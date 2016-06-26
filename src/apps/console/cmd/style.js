@@ -1,0 +1,11 @@
+export const $clrDarkMatter = 'rgb(10,10,10)'; // chalkboard black
+export const $clrBackground = 'rgb(30,30,30)'; // chalkboard black
+export const $clrBackgroundH = 'rgb(37,37,37)'; // dark gray
+export const $clrLowContrast = 'rgb(70,70,70)'; // gray
+export const $clrDefault = 'rgb(220,220,220)'; // off-white
+export const $clrKeyword = 'rgb(86,156,214)'; // blue chalk
+export const $clrString = 'rgb(214,157,133)'; // orange chalk
+export const $clrComment = 'hsl(112, 52%, 40%)'; // pastel green
+export const $clrCommentOld = 'rgb(87,166,74)'; // pastel green
+export const $clrError = 'rgb(216,80,80)'; // pastel red
+export const $clrNumber = 'rgb(181,206,168)'; // muted pastel green
