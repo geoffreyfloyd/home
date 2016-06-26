@@ -5,7 +5,7 @@ module.exports = exports = {
    // Apps
    // -------------------------------------------------------
    apps: {
-      cmd: path.resolve(__dirname, './src/apps/cmd'),
+      console: path.resolve(__dirname, './src/apps/console'),
       doozy: path.resolve(__dirname, './src/apps/doozy'),
       gnidbits: path.resolve(__dirname, './src/apps/gnidbits'),
    },
