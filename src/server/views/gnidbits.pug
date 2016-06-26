@@ -1,0 +1,39 @@
+doctype html
+html(class="no-js", lang="")
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="x-ua-compatible", content="ie=edge")
+    title= title
+    meta(name="description", description=description)
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(rel="apple-touch-icon", href="apple-touch-icon.png")
+    link(rel="stylesheet",href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css")
+    link(rel="stylesheet",href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css")
+    script(src="https://code.jquery.com/jquery-2.2.3.min.js")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js")
+    style#css!= css
+  body
+    #app
+    script(src=entry)
+    script.
+      ReactDOM.render(React.createElement(APP, #{JSON.stringify(params)}), document.getElementById('app'));
+      var tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      window.activeVideoPlayer;
+      window.isYouTubeApiLoaded = false;
+      window.ytTarget = null;
+
+      function onYouTubeIframeAPIReady() {
+        window.isYouTubeApiLoaded = true;
+        if (window.ytTarget) {
+          window.activeVideoPlayer = new window.YT.Player(window.ytTarget.id, {
+            events: {
+              'onReady': window.ytTarget.onPlayerReady,
+              'onStateChange': window.ytTarget.onPlayerStateChange
+            }
+          });
+        }
+      }

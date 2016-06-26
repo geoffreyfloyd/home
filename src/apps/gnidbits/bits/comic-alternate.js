@@ -1,0 +1,1 @@
+// indirectly link to someone else's comic by setting the comic-node's `before` to the url
