@@ -105,3 +105,25 @@ export default class ComicStrip extends React.Component {
       );
    }
 }
+
+const styles = {
+   wrap: {
+      display: 'flex',
+      alignContent: 'flex-start',
+      justifyContent: 'space-around',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      minHeight: '100vh',
+   },
+   feed: {
+      width: '31rem',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      
+   },
+   pan: {
+      overflowX: 'auto',
+      whiteSpace: 'nowrap',
+      maxHeight: '20rem',
+   },
+};

@@ -1,4 +1,6 @@
-import { socketPort } from '../../server.config';
+const DEBUG = process.argv.indexOf('--release') === -1;
+var socketPort = require('../../server.config')(DEBUG).socketPort;
+
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 

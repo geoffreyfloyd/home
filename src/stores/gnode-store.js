@@ -27,20 +27,21 @@ export default class GnodeStore {
       this.appName = appName;
       this.storeName = storeName;
       this.retry = 5;
-      this.url = `${baseUrl}/api/${this.appName}/${this.storeName.toLowerCase()}`;
+      this.url = `${baseUrl}/api/${this.appName.toLowerCase()}/${this.storeName.toLowerCase()}`;
 
       /***********************************************************************
        * REST API
        **********************************************************************/
+      var me = this;
       this._api = {
          post (model) {
-            return http(this.url).post().withCreds().withJsonBody(model).requestJson();
+            return http(me.url).post().withCreds().withJsonBody(model).requestJson();
          },
          put (model) {
-            return http(this.url).put().withCreds().withJsonBody(model).requestJson();
+            return http(me.url).put().withCreds().withJsonBody(model).requestJson();
          },
          destroy (id) {
-            return http(`${this.url}/${id}`, { method: 'DELETE' }).withCreds().requestJson();
+            return http(`${me.url}/${id}`, { method: 'DELETE' }).withCreds().requestJson();
          },
       };
    }

@@ -5,19 +5,7 @@ module.exports = function (operator) {
    /*****************************************************
    * BITS
    ****************************************************/
-   operator.server.get('/gnidbits/api/bit', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
-      getAll(operator, 'gnidbits.bit').then(result => {
-         res.end(JSON.stringify(result));
-      });
-   });
-
-   operator.server.get('/gnidbits/api/bit/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
-      get(operator, req.params.id, 'gnidbits.bit').then(result => {
-         res.end(JSON.stringify(result));
-      });
-   });
-
-   operator.server.post('/gnidbits/api/bit', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.post('/api/gnidbits/bit', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       create(operator, 'gnidbits.bit', req.body, function (gnode, db, model) {
          // Create tag connections
          if (model.tags && model.tags.length) {
@@ -33,7 +21,7 @@ module.exports = function (operator) {
       });
    });
 
-   operator.server.put('/gnidbits/api/bit', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.put('/api/gnidbits/bit', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       update(operator, 'gnidbits.bit', req.body, function (gnode, db, model) {
          // remove old connections
          var removeConnections = [];
@@ -81,7 +69,7 @@ module.exports = function (operator) {
       });
    });
 
-   operator.server.delete('/gnidbits/api/bit/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.delete('/api/gnidbits/bit/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       remove(operator, 'gnidbits.bit', req.params.id).then(result => {
          res.end(JSON.stringify(result));
       });

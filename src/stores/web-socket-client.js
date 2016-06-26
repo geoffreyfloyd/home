@@ -1,7 +1,8 @@
-import { hostName, socketPort } from '../../server.config';
 var W3CWebSocket = require('websocket').w3cwebsocket;
+const DEBUG = process.env.NODE_ENV !== 'production';
+var serverConfig = require('../../server.config')(DEBUG);
 
-var client = new W3CWebSocket(`ws://${hostName}:${socketPort}/`, 'echo-protocol');
+var client = new W3CWebSocket(`ws://${serverConfig.hostName}:${serverConfig.socketPort}/`, 'echo-protocol');
 
 client.onerror = () => {
    console.log('Connection Error');

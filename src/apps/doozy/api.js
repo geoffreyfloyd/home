@@ -8,7 +8,7 @@ module.exports = function (operator) {
    /*****************************************************
    * ACTIONS
    ****************************************************/
-   operator.server.post('/doozy/api/action', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.post('/api/doozy/action', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       create(operator, 'doozy.action', req.body, (gnode, db, model) => {
          // Create tag connections
          if (model.tags && model.tags.length) {
@@ -24,7 +24,7 @@ module.exports = function (operator) {
       });
    });
 
-   operator.server.put('/doozy/api/action', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.put('/api/doozy/action', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       update(operator, 'doozy.action', req.body, (gnode, db, model) => {
          // remove old connections
          var removeConnections = [];
@@ -72,7 +72,7 @@ module.exports = function (operator) {
       });
    });
 
-   operator.server.delete('/doozy/api/action/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.delete('/api/doozy/action/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       remove(operator, 'doozy.action', req.params.id, (gnode, db) => {
          gnode.related('doozy.logentry').forEach(logGnapse => {
             var logGnode = logGnapse.getTarget();
@@ -115,31 +115,31 @@ module.exports = function (operator) {
    /*****************************************************
    * FOCUSES
    ****************************************************/
-   operator.server.get('/doozy/api/focus', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.get('/api/doozy/focus', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       getAll(operator, 'doozy.focus').then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.get('/doozy/api/focus/:id/:version', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.get('/api/doozy/focus/:id/:version', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       get(operator, req.params.id, 'doozy.focus').then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.post('/doozy/api/focus', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.post('/api/doozy/focus', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       create(operator, 'doozy.focus', req.body).then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.put('/doozy/api/focus', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.put('/api/doozy/focus', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       update(operator, 'doozy.focus', req.body).then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.delete('/doozy/api/focus/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.delete('/api/doozy/focus/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       remove(operator, 'doozy.focus', req.params.id).then(result => {
          res.end(JSON.stringify(result));
       });
@@ -148,19 +148,19 @@ module.exports = function (operator) {
    /*****************************************************
    * TAGS
    ****************************************************/
-   operator.server.post('/doozy/api/tag', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.post('/api/doozy/tag', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       create(operator, 'tag', req.body).then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.put('/doozy/api/tag', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.put('/api/doozy/tag', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       update(operator, 'tag', req.body).then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.delete('/doozy/api/tag/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.delete('/api/doozy/tag/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       remove(operator, 'tag', req.params.id).then(result => {
          res.end(JSON.stringify(result));
       });
@@ -169,19 +169,19 @@ module.exports = function (operator) {
    /*****************************************************
    * TARGETS
    ****************************************************/
-   operator.server.post('/doozy/api/target', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.post('/api/doozy/target', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       create(operator, 'doozy.target', req.body).then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.put('/doozy/api/target', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.put('/api/doozy/target', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       update(operator, 'doozy.target', req.body).then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.delete('/doozy/api/target/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.delete('/api/doozy/target/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       remove(operator, 'doozy.target', req.params.id).then(result => {
          res.end(JSON.stringify(result));
       });
@@ -190,19 +190,19 @@ module.exports = function (operator) {
    /*****************************************************
    * PLANS
    ****************************************************/
-   operator.server.post('/doozy/api/plan', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.post('/api/doozy/plan', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       create(operator, 'doozy.plan', req.body).then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.put('/doozy/api/plan', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.put('/api/doozy/plan', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       update(operator, 'doozy.plan', req.body).then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.delete('/doozy/api/plan/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.delete('/api/doozy/plan/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       remove(operator, 'doozy.plan', req.params.id).then(result => {
          res.end(JSON.stringify(result));
       });
@@ -211,7 +211,7 @@ module.exports = function (operator) {
    /*****************************************************
    * PLAN STEPS
    ****************************************************/
-   operator.server.post('/doozy/api/planstep', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.post('/api/doozy/planstep', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       create(operator, 'doozy.planstep', req.body, (gnode, db, model) => {
          // set connections
          if (model.planId) {
@@ -233,13 +233,13 @@ module.exports = function (operator) {
       });
    });
 
-   operator.server.put('/doozy/api/planstep', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.put('/api/doozy/planstep', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       update(operator, 'doozy.planstep', req.body).then(result => {
          res.end(JSON.stringify(result));
       });
    });
 
-   operator.server.delete('/doozy/api/planstep/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.delete('/api/doozy/planstep/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       remove(operator, 'doozy.planstep', req.params.id).then(result => {
          res.end(JSON.stringify(result));
       });
@@ -248,7 +248,7 @@ module.exports = function (operator) {
    /*****************************************************
    * LOG ENTRIES
    ****************************************************/
-   operator.server.post('/doozy/api/logentry', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.post('/api/doozy/logentry', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       create(operator, 'doozy.logentry', req.body,
          // Create Connections
          (gnode, db, model) => {
@@ -312,7 +312,7 @@ module.exports = function (operator) {
          });
    });
 
-   operator.server.put('/doozy/api/logentry', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.put('/api/doozy/logentry', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       update(operator, 'doozy.logentry', req.body,
          // Update Connections
          (gnode, db, model) => {
@@ -383,7 +383,7 @@ module.exports = function (operator) {
          });
    });
 
-   operator.server.delete('/doozy/api/logentry/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+   operator.server.delete('/api/doozy/logentry/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       remove(operator, 'doozy.logentry', req.params.id).then(result => {
          res.end(JSON.stringify(result));
       });

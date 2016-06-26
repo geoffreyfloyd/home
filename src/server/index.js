@@ -6,17 +6,14 @@ import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import session from 'express-session';
 import expressGraphQL from 'express-graphql';
-import ReactDOM from 'react-dom/server';
 import PrettyError from 'pretty-error';
 import schema from '../data/schema';
-import { port } from '../../server.config';
 
 import Operator from '../libs/operator';
 import config from '../../home.config';
 
 const DEBUG = process.argv.indexOf('--release') === -1;
-process.env.NODE_ENV = DEBUG ? 'development' : 'production';
-
+var port = require('../../server.config')(DEBUG).port;
 const server = global.server = express();
 
 //

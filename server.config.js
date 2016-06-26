@@ -1,7 +1,7 @@
-const DEBUG = process.env.NODE_ENV !== 'production';
-
-module.exports = exports = {
-   hostName: DEBUG ? 'localhost' : 'home.hoomanlogic.com',
-   port: DEBUG ? 8081 : 80,
-   socketPort: DEBUG ? 8080 : 8181,
+module.exports = exports = function (debug) {
+   return {
+      hostName: debug ? 'localhost' : 'home.hoomanlogic.com',
+      port: debug ? 8081 : 80,
+      socketPort: debug ? 8080 : 8181,
+   };
 };

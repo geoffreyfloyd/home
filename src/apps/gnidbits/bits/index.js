@@ -127,25 +127,6 @@ const styles = {
    body: {
       backgroundColor: '#444',
    },
-   wrap: {
-      display: 'flex',
-      alignContent: 'flex-start',
-      justifyContent: 'space-around',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      minHeight: '100vh',
-   },
-   feed: {
-      width: '31rem',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      
-   },
-   pan: {
-      overflowX: 'auto',
-      whiteSpace: 'nowrap',
-      maxHeight: '20rem',
-   },
 };
 
 var testMediaStrip = [
