@@ -1,31 +1,37 @@
-import {Store} from './store';
-var window = global.window || { innerWidth: 800, innerHeight: 600 };
+import { Store } from './store';
 
 class WindowSizeStore extends Store {
    constructor () {
       super();
-      
-      // Bind instance to handler
       this._onWindowResize = this._onWindowResize.bind(this);
-      this._onWindowResize();
    }
-   
-   _onWindowResize () {
-      this.updates.value = {
+
+   getSize () {
+      return {
          width: window.innerWidth,
-         height: window.innerHeight
+         height: window.innerHeight,
+         clientWidth: document.body.clientWidth,
+         clientHeight: document.body.clientHeight,
       };
-      this.notify();
+   }
+
+   refresh () {
+      this.update(this.getSize());
    }
 
    onFirstIn () {
-      window.addEventListener('resize', _onWindowResize);
-      onWindowResize();
+      window.addEventListener('resize', this._onWindowResize);
+      this._onWindowResize();
    }
 
    onLastOut () {
-      window.removeEventListener('resize', onWindowResize);
+      window.removeEventListener('resize', this._onWindowResize);
    }
-};
 
-export default new WindowSizeStore();
+   _onWindowResize () {
+      this.update(this.getSize());
+   }
+}
+
+var singleton = new WindowSizeStore();
+export default singleton;

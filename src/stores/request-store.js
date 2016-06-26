@@ -1,207 +1,184 @@
 import http from 'libs/http';
 import uuid from 'uuid';
 import WebSocketClient from './web-socket-client';
+import those from 'those';
 
-var openWidgets = [];
 var callbacks = [];
 var requests = [];
 
 var api = {
-    sendRequest: function (request, callback) {
-        http('http://' + window.location.href.split('/').slice(2,3).join('/') + '/_/cmd/', {
-            context: this,
-            type: 'POST',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(request),
-            dataType: "json"
-        }).withJsonBody(request).requestJson(json => {
-            request.response = json;
-            callback(request);
-        }).catch(function (err) {
-            request.response = {
-                status: 'ERR',
-                date: (new Date()).toISOString(),
-                result: err.statusText,
-                type: 'text'
-            };
-            callback(request);
-        });
-    }
+   sendRequest (request, callback) {
+      http(`http://${window.location.href.split('/').slice(2, 3).join('/')}/_/cmd/`).withJsonBody(request).requestJson(json => {
+         request.response = json;
+         callback(request);
+      }).catch(err => {
+         request.response = {
+            status: 'ERR',
+            date: (new Date()).toISOString(),
+            result: err.statusText,
+            type: 'text',
+         };
+         callback(request);
+      });
+   },
 };
 
-var handleSocketMessage = function (data) {
+function handleSocketMessage (data) {
+   // Parse json string to an object
+   data = JSON.parse(data);
 
-    data = JSON.parse(data);
-    var request = null;
-    requests.map(function (req) {
-        if (req.context && req.context.processId === data.id) {
-            request = req;
-        }
-    });
+   // Find appropriate request
+   var request = those(requests).first(req => req.context && req.context.processId === data.id);
+   if (request === null) {
+      return;
+   }
 
-    if (request === null) {
-        return;
-    }
+   if (data.result === null || data.processEnded) {
+      // process ended
+      request.context.processId = void 0;
+   }
 
-    if (data.result === null || data.processEnded) {
-        // process ended
-        request.context.processId = void 0;
-    }
+   if (data.result !== null) {
+      if (request.response === null) {
+         request.response = {};
+      }
+      if (typeof request.response.result === 'string' && typeof data.result === 'string') {
+         request.response.result += `\r\n${data.result}`;
+      }
+      else {
+         request.response.result = data.result;
+      }
+   }
 
-    if (data.result !== null) {
-        if (request.response === null) {
-            request.response = {};
-        }
-        if (typeof request.response.result === 'string' && typeof data.result === 'string') {
-            request.response.result += '\r\n' + data.result;
-        }
-        else {
-            request.response.result = data.result;
-        }
-    }
-
-    f.notify(request);
+   // Notify
+   f.notify(request);
 }
 
 WebSocketClient.onmessage(handleSocketMessage);
 
-var wrapRequest = function (cmd, sessionId) {
-    return {
-        id: uuid.v4(),
-        sessionId: sessionId,
-        context: {},
-        date: (new Date()).toISOString(),
-        cmd: cmd,
-        response: null
-    };
+function wrapRequest (cmd, sessionId) {
+   return {
+      id: uuid.v4(),
+      sessionId,
+      context: {},
+      date: (new Date()).toISOString(),
+      cmd,
+      response: null,
+   };
 }
 
 var f = {
-    send: function (cmd, sessionId, callback) {
+   send (cmd, sessionId, callback) {
 
-        if (!cmd) {
-            return;
-        }
+      if (!cmd) {
+         return;
+      }
 
-        var request = wrapRequest(cmd, sessionId);
-        requests.push(request);
+      var request = wrapRequest(cmd, sessionId);
+      requests.push(request);
 
-        // notify subscribers
-        f.notify(request);
+      // notify subscribers
+      f.notify(request);
 
-        // A managed type of object.assign to
-        // add logic based on property name being updated
-        var assignFilter = function (root, other, on) {
-            for (var prop in other) {
-                if (other.hasOwnProperty(prop)) {
-                    if (!root.hasOwnProperty(prop) || root[prop] != other[prop]) {
-                        if (on(prop)) {
-                            root[prop] = other[prop];
-                        }
-                    }
-                }
-            }
-        }
+      // A managed type of object.assign to
+      // add logic based on property name being updated
+      // var assignFilter = function (root, other, on) {
+      //    for (var prop in other) {
+      //       if (other.hasOwnProperty(prop)) {
+      //          if (!root.hasOwnProperty(prop) || root[prop] != other[prop]) {
+      //             if (on(prop)) {
+      //                root[prop] = other[prop];
+      //             }
+      //          }
+      //       }
+      //    }
+      // }
 
-        api.sendRequest(request, function (request) {
-            if (request.response.hasOwnProperty('setContext')) {
-                var context = request.response.setContext;
-                //request.response.setContext = void 0;
+      api.sendRequest(request, req => {
+         // if (req.response.hasOwnProperty('setContext')) {
+         //    var context = req.response.setContext;
+         //    req.response.setContext = void 0;
 
-                // If we're getting a process id, then let's
-                // spawn a new session
-               //  assignFilter(request.context, context, function(prop) {
-               //      if (prop === 'processId') {
+         //    // If we're getting a process id, then let's
+         //    // spawn a new session
+         //    assignFilter(req.context, context, prop => {
+         //       if (prop === 'processId') {
+         //          req.sessionId = uuid.v4();
+         //       }
+         //       return true;
+         //    });
+         // }
 
-               //          request.sessionId = uuid.v4();
-               //      }
-               //      return true;
-               //  });
-            }
+         // notify subscribers
+         f.notify(req);
 
-            // notify subscribers
-            f.notify(request);
+         if (callback) {
+            callback(req);
+         }
+      });
+   },
+   repeat (id) {
+      var i, repeatRequest;
 
-            if (callback) {
-                callback(request);
-            }
-        });
-    },
-    repeat: function (id) {
-        var i;
-        var repeatRequest;
-        var currentRequest;
+      for (i = 0; i < requests.length; i++) {
+         if (requests[i].id === id) {
+            repeatRequest = requests[i];
+            break;
+         }
+      }
 
-        for (i = 0; i < requests.length; i++) {
-            if (requests[i].id === id) {
-                repeatRequest = requests[i];
-                break;
-            }
-        }
+      f.send(repeatRequest.cmd, repeatRequest.sessionId, request => {
+         // notify subscribers
+         f.notify(request);
+      });
+   },
+   getRequests (sessionId) {
+      return those(requests).like({ sessionId });
+   },
+   closeSession (sessionId) {
+      // Filter out all requests for this session
+      requests = requests.filter(req => req.sessionId !== sessionId);
 
-        f.send(repeatRequest.cmd, repeatRequest.sessionId, function (request) {
-            // notify subscribers
-            f.notify(request);
-        })
-    },
-    getRequests: function (sessionId) {
-        var filtered = [];
-        requests.map(function (request) {
-            if (request.sessionId === sessionId) {
-                filtered.push(request);
-            }
-        });
-        return filtered;
-    },
-    closeSession: function (sessionId) {
-        var filtered = [];
-        requests.map(function (request) {
-            if (request.sessionId !== sessionId) {
-                filtered.push(request);
-            }
-        });
-        requests = filtered;
-        f.notify(sessionId);
-
-        if (requests.length === 0) {
-            f.new();
-        }
-    },
-    getSessionIds: function () {
-        var sessionIds = [];
-        requests.map(function (request) {
-            if (sessionIds.indexOf(request.sessionId) === -1) {
-                sessionIds.push(request.sessionId);
-            }
-        });
-        return sessionIds;
-    },
-    subscribe: function (callback, id) {
-        callbacks.push({
-            callback: callback,
-            id: id
-        });
-    },
-    new: function () {
-        var welcome = wrapRequest('', uuid.v4());
-        welcome.response = {
-            status: 'OK',
-            date: new Date(),
-            result: '', //WebPrompt\r\nby HoomanLogic
-            type: 'text'
-        };
-        requests.push(welcome);
-        f.notify(welcome);
-        return welcome.sessionId;
-    },
-    notify: function (request) {
-        // notify subscribers
-        callbacks.map(function (cb) {
-            if (!cb.id || request.id === cb.id || request.sessionId === cb.id) {
-                cb.callback(request);
-            }
-        });
-    }
+      f.notify(sessionId);
+      if (requests.length === 0) {
+         f.new();
+      }
+   },
+   getSessionIds () {
+      var sessionIds = [];
+      requests.forEach(req => {
+         if (sessionIds.indexOf(req.sessionId) === -1) {
+            sessionIds.push(req.sessionId);
+         }
+      });
+      return sessionIds;
+   },
+   subscribe (callback, id) {
+      callbacks.push({
+         callback,
+         id,
+      });
+   },
+   new () {
+      var welcome = wrapRequest('', uuid.v4());
+      welcome.response = {
+         status: 'OK',
+         date: new Date(),
+         result: '', // WebPrompt\r\nby HoomanLogic
+         type: 'text',
+      };
+      requests.push(welcome);
+      f.notify(welcome);
+      return welcome.sessionId;
+   },
+   notify (request) {
+      // notify subscribers
+      callbacks.slice().forEach(cb => {
+         if (!cb.id || request.id === cb.id || request.sessionId === cb.id) {
+            cb.callback(request);
+         }
+      });
+   },
 };
 
 module.exports = exports = f;
