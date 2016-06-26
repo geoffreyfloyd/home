@@ -1,6 +1,6 @@
 import React from 'react';
 import { Editor, ContentState, EditorState, RichUtils, CompositeDecorator } from 'draft-js';
-import requestStore from '../../stores/request-store';
+import requestStore from 'stores/request-store';
 import those from 'those';
 
 const HASHTAG_REGEX = /\#[\w\u0590-\u05ff]+/g;

@@ -1,4 +1,4 @@
-import { Store } from './store';
+import Store from './store';
 
 class WindowSizeStore extends Store {
    constructor () {
@@ -16,7 +16,7 @@ class WindowSizeStore extends Store {
    }
 
    refresh () {
-      this.update(this.getSize());
+      this.notify(this.getSize());
    }
 
    onFirstIn () {

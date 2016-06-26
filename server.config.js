@@ -1,5 +1,7 @@
-const DEBUG = process.argv.indexOf('--release') === -1;
+const DEBUG = process.env.NODE_ENV !== 'production';
 
-export const hostName = DEBUG ? 'localhost' : 'home.hoomanlogic.com';
-export const port = DEBUG ? 8081 : 80;
-export const socketPort = DEBUG ? 8080 : 8181;
+module.exports = exports = {
+   hostName: DEBUG ? 'localhost' : 'home.hoomanlogic.com',
+   port: DEBUG ? 8081 : 80,
+   socketPort: DEBUG ? 8080 : 8181,
+};

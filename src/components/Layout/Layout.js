@@ -1,5 +1,5 @@
 import React from 'react';
-import LayoutMixin from 'Mixins/LayoutMixin';
+import LayoutMixin from './LayoutMixin';
 
 var Layout = React.createClass({
    /*************************************************************

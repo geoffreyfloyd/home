@@ -1,10 +1,12 @@
 import React from 'react';
-import { $clrLowContrast } from './style.js';
+import Layout from 'components/Layout/Layout';
+import { $clrLowContrast } from './style';
 
 function Toolbar (props) {
    return (
-      <div style={styles.container}>
-         <ul style={styles.menu} style={{ float: 'right' }}>
+      <Layout layoutContext={props.layoutContext}>
+         {props.children}
+         <ul style={styles.menu}>
             <li style={styles.menuItem}>
                <button style={styles.button} onClick={props.onClickNewSession}>
                   <i className="fa fa-2x fa-terminal" title="Start a new session"></i>
@@ -16,13 +18,13 @@ function Toolbar (props) {
                </button>
             </li>
          </ul>
-         {props.children}
-      </div>
+      </Layout>
    );
 }
 
 Toolbar.propTypes = {
    children: React.PropTypes.object,
+   layoutContext: React.PropTypes.object,
    onClickNewSession: React.PropTypes.func,
    onClickProcesses: React.PropTypes.func,
    showProcesses: React.PropTypes.bool,

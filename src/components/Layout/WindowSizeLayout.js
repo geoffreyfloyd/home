@@ -1,7 +1,7 @@
 import React from 'react';
 import windowSizeStore from 'stores/window-size-store';
 import { getThrottledHandler } from 'libs/event-handler';
-import LayoutMixin from 'Mixins/LayoutMixin';
+import LayoutMixin from './LayoutMixin';
 
 var WindowSizeLayout = React.createClass({
    /*************************************************************
@@ -16,7 +16,7 @@ var WindowSizeLayout = React.createClass({
 
    getInitialState () {
       return {
-         size: windowSizeStore.getSize()
+         size: windowSizeStore.getSize(),
       };
    },
 

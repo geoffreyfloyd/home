@@ -15,7 +15,7 @@ import Operator from '../libs/operator';
 import config from '../../home.config';
 
 const DEBUG = process.argv.indexOf('--release') === -1;
-const VERBOSE = process.argv.indexOf('--verbose') > -1;
+process.env.NODE_ENV = DEBUG ? 'development' : 'production';
 
 const server = global.server = express();
 

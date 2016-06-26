@@ -3,26 +3,21 @@ var path = require("path");
 var homeConfig = require('./home.config.js');
 
 var DEBUG = process.argv.indexOf('--release') === -1;
-var VERBOSE = process.argv.indexOf('--verbose') > -1;
-var GLOBALS = {
-   'process.env.NODE_ENV': DEBUG ? '"development"' : '"production"',
-   __DEV__: DEBUG,
-};
+process.env.NODE_ENV = DEBUG ? 'development' : 'production';
 
 module.exports = function (options) {
-
    var plugins = [];
 
    // Stringify process.env.NODE_ENV in production for performance
    if (!DEBUG) {
       plugins.push(new webpack.DefinePlugin({
-         'process.env.NODE_ENV': JSON.stringify('production')
+         'process.env.NODE_ENV': JSON.stringify('production'),
       }));
       // Save this for eventual end of ASP.NET Bundling
       plugins.push(new webpack.optimize.UglifyJsPlugin({
          compress: {
-            warnings: false
-         }
+            warnings: false,
+         },
       }));
    }
 
@@ -37,7 +32,7 @@ module.exports = function (options) {
       Object.keys(homeConfig.apps).forEach(function (appKey) {         
          var entryPoints = require(path.join(homeConfig.apps[appKey], 'ui.js'));
 
-         Object.keys(entryPoints).forEach( function (uiKey) {
+         Object.keys(entryPoints).forEach(function (uiKey) {
             entry[`${appKey}-${uiKey}`] = [
                'webpack-dev-server/client?http://localhost:3000',
                'webpack/hot/dev-server',
@@ -135,10 +130,10 @@ module.exports = function (options) {
    var config = {
       entry: entry,
       eslint: {
-         configFile: '.eslintrc'
+         configFile: '.eslintrc',
       },
       module: {
-         loaders: loaders
+         loaders: loaders,
       },
       output: output,
       plugins: plugins,

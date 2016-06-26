@@ -7,13 +7,14 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import Prompt from './Prompt';
 import Session from './Session';
 import Toolbar from './Toolbar';
 import requestStore from 'stores/request-store';
-import windowSizeStore from 'stores/window-size-store';
-import { WindowSizeLayout, Layout } from 'components/Layout';
+import WindowSizeLayout from 'components/Layout/WindowSizeLayout';
+import Layout from 'components/Layout/Layout';
 
 class Cmd extends React.Component {
    constructor (props) {
@@ -22,7 +23,7 @@ class Cmd extends React.Component {
          selectedSessionId: requestStore.new(),
          sessionIds: [],
          showProcesses: true,
-         sidePanelWidth: 400
+         sidePanelWidth: 400,
       };
       this.handleClickProcesses = this.handleClickProcesses.bind(this);
       this.handleClickNewSession = this.handleClickNewSession.bind(this);
@@ -31,12 +32,10 @@ class Cmd extends React.Component {
    }
 
    componentDidMount () {
-      windowSizeStore.subscribe(this.handleStoreUpdate);
       requestStore.subscribe(this.handleStoreUpdate.bind(this), null);
    }
 
    componentWillUnmount () {
-      windowSizeStore.unsubscribe(this.handleStoreUpdate);
       requestStore.unsubscribe(this.handleStoreUpdate.bind(this), null);
    }
 
@@ -50,14 +49,14 @@ class Cmd extends React.Component {
          if (sessionIds.length > 0) {
             this.setState({
                ts: (new Date()).toISOString(),
-               selectedSessionId: sessionIds[0]
+               selectedSessionId: sessionIds[0],
             });
             return;
          }
       }
 
       this.setState({
-         ts: (new Date()).toISOString()
+         ts: (new Date()).toISOString(),
       });
    }
 
@@ -79,34 +78,9 @@ class Cmd extends React.Component {
    }
 
    /*************************************************************
-    * HELPERS
-    *************************************************************/
-   calculateSize (showProcesses) {
-      var size = windowSizeStore.updates.value;
-
-      var sidePanelWidth = 400;
-      var workspaceHeight = size.height - 75;
-
-      if (requestStore.getSessionIds().length > 1 && showProcesses) {
-         if (size.width < sidePanelWidth * 2) {
-            sidePanelWidth = size.width - sidePanelWidth;
-         }
-      }
-      else {
-         sidePanelWidth = 0;
-      }
-
-      return {
-         sidePanelWidth,
-         workspaceHeight,
-         workspaceWidth: size.width - sidePanelWidth,
-      };
-   }
-
-   /*************************************************************
     * RENDERING
     *************************************************************/
-   renderMultiSession (sessionIds, size) {
+   renderMultiSession (sessionIds) {
       var selectedSessionId = this.state.selectedSessionId;
 
       if (selectedSessionId === null) {
@@ -122,20 +96,20 @@ class Cmd extends React.Component {
       });
 
       var currentSession, sideSessions;
-      // currentSession = (
-      //    <div key="mainworkspace" style={{ flexGrow: '1', margin: '0 10px', maxWidth: String(size.workspaceWidth) + 'px', height: size.workspaceHeight + 'px', overflowY: 'auto' }} >
-      //       <Session sessionId={selectedSessionId} selected />
-      //    </div>
-      // );
-      // if (this.state.showProcesses) {
-      //    sideSessions = (
-      //       <div key="sideSessions" style={styles.sideSession}>
-      //          {otherSessionIds.map(sessionId => {
-      //             return (<Session key={sessionId} sessionId={sessionId} style={{ maxHeight: '600px', overflowY: 'auto' }} onSelect={this.handleSelectSession.bind(this) } />);
-      //          }) }
-      //       </div>
-      //    );
-      // }
+      currentSession = (
+         <Layout layoutWidth="flex" key="mainworkspace">
+            <Session sessionId={selectedSessionId} selected />
+         </Layout>
+      );
+      if (this.state.showProcesses) {
+         sideSessions = (
+            <Layout layoutWidth="20rem" key="sideSessions">
+               {otherSessionIds.map(sessionId => {
+                  return (<Session key={sessionId} sessionId={sessionId} style={{ maxHeight: '600px', overflowY: 'auto' }} onSelect={this.handleSelectSession.bind(this) } />);
+               }) }
+            </Layout>
+         );
+      }
 
       return (
          <WindowSizeLayout layoutOptions={{ overflow: '*', flex: false }}>
@@ -154,52 +128,51 @@ class Cmd extends React.Component {
       );
    }
 
-   renderSingleSession (sessionId /* , size */) {
+   renderSingleSession (sessionId) {
       var session;
-      // session = (
-      //    <div key="mainworkspace" style={{ margin: '0 10px 10px', height: size.workspaceHeight + 'px', overflowY: 'auto' }}>
-      //       <Session sessionId={sessionId} selected />
-      //    </div>
-      // );
+      session = (
+         <Layout key="mainworkspace">
+            <Session sessionId={sessionId} selected />
+         </Layout>
+      );
+
       return (
-         <div>
-            <Toolbar key="toolbar"
-              showProcesses={false}
-              onClickProcesses={this.handleClickProcesses}
-              onClickNewSession={this.handleClickNewSession}
-            >
-               <Prompt sessionId={sessionId} />
-            </Toolbar>
-            {session}
-         </div>
+         <WindowSizeLayout layoutOptions={{ overflow: '*', flex: false }}>
+            <Layout layoutHeight="flex:900" layoutWidth="flex:1500" layoutOptions={{ flex: false }}>
+               <Layout layoutHeight="3rem">
+                  <Toolbar key="toolbar"
+                    showProcesses={false}
+                    onClickProcesses={this.handleClickProcesses}
+                    onClickNewSession={this.handleClickNewSession}
+                  >
+                     <Prompt sessionId={sessionId} />
+                  </Toolbar>
+               </Layout>
+               <Layout layoutHeight="flex">
+                  {session}
+               </Layout>
+            </Layout>
+         </WindowSizeLayout>
       );
    }
 
    render () {
-      var size = this.calculateSize(this.state.showProcesses);
       var sessionIds = requestStore.getSessionIds();
 
       if (sessionIds.length === 0) {
          return null;
       }
       else if (sessionIds.length === 1) {
-         return this.renderSingleSession(sessionIds[0], size);
+         return this.renderSingleSession(sessionIds[0]);
       }
-      return this.renderMultiSession(sessionIds, size);
+      return this.renderMultiSession(sessionIds);
    }
 }
 
-Cmd.propTypes = { title: PropTypes.string.isRequired };
+// Cmd.propTypes = { title: PropTypes.string.isRequired };
 
-// var styles = {
-//    sideSession (size) {
-//       return {
-//          height: `${size.workspaceHeight}px`,
-//          overflowY: 'auto',
-//          width: `${String(size.sidePanelWidth)}px`,
-//          margin: '0 10px 0 0',
-//       };
-//    },
-// };
+global.APP = Cmd;
+global.React = React;
+global.ReactDOM = ReactDOM;
 
 export default Cmd;
