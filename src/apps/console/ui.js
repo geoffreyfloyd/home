@@ -3,6 +3,6 @@ module.exports = exports = {
    cmd: {
       entry: path.resolve(__dirname, './cmd/index.js'),
       route: '/cmd',
-      view: 'index',
+      view: 'noscroll',
    },
 };

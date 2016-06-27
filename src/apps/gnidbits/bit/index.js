@@ -73,9 +73,9 @@ export default class Bit extends React.Component {
       return (
          <div style={$background}>
             <div style={$content}>
-               <Form ref="form" model={model} style={{ color: '#2B90E8' }} labelStyle={{ color: '#00AF27' }}>
-                  <FormSection title="General" labelSpan={2} style={$formSection}>
-                     <TextInput label="Name" path="caption" />
+               <Form ref="form" model={model} style={{ color: '#2B90E8' }}>
+                  <FormSection title="General" style={$formSection} labelSpan={2} labelStyle={{ color: '#00AF27' }}>
+                     <TextInput label="Caption" path="caption" />
                      <TagInput label="Tags" path="tags" items={tags} />
                   </FormSection>
                   <FormSection title="Images" style={$formSection}>

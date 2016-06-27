@@ -109,7 +109,7 @@ class Presenter extends React.Component {
          <div style={styles.body}>
             <Form
               model={this.model}
-              style={{ color: '#2B90E8', padding: '0.5rem', maxWidth: '20rem' }}
+              style={{ color: '#2B90E8', padding: '0.5rem', maxWidth: '30rem' }}
               onChange={this.handleFormChange}
               labelSpan={2}
               labelStyle={{ color: '#00AF27' }}
