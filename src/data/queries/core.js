@@ -233,7 +233,7 @@ export async function getAll (operator, kind) {
       });
    });
    return result;
-};
+}
 
 export async function get (operator, id, kind) {
    var result;
@@ -248,7 +248,7 @@ export async function get (operator, id, kind) {
       }
    });
    return result;
-};
+}
 
 export function create (operator, kind, model, createConnections, generateTag) {
    return new Promise(function (resolve) {
@@ -278,10 +278,10 @@ export function create (operator, kind, model, createConnections, generateTag) {
          // refresh the model
          model = getModel(gnode, db, kind);
 
-         resolve(model);   
+         resolve(model);
       });
    });
-};
+}
 
 export function update (operator, kind, model, updateConnections) {
    return new Promise(function (resolve) {
@@ -289,7 +289,6 @@ export function update (operator, kind, model, updateConnections) {
          // Get gnode from db
          var gnode = db.find(model.id, kind).first();
          if (gnode) {
-
             // Strip model to state and update existing gnode's state
             gnode.setState(stripModel(model, modelProps[kind]));
 
@@ -305,11 +304,11 @@ export function update (operator, kind, model, updateConnections) {
             model = getModel(gnode, db, kind);
 
             // Send refreshed model
-            resolve(model)
+            resolve(model);
          }
       });
-});
-};
+   });
+}
 
 export function remove (operator, kind, id, beforeRemove) {
    return new Promise(function (resolve) {
@@ -328,4 +327,4 @@ export function remove (operator, kind, id, beforeRemove) {
          }
       });
    });
-};
+}
