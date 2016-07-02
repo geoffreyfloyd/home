@@ -30,7 +30,7 @@ export const $inputRow = {
 };
 
 export const $label = {
-   color: '#00AF27'
+   color: '#00AF27',
 };
 
 export const $buttons = {
@@ -38,23 +38,27 @@ export const $buttons = {
 };
 
 export const $button = {
-      color: '#fff',
-      backgroundColor: '#2B90E8',
-      width: '100%',
-      display: 'inline-block',
-      fontSize: '1.1rem',
-      lineHeight: '1.42857143',
-      textAlign: 'center',
-      whiteSpace: 'nowrap',
-      verticalAlign: 'middle',
-      msTouchAction: 'manipulation',
-      touchAction: 'manipulation',
-      cursor: 'pointer',
-      WebkitUserSelect: 'none',
-      MozUserSelect: 'none',
-      MsUserSelect: 'none',
-      userSelect: 'none',
-      backgroundImage: 'none',
-      border: '1px solid transparent',
-      borderRadius: '0.25rem'
+   color: '#fff',
+   backgroundColor: '#2B90E8',
+   width: '100%',
+   display: 'inline-block',
+   fontSize: '1.1rem',
+   lineHeight: '1.42857143',
+   textAlign: 'center',
+   whiteSpace: 'nowrap',
+   verticalAlign: 'middle',
+   msTouchAction: 'manipulation',
+   touchAction: 'manipulation',
+   cursor: 'pointer',
+   WebkitUserSelect: 'none',
+   MozUserSelect: 'none',
+   MsUserSelect: 'none',
+   userSelect: 'none',
+   backgroundImage: 'none',
+   border: '1px solid transparent',
+   borderRadius: '0.25rem',
+};
+
+export const $click = {
+   cursor: 'pointer',
 };

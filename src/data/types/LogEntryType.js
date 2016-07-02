@@ -18,6 +18,7 @@ const LogEntryType = new ObjectType({
       actions: { type: new List(ActionType) },
       tags: { type: new List(TagType) },
       kind: { type: StringType },
+      entry: { type: StringType },
       details: { type: StringType },
    },
 });

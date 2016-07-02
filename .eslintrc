@@ -26,6 +26,7 @@
     "one-var-declaration-per-line": [2, "initializations"],
     "spaced-comment": [2, "always", { "exceptions": ["*"] }],
     "space-before-function-paren": [2, { "anonymous": "always", "named": "always" }],
-    "vars-on-top": 0
+    "vars-on-top": 0,
+    "react/jsx-indent-props": 0
   }
 }
