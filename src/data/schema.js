@@ -10,6 +10,7 @@ export default function (operator) {
    const bits = require('./queries/bits')(operator);
    const actions = require('./queries/actions')(operator);
    const logentries = require('./queries/logentries')(operator);
+   const targets = require('./queries/targets')(operator);
    return new Schema({
       query: new ObjectType({
          name: 'Query',
@@ -19,6 +20,7 @@ export default function (operator) {
             actions,
             bits,
             logentries,
+            targets,
             ...operator.dataSchema,
          },
       }),

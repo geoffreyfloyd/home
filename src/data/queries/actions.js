@@ -14,8 +14,7 @@ module.exports = function (operator) {
       resolve (_, args) {
          if (args && args.id) {
             // Array filtered to single action
-            return new Promise(function (resolve, reject) {
-
+            return new Promise(resolve => {
                var action = get(operator, args.id, 'doozy.action');
                if (action) {
                   action = [action];
@@ -23,23 +22,20 @@ module.exports = function (operator) {
                resolve(action);
             });
          }
-         else {
-            if (lastFetchTask) {
-               return lastFetchTask;
-            }
 
-            lastFetchTask = new Promise(function (resolve, reject) {
-               var actions = getAll(operator, 'doozy.action');
-               resolve(actions);
-            })
-            .finally(() => {
-               lastFetchTask = null;
-            });
-
+         if (lastFetchTask) {
             return lastFetchTask;
-         }       
-      }
+         }
 
+         lastFetchTask = new Promise(resolve => {
+            var actions = getAll(operator, 'doozy.action');
+            resolve(actions);
+         })
+         .finally(() => {
+            lastFetchTask = null;
+         });
+
+         return lastFetchTask;
+      },
    };
-   
 };

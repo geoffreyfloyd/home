@@ -3,14 +3,14 @@ import those from 'those';
 
 var baseModel = function (gnode) {
    if (gnode) {
-         return {
-            id: gnode.tag,
-            version: gnode.version,
-            isNew: false
-         };
+      return {
+         id: gnode.tag,
+         version: gnode.version,
+         isNew: false
+      };
    }
    else {
-         return null;
+      return null;
    }
 };
 
@@ -31,200 +31,222 @@ var getModel = function (gnode, db, kind) {
 };
 
 var modelProps = {
-   'doozy.action': ['id', 'version', 'isNew', 'lastPerformed', 'tags'],
-   'doozy.logentry': ['id', 'version', 'isNew','actions','tags'],
-   'doozy.plan': ['id', 'version', 'isNew'],
-   'doozy.planstep': ['id', 'version', 'isNew','planId','parentId'],
+   // Core
+   path: ['id', 'version', 'isNew'],
    tag: ['id', 'version', 'isNew', 'descendantOf'],
-   'doozy.target': ['id', 'version', 'isNew'],
+   // Doozy
+   'doozy.action': ['id', 'version', 'isNew', 'lastPerformed', 'tags'],
+   'doozy.logentry': ['id', 'version', 'isNew', 'actions', 'tags'],
+   'doozy.plan': ['id', 'version', 'isNew'],
+   'doozy.planstep': ['id', 'version', 'isNew', 'planId', 'parentId'],
+   'doozy.target': ['id', 'version', 'isNew', 'tags'],
+   // Gnidbits
    'gnidbits.bit': ['id', 'version', 'isNew', 'tags', 'slug'],
    'gnidbits.strip': ['id', 'version', 'isNew', 'tags'],
-   path: ['id', 'version', 'isNew'],
 };
 
 var modelStraps = {
-   'doozy.action' (gnode, db) {
-         var strap = {};
-
-         /**
-          * defaults
-            */
-         strap.recurrenceRules = gnode.state.recurrenceRules || [];
-
-         /**
-          * calculations
-            */
-         // calc tags data
-         var tags = [];
-         gnode.siblings('tag').forEach(function (gnapse) {
-            tags.push(getModel(gnapse.getTarget(), db, 'tag'));
-         });
-         strap.tags = tags;
-
-         // calc latest logentry
-         var lastPerformed = null;
-         gnode.siblings('doozy.logentry').forEach(function (gnapse) {
-            if (gnapse.target.state.entry === 'performed' && (!lastPerformed || lastPerformed < gnapse.target.state.date)) {
-               lastPerformed = gnapse.target.state.date;
-            }
-         });
-
-         strap.lastPerformed = lastPerformed;
-
-         return strap;
-   },
-   'doozy.logentry' (gnode, db) {
-         var strap = {};
-
-         // calc tags data
-         var actions = [];
-         var tags = [];
-         
-         // Add direct tags
-         gnode.siblings('tag').forEach(function (tagGnapse) {
-            var tagGnode = tagGnapse.getTarget()
-            if (tagGnode) {
-               tags.push(getModel(tagGnode, db, 'tag'));
-            }
-            else {
-               console.log('Orphaned gnapse!');
-            }
-         });
-         
-         // Add actions
-         var actionGnapses = gnode.siblings('doozy.action').forEach(function (actionGnapse) {
-            
-            var actionGnode = actionGnapse.getTarget();
-            if (actionGnode) {
-               // Get model from gnode
-               var action = getModel(actionGnode, db, 'doozy.action');
-               
-               // Add action
-               actions.push(action);
-
-               // Add action's tags to list of logentry tags
-               action.tags.forEach(function (tag) {
-                  if (!those(tags).has(tag)) {
-                     tags.push(tag);
-                  }
-               });
-            }
-            else {
-               console.log('Orphaned gnapse!');
-            }
-         });
-         
-         // Massage date
-         strap.date = gnode.state.date.split('T')[0];
-         
-         // return the model strap
-         strap.actions = actions;
-         strap.tags = tags;
-         strap.kind = gnode.state.entry;
-         return strap;
-   },
-   'doozy.planstep' (gnode, db) {
-         var strap = {};
-         // Get plan (may be parent or associate)
-         var plan = gnode.related('doozy.plan').first();
-         if (plan) {
-            strap.planId = plan.target.tag;
-         }
-         // Get parent planstep (if not root)
-         var parent = gnode.parents('doozy.planstep').first();
-         if (parent && parent.target.kind === 'doozy.planstep') {
-            strap.parentId = parent.target.tag;
-         }
-         else {
-            strap.parentId = null;
-         }
-         return strap;
-   },
-   'gnidbits.bit' (gnode, db) {
-         var strap = {};
-
-         /**
-          * defaults
-          */
-         strap.caption = gnode.state.caption || '';
-         strap.images = gnode.state.images || [];
-         strap.notes = gnode.state.notes || [];
-         strap.texts = gnode.state.texts || [];
-         strap.videos = gnode.state.videos || [];
-         strap.links = gnode.state.links || [];
-
-         /**
-          * calculations
-          */
-         // calc tags data
-         var tags = [];
-         gnode.siblings('tag').forEach(function (gnapse) {
-            tags.push(getModel(gnapse.getTarget(), db, 'tag'));
-         });
-         strap.tags = tags;
-
-         return strap;
-   },
-   'gnidbits.strip' (gnode, db) {
-         var strap = {};
-
-         /**
-          * defaults
-          */
-         strap.bits = gnode.state.bits || [];
-         var mappedBits = [];
-         strap.bits.forEach(bit => {
-            var bitGnode = db.get('gnidbits.bit.' + bit);
-            mappedBits.push(getModel(bitGnode, db, 'gnidbits.bit'));
-         });
-
-         strap.bits = mappedBits;
-         
-         /**
-          * calculations
-          */
-         // calc tags data
-         var tags = [];
-         gnode.siblings('tag').forEach(function (gnapse) {
-            tags.push(getModel(gnapse.getTarget(), db, 'tag'));
-         });
-         strap.tags = tags;
-
-         return strap;
-   },
+   // Core
    tag (gnode, db) {
-         var strap = {};
-         // calc tags data
-         var tags = [];
-         var getAllParents = function (gnapse) {
-            var tagGnode = gnapse.getTarget();
-            if (tagGnode) {
-               tags.push(tagGnode.tag);
-               tagGnode.parents('tag').forEach(getAllParents);
-            }
-         };
-         gnode.parents('tag').forEach(getAllParents);
-         strap.descendantOf = tags;
-         return strap;
+      var strap = {};
+      // calc tags data
+      var tags = [];
+      var getAllParents = function (gnapse) {
+         var tagGnode = gnapse.getTarget();
+         if (tagGnode) {
+            tags.push(tagGnode.tag);
+            tagGnode.parents('tag').forEach(getAllParents);
+         }
+      };
+      gnode.parents('tag').forEach(getAllParents);
+      strap.descendantOf = tags;
+      return strap;
    },
    path (gnode, db) {
-         var strap = {};
-         return strap;
-   }
+      var strap = {};
+      return strap;
+   },
+   // Doozy
+   'doozy.action' (gnode, db) {
+      var strap = {};
+
+      /**
+       * defaults
+         */
+      strap.recurrenceRules = gnode.state.recurrenceRules || [];
+
+      /**
+       * calculations
+         */
+      // calc tags data
+      var tags = [];
+      gnode.siblings('tag').forEach(function (gnapse) {
+         tags.push(getModel(gnapse.getTarget(), db, 'tag'));
+      });
+      strap.tags = tags;
+
+      // calc latest logentry
+      var lastPerformed = null;
+      gnode.siblings('doozy.logentry').forEach(function (gnapse) {
+         if (gnapse.target.state.entry === 'performed' && (!lastPerformed || lastPerformed < gnapse.target.state.date)) {
+            lastPerformed = gnapse.target.state.date;
+         }
+      });
+
+      strap.lastPerformed = lastPerformed;
+
+      return strap;
+   },
+   'doozy.logentry' (gnode, db) {
+      var strap = {};
+
+      // calc tags data
+      var actions = [];
+      var tags = [];
+
+      // Add direct tags
+      gnode.siblings('tag').forEach(function (tagGnapse) {
+         var tagGnode = tagGnapse.getTarget()
+         if (tagGnode) {
+            tags.push(getModel(tagGnode, db, 'tag'));
+         }
+         else {
+            console.log('Orphaned gnapse!');
+         }
+      });
+
+      // Add actions
+      var actionGnapses = gnode.siblings('doozy.action').forEach(function (actionGnapse) {
+
+         var actionGnode = actionGnapse.getTarget();
+         if (actionGnode) {
+            // Get model from gnode
+            var action = getModel(actionGnode, db, 'doozy.action');
+
+            // Add action
+            actions.push(action);
+
+            // Add action's tags to list of logentry tags
+            action.tags.forEach(function (tag) {
+               if (!those(tags).has(tag)) {
+                  tags.push(tag);
+               }
+            });
+         }
+         else {
+            console.log('Orphaned gnapse!');
+         }
+      });
+
+      // Massage date
+      strap.date = gnode.state.date.split('T')[0];
+
+      // return the model strap
+      strap.actions = actions;
+      strap.tags = tags;
+      strap.kind = gnode.state.entry;
+      return strap;
+   },
+   'doozy.planstep' (gnode, db) {
+      var strap = {};
+      // Get plan (may be parent or associate)
+      var plan = gnode.related('doozy.plan').first();
+      if (plan) {
+         strap.planId = plan.target.tag;
+      }
+      // Get parent planstep (if not root)
+      var parent = gnode.parents('doozy.planstep').first();
+      if (parent && parent.target.kind === 'doozy.planstep') {
+         strap.parentId = parent.target.tag;
+      }
+      else {
+         strap.parentId = null;
+      }
+      return strap;
+   },
+   'doozy.target' (gnode, db) {
+      var strap = {};
+      var tags = [];
+      
+      /**
+       * calculations
+         */
+      // calc tags data
+      var tags = [];
+      gnode.siblings('tag').forEach(gnapse => {
+         tags.push(getModel(gnapse.getTarget(), db, 'tag'));
+      });
+      strap.tags = tags;
+
+      return strap;
+   },
+   // Gnidbits
+   'gnidbits.bit' (gnode, db) {
+      var strap = {};
+
+      /**
+       * defaults
+       */
+      strap.caption = gnode.state.caption || '';
+      strap.images = gnode.state.images || [];
+      strap.notes = gnode.state.notes || [];
+      strap.texts = gnode.state.texts || [];
+      strap.videos = gnode.state.videos || [];
+      strap.links = gnode.state.links || [];
+
+      /**
+       * calculations
+       */
+      // calc tags data
+      var tags = [];
+      gnode.siblings('tag').forEach(gnapse => {
+         tags.push(getModel(gnapse.getTarget(), db, 'tag'));
+      });
+      strap.tags = tags;
+
+      return strap;
+   },
+   'gnidbits.strip' (gnode, db) {
+      var strap = {};
+
+      /**
+       * defaults
+       */
+      strap.bits = gnode.state.bits || [];
+      var mappedBits = [];
+      strap.bits.forEach(bit => {
+         var bitGnode = db.get('gnidbits.bit.' + bit);
+         mappedBits.push(getModel(bitGnode, db, 'gnidbits.bit'));
+      });
+
+      strap.bits = mappedBits;
+
+      /**
+       * calculations
+       */
+      // calc tags data
+      var tags = [];
+      gnode.siblings('tag').forEach(gnapse => {
+         tags.push(getModel(gnapse.getTarget(), db, 'tag'));
+      });
+      strap.tags = tags;
+
+      return strap;
+   },
 }
 
 var stripModel = function (model, stripOut) {
    var state = {};
    for (var prop in model) {
-         // Only copy over if the propery isn't in list of ones to strip out
-         if (model.hasOwnProperty(prop) && stripOut.indexOf(prop) === -1) {
-            state[prop] = model[prop];
-         }
+      // Only copy over if the propery isn't in list of ones to strip out
+      if (model.hasOwnProperty(prop) && stripOut.indexOf(prop) === -1) {
+         state[prop] = model[prop];
+      }
    }
    return state;
 };
 
-export async function getAll (operator, kind) {
+export async function getAll(operator, kind) {
    var result = [];
    await operator.getDb(function (db) {
       db.allOf(kind).forEach(function (gnode) {
@@ -235,7 +257,7 @@ export async function getAll (operator, kind) {
    return result;
 }
 
-export async function get (operator, id, kind) {
+export async function get(operator, id, kind) {
    var result;
    await operator.getDb(function (db) {
       var gnode = db.get(kind + '.' + id);
@@ -250,7 +272,7 @@ export async function get (operator, id, kind) {
    return result;
 }
 
-export function create (operator, kind, model, createConnections, generateTag) {
+export function create(operator, kind, model, createConnections, generateTag) {
    return new Promise(function (resolve) {
       operator.getDb(function (db) {
          var name;
@@ -283,7 +305,7 @@ export function create (operator, kind, model, createConnections, generateTag) {
    });
 }
 
-export function update (operator, kind, model, updateConnections) {
+export function update(operator, kind, model, updateConnections) {
    return new Promise(function (resolve) {
       operator.getDb(function (db) {
          // Get gnode from db
@@ -310,7 +332,7 @@ export function update (operator, kind, model, updateConnections) {
    });
 }
 
-export function remove (operator, kind, id, beforeRemove) {
+export function remove(operator, kind, id, beforeRemove) {
    return new Promise(function (resolve) {
       operator.getDb(function (db) {
          var gnode = db.find(id, kind).first();
@@ -320,10 +342,10 @@ export function remove (operator, kind, id, beforeRemove) {
             }
             db.remove(gnode);
             db.commitChanges();
-            resolve({error: null});
+            resolve({ error: null });
          }
          else {
-            resolve({error: 'Gnode not found'});
+            resolve({ error: 'Gnode not found' });
          }
       });
    });

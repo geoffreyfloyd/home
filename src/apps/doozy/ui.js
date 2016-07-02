@@ -10,4 +10,9 @@ module.exports = exports = {
    //    route: '/logs',
    //    view: 'index',
    // },
+   target: {
+      entry: path.resolve(__dirname, './target/index.js'),
+      route: '/target/:id',
+      view: 'index',
+   },
 };

@@ -46,6 +46,23 @@ class TargetStore extends GnodeStore {
       }
       return this.update(model);
    }
+
+   getMeasures () {
+      return [
+         { name: 'By Execution', value: 0 },
+         { name: 'By Progress', value: 1 },
+         { name: 'By Duration', value: 2 },
+      ];
+   }
+
+   getPeriods () {
+      return [
+         { name: 'Years', value: 0 },
+         { name: 'Months', value: 1 },
+         { name: 'Weeks', value: 2 },
+         { name: 'Days', value: 3 },
+      ];
+   }
 }
 
 // Export instance

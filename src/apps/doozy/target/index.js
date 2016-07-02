@@ -2,13 +2,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import http from 'libs/http';
-import logEntryStore from 'stores/logentry-store';
+import targetStore from 'stores/target-store';
 import { $background, $content, $form, $formSection, $label, $buttons, $button } from 'components/styles';
 import Form from 'components/forms/Form';
 import FormSection from 'components/forms/FormSection';
 import TagInput from 'components/forms/TagInput';
 import TextInput from 'components/forms/TextInput';
-import MultiLineInput from 'components/forms/MultiLineInput';
+import SelectionInput from 'components/forms/SelectionInput';
 import Message from 'components/Message';
 
 export default class LogEntry extends React.Component {
@@ -16,7 +16,7 @@ export default class LogEntry extends React.Component {
       super(props);
       this.handleSaveChanges = this.handleSaveChanges.bind(this);
       this.state = {
-         model: logEntryStore.new(),
+         model: targetStore.new(),
          tags: [],
       };
    }
@@ -24,14 +24,19 @@ export default class LogEntry extends React.Component {
    componentDidMount () {
       // Get Data
       http(`/graphql?query={
-         logentries(id:"${this.props.id}"){
+         targets(id:"${this.props.id}"){
             id,
-            kind,
-            date,
-            details,
-            duration,
-            actions{id,name},
-            tags{id,name,kind,descendantOf}
+            created,
+            starts,
+            retire,
+            name,
+            entityType,
+            entityId,
+            measure,
+            period,
+            multiplier,
+            number,
+            retireWhenMet
          },
          tags{
             id,
@@ -42,7 +47,7 @@ export default class LogEntry extends React.Component {
       }`.replace(/ /g, '')).requestJson().then(json => {
          // Set data
          this.setState({
-            model: json.data.logentries[0] || this.state.model,
+            model: json.data.targets[0] || this.state.model,
             tags: json.data.tags,
          });
       });
@@ -56,7 +61,7 @@ export default class LogEntry extends React.Component {
       var newModel = Object.assign({}, this.state.model, form);
 
       Message.notify('Saving...');
-      logEntryStore.save(newModel).then(serverModel => {
+      targetStore.save(newModel).then(serverModel => {
          this.setState({ model: serverModel });
          Message.notify('Saved...');
       });
@@ -72,10 +77,17 @@ export default class LogEntry extends React.Component {
             <div style={$content}>
                <Form ref="form" model={model} style={$form} labelSpan={2} labelStyle={$label}>
                   <FormSection title="General" style={$formSection}>
-                     <TextInput label="Date" path="date" type="date" />
-                     <MultiLineInput label="Details" path="details" autoGrow focus />
-                     <TextInput label="Duration" path="duration" type="text" />
+                     <TextInput label="Name" path="name" />
+                     <TextInput label="Entity Type" path="entityType" />
+                     <TextInput label="Entity ID" path="entityId" />
                      <TagInput label="Tags" path="tags" items={tags} />
+                     <SelectionInput label="Measure" path="measure" type="number" items={targetStore.getMeasures()} displayPath="name" valuePath="value" />
+                     <SelectionInput label="Period" path="period" type="number" items={targetStore.getPeriods()} displayPath="name" valuePath="value" />
+                     <TextInput label="Periods" path="multiplier" type="number" />
+                     <TextInput label="Number" path="number" type="number" />
+                     <TextInput label="Starts" path="starts" />
+                     <TextInput label="Retire" path="retire" />
+                     <TextInput label="Created" path="created" readonly />
                   </FormSection>
                </Form>
                <div style={$buttons}>
@@ -86,14 +98,6 @@ export default class LogEntry extends React.Component {
       );
    }
 }
-
-// function newTag () {
-//    return new Promise((resolve) => {
-//       resolve({
-//          id: '',
-//       });
-//    });
-// }
 
 global.APP = LogEntry;
 global.React = React;

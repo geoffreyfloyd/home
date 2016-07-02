@@ -39,7 +39,7 @@ export default class LogEntry extends React.Component {
             kind,
             descendantOf
          }
-      }`.replace(/ /g, '')).requestJson().then(json => {
+      }`).requestJson().then(json => {
          // Set data
          this.setState({
             model: json.data.logentries[0] || this.state.model,
@@ -86,14 +86,6 @@ export default class LogEntry extends React.Component {
       );
    }
 }
-
-// function newTag () {
-//    return new Promise((resolve) => {
-//       resolve({
-//          id: '',
-//       });
-//    });
-// }
 
 global.APP = LogEntry;
 global.React = React;

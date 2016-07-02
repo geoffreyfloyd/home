@@ -41,7 +41,7 @@ export default class Bit extends React.Component {
             kind,
             descendantOf
          }
-      }`).requestJson().then(json =>
+      }`.replace(/ /g, '')).requestJson().then(json =>
          // Set data
          this.setState({
             model: json.data.bits[0] || this.state.model,
