@@ -2,8 +2,9 @@
 import React from 'react';
 import those from 'those';
 import LogEntryListItem from './LogEntryListItem';
+import focusTags from 'components/focusTags';
 
-export default class LogEntryList extends React.Component {
+class LogEntryList extends React.Component {
    /*************************************************************
     * COMPONENT LIFECYCLE
     *************************************************************/
@@ -37,7 +38,8 @@ export default class LogEntryList extends React.Component {
     *************************************************************/
    render () {
       var { maxReturn } = this.state;
-      var logentries = those(this.props.logentries)
+      var { list } = this.props;
+      var logentries = those(list)
          .order(item => item.date.split('T')[0] + '-' + (['performed', 'skipped'].indexOf(item.kind) > -1 ? '1' : '0'))
          .flip()
          .top(maxReturn);
@@ -59,3 +61,5 @@ var styles = {
       paddingTop: '0.5rem',
    },
 };
+
+export default focusTags(LogEntryList);

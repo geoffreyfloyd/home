@@ -11,7 +11,7 @@ export default class LogEntries extends React.Component {
 
       // Set initial state
       this.state = {
-         logentries: [],
+         list: [],
          tags: [],
       };
    }
@@ -37,7 +37,7 @@ export default class LogEntries extends React.Component {
       }`.replace(/ /g, '')).requestJson().then(json => {
          // Set data
          this.setState({
-            logentries: json.data.logentries,
+            list: json.data.logentries,
             tags: json.data.tags,
          });
       });
@@ -47,11 +47,16 @@ export default class LogEntries extends React.Component {
     * RENDERING
     *************************************************************/
    render () {
-      var { logentries, tags } = this.state;
+      var { list, tags } = this.state;
+
+      if (!list.length || !tags.length) {
+         return <div>Loading...</div>;
+      }
+
       return (
          <div style={$background}>
             <div style={$content}>
-               <LogEntryList logentries={logentries} />
+               <LogEntryList list={list} tags={tags} />
             </div>
          </div>
       );
