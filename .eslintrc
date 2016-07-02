@@ -27,6 +27,7 @@
     "spaced-comment": [2, "always", { "exceptions": ["*"] }],
     "space-before-function-paren": [2, { "anonymous": "always", "named": "always" }],
     "vars-on-top": 0,
-    "react/jsx-indent-props": 0
+    "react/jsx-indent-props": 0,
+    "react/sort-comp": 0
   }
 }

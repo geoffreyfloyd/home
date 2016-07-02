@@ -5,6 +5,7 @@ import Day from './Day';
 import { parseISO8601String, today } from 'libs/date-util';
 import { getJsonFromUrl } from 'libs/url-util';
 import targetStore from 'stores/target-store';
+import { $getFlex } from 'libs/style';
 
 class Calendar extends React.Component {
    /*************************************************************
@@ -12,6 +13,12 @@ class Calendar extends React.Component {
    *************************************************************/
    constructor (props) {
       super(props);
+
+      // Bind event handlers
+      this.handleLeftClick = this.handleLeftClick.bind(this);
+      this.handleRightClick = this.handleRightClick.bind(this);
+
+      // Set initial state
       this.state = {
          date: (new Date()).toISOString(),
       };
@@ -65,17 +72,19 @@ class Calendar extends React.Component {
    *************************************************************/
    handleLeftClick () {
       var date = this.state.date;
-      date.setMonth(date.getMonth() - 1);
+      var dateObj = parseISO8601String(date);
+      dateObj.setMonth(dateObj.getMonth() - 1);
       this.setState({
-         date,
+         date: dateObj.toISOString(),
       });
    }
 
    handleRightClick () {
       var date = this.state.date;
-      date.setMonth(date.getMonth() + 1);
+      var dateObj = parseISO8601String(date);
+      dateObj.setMonth(dateObj.getMonth() + 1);
       this.setState({
-         date,
+         date: dateObj.toISOString(),
       });
    }
 
@@ -90,7 +99,7 @@ class Calendar extends React.Component {
    getMonthDays (beginMonthViewDate) {
       var date = parseISO8601String(this.state.date);
       var days = this.getDaysOfWeek(beginMonthViewDate, 35);
-      var nextDate = days[days.length - 1].date;
+      var nextDate = new Date(days[days.length - 1].date.toISOString());
       nextDate.setDate(nextDate.getDate() + 1);
       if (this.calcIsMonth(date, nextDate)) {
          days = days.concat(this.getDaysOfWeek(nextDate, 7));
@@ -183,20 +192,23 @@ class Calendar extends React.Component {
       var days = this.getMonthDays(beginMonthViewDate);
       this.styleDaysOfMonth(days);
 
+      var weeks = [days.slice(0, 7), days.slice(7, 14), days.slice(14, 21), days.slice(21, 28), days.slice(28, 35), days.slice(35, 42)];
+
       // html
       return (
-            <div>
+            <div style={{ ...$getFlex('column', false), minHeight: '100vh', minWidth: '50rem' }}>
                <div style={headerStyle}>
-                  <div style={{paddingRight: '5px'}} onClick={this.handleLeftClick}><i className="clickable fa fa-chevron-left fa-2x"></i></div>
-                  <div style={{flexGrow: '1'}}>Month of {Calendar.months[dateObj.getMonth()] + appendTargetName}</div>
-                  <div style={{paddingRight: '5px'}} onClick={this.handleRightClick}><i className="clickable fa fa-chevron-right fa-2x"></i></div>
-                  <div style={{paddingRight: '5px'}}><button type="button" className="close" onClick={this.handleCloseClick}><span aria-hidden="true">&times;</span></button></div>
+                  <div style={styles.navButton} onClick={this.handleLeftClick}><i className="clickable fa fa-chevron-left"></i></div>
+                  <div style={styles.title}>{`${Calendar.months[dateObj.getMonth()]} ${dateObj.getFullYear()}${appendTargetName}`}</div>
+                  <div style={styles.navButton} onClick={this.handleRightClick}><i className="clickable fa fa-chevron-right"></i></div>
                </div>
-               <div>
-                  {days.map((item, index) => {
-                     return (<Day key={index} data={item} />);
-                  })}
-               </div>
+               {weeks.map(week => {
+                  return (
+                     <div style={{ ...$getFlex('row', false), width: '100%', flex: '1' }}>
+                        {week.map((day, index) => <Day key={index} data={day} />)}
+                     </div>
+                  );
+               })}
             </div>
       );
    }
@@ -209,14 +221,24 @@ Calendar.defaultProps = {
 Calendar.days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 Calendar.months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+var styles = {
+   navButton: {
+      cursor: 'pointer',
+   },
+   title: {
+      flexGrow: '1',
+      textAlign: 'center',
+   }
+}
+
 var headerStyle = {
-   display: 'flex',
-   flexDirection: 'row',
+   ...$getFlex(),
    color: '#e2ff63',
    backgroundColor: '#444',
-   padding: '2px 2px 0 8px',
+   padding: '0.5rem',
    fontWeight: 'bold',
    fontSize: '1.5em',
+   width: '100%',
 };
 
 

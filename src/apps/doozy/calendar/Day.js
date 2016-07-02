@@ -9,14 +9,13 @@ class Day extends React.Component {
    render () {
       var { data } = this.props;
       var style = {
-         display: 'inline-block',
+         flex: '1',
          borderRadius: '0',
          margin: '0',
-         width: '14%',
-         height: '100%',
-         minHeight: '100px',
+         width: '13.6%',
          border: '1px solid #81981d',
          borderWidth: '1px 0 1px 1px',
+         minHeight: '8rem',
       };
 
       var styleOutOfScope = {
