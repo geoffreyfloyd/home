@@ -1,6 +1,5 @@
 import React from 'react';
 import Indicator from 'components/Indicator';
-// import { today } from 'libs/date-util';
 
 class Day extends React.Component {
    /*************************************************************
@@ -13,25 +12,25 @@ class Day extends React.Component {
          borderRadius: '0',
          margin: '0',
          width: '13.6%',
-         border: '1px solid #81981d',
+         border: '1px solid hsl(0, 0%, 53%)',
          borderWidth: '1px 0 1px 1px',
          minHeight: '8rem',
       };
 
       var styleOutOfScope = {
-         border: '1px solid hsl(0, 0%, 53%)',
+         backgroundColor: '#CCC',
       };
 
       if (!data.isMonth) {
          style = Object.assign(style, styleOutOfScope);
       }
 
-      var styleIsDay = {
-         boxShadow: '#e263ff 0 0 100px inset',
-      };
-      if (data.isDay) {
-         style = Object.assign(style, styleIsDay);
-      }
+      // var styleIsDay = {
+      //    boxShadow: '#e263ff 0 0 100px inset',
+      // };
+      // if (data.isDay) {
+      //    style = Object.assign(style, styleIsDay);
+      // }
 
       // just show first one
       var targetInfo;
@@ -42,6 +41,7 @@ class Day extends React.Component {
                backgroundColor={Indicator.calcColor(stats.accuracy) }
                value={stats.accuracy}
                change={stats.change}
+               style={{ maxWidth: '7rem', margin: 'auto' }}
             />
          );
          var styleIsMet = {
@@ -55,8 +55,8 @@ class Day extends React.Component {
       return (
          <div style={style}>
             <div className="calendar-box-header" style={{ display: 'flex' }}>
-               <span style={{ flexGrow: '1', fontSize: '1.6em' }} className="calendar-day">{data.dayName.slice(0, 3) }</span>
-               <span style={{ fontSize: '1.6em', fontWeight: 'bold' }}>{data.date.getDate() }</span>
+               <span style={{ flexGrow: '1', fontSize: '1.6em', padding: '0.25rem' }} className="calendar-day">{data.dayName.slice(0, 3) }</span>
+               <span style={{ fontSize: '1.6em', fontWeight: 'bold', padding: '0.25rem' }}>{data.date.getDate() }</span>
             </div>
             {targetInfo}
          </div>
