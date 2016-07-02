@@ -54,17 +54,18 @@ var WindowSizeLayout = React.createClass({
     *************************************************************/
    getRootLayoutContext () {
       var { size } = this.state;
+      var { minHeight, minWidth } = this.props;
 
       var dimensions = {
          height: size.height,
          width: size.width,
       };
 
-      if (this.props.minHeight) {
-         dimensions.height = Math.max(dimensions.height, this.props.minHeight);
+      if (minHeight) {
+         dimensions.height = Math.max(dimensions.height, minHeight);
       }
-      if (this.props.minWidth) {
-         dimensions.width = Math.max(dimensions.width, this.props.minWidth);
+      if (minWidth) {
+         dimensions.width = Math.max(dimensions.width, minWidth);
       }
       return dimensions;
    },
