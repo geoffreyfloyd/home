@@ -99,7 +99,7 @@ class Calendar extends React.Component {
    getMonthDays (beginMonthViewDate) {
       var date = parseISO8601String(this.state.date);
       var days = this.getDaysOfWeek(beginMonthViewDate, 35);
-      var nextDate = new Date(days[days.length - 1].date.toISOString());
+      var nextDate = new Date(days[days.length - 1].date.getTime());
       nextDate.setDate(nextDate.getDate() + 1);
       if (this.calcIsMonth(date, nextDate)) {
          days = days.concat(this.getDaysOfWeek(nextDate, 7));
@@ -111,7 +111,7 @@ class Calendar extends React.Component {
       var days = [];
       for (var i = 0; i < count; i++) {
          days.push({
-            date: new Date(date.toISOString()),
+            date: new Date(date.getTime()),
             day: date.getDay(),
             dayName: Calendar.days[date.getDay()]
          });
@@ -156,7 +156,7 @@ class Calendar extends React.Component {
       days.forEach(day => {
          var targetsStats;
          if (targetId && today > day.date) {
-            var nextDay = day.date;
+            var nextDay = new Date(day.date.getTime());
             nextDay.setDate(nextDay.getDate() + 1);
             targetsStats = targetStore.targetsStats(targets, logentries, nextDay);
             if (targetsStats[0].error) {

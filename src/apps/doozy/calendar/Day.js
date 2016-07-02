@@ -45,9 +45,9 @@ class Day extends React.Component {
             />
          );
          var styleIsMet = {
-            boxShadow: '#e2ff63 0 0 100px inset',
+            backgroundColor: 'rgb(239, 255, 169)',
          };
-         if (stats.change > 0.0) {
+         if (stats.change >= 0.0) {
             style = Object.assign(style, styleIsMet);
          }
       }
