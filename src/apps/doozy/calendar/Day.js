@@ -25,13 +25,6 @@ class Day extends React.Component {
          style = Object.assign(style, styleOutOfScope);
       }
 
-      // var styleIsDay = {
-      //    boxShadow: '#e263ff 0 0 100px inset',
-      // };
-      // if (data.isDay) {
-      //    style = Object.assign(style, styleIsDay);
-      // }
-
       // just show first one
       var targetInfo;
       if (data.targetsStats) {
