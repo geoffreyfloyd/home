@@ -52,6 +52,32 @@ class TargetStore extends GnodeStore {
       ];
    }
 
+   getPeriodDescription (period, multiplier) {
+      if (multiplier === 1) {
+         switch (period) {
+            case (0):
+               return 'Yearly';
+            case (1):
+               return 'Monthly';
+            case (2):
+               return 'Weekly';
+            case (3):
+               return 'Daily';
+         }
+      }
+      switch (period) {
+         case (0):
+            return `Every ${multiplier} Years`;
+         case (1):
+            return `Every ${multiplier} Months`;
+         case (2):
+            return `Every ${multiplier} Weeks`;
+         case (3):
+            return `Every ${multiplier} Days`;
+      }
+      return '';
+   }
+
    targetsStats (targets, logEntries, today) {
       var targetsStats = [];
 

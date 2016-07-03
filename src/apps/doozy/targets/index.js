@@ -71,8 +71,8 @@ export default class Targets extends React.Component {
       // host.go('/doozy/target/' + target.id);
    }
 
-   handleTargetClick () {
-      // ui.goTo('Calendar', {targetId: target.id});
+   handleTargetClick (target) {
+      window.location.href = `/calendar?targetId=${target.id}`;
    }
 
    /*************************************************************
@@ -91,7 +91,7 @@ export default class Targets extends React.Component {
          var progress = Indicator.calcProgressProps(item, stats);
          var longestStreak = stats.periodLongestStreak || 0;
          var streak = {
-            backgroundColor: stats.periodActive.streak >= longestStreak ? 'hsl(120,90%,40%)' : (stats.periodActive.streak === 0 ? 'hsl(0,90%,40%)' : 'white'),
+            backgroundColor: stats.periodActive.streak >= longestStreak && stats.periodActive.streak > 0 ? 'hsl(120,90%,40%)' : (stats.periodActive.streak === 0 && longestStreak > 0 ? 'hsl(0,90%,40%)' : 'white'),
             change: stats.periodActive.streak > longestStreak ? stats.periodActive.streak - longestStreak : 0,
          };
          var timeTo = new Date(stats.periodActive.ends);
@@ -141,7 +141,7 @@ export default class Targets extends React.Component {
 
    renderTargetRow (item, isLast) {
       var totalPeriods = item.stats.periods.length + (item.progress.value === 'MET' ? 0 : 1); 
-      var periodDescription = item.target.multiplier + ' ' + those(targetStore.getPeriods()).first({ value: item.target.period }).name;
+      var periodDescription = targetStore.getPeriodDescription(item.target.period, item.target.multiplier);
       return (
          <div key={item.target.id} style={styles.targetStyle(isLast)}>
             <div style={styles.title}>{item.target.name}</div>
@@ -168,7 +168,7 @@ export default class Targets extends React.Component {
                />
                <div style={styles.timeLeft}>{item.timeLeft}</div>
                <div style={styles.timeLeft}>{periodDescription}</div>
-               <div style={styles.timeLeft}>{totalPeriods === 1 ? 'First Period' : totalPeriods + ' Periods'}</div>
+               <div style={styles.timeLeft}>{`Since ${(new Date(item.target.starts)).toLocaleDateString()}`}</div>
                <div style={styles.edit} onClick={this.handleEditClick.bind(null, item.target)}><i className="fa fa-pencil fa-2x"></i></div>
             </div>
          </div>

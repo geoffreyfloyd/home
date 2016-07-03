@@ -44,6 +44,24 @@ var FocusBar = React.createClass({
          />
       ));
 
+      /**
+       * Add additional menu item when in Focus Management
+       */
+      var f = {};
+      f.name = 'nofocus';
+      menuItems.push((
+         <li key="nofocus" >
+            <a onClick={this.handleFocusClick.bind(null, f) } style={styles.menuItem}>
+               <div>
+                  <div style={{ display: 'inline', verticalAlign: 'inherit' }}>
+                     <img style={styles.buttonImage} src={'/my/tag/icon.png'} />
+                  </div>
+                  <div style={{ display: 'inline-block' }}>Clear Focus</div>
+               </div>
+            </a>
+         </li>
+      ));
+
       var button = null;
       if (currentFocus && currentFocus.name !== 'nofocus') {
          button = (
@@ -57,7 +75,7 @@ var FocusBar = React.createClass({
       }
 
       return (
-         <DropdownMenu style={{ float: 'left', padding: '2px', width: '50px' }} buttonContent={button} menuItems={menuItems} />
+         <DropdownMenu id={'focuses'} style={{ float: 'left', padding: '2px', width: '50px' }} buttonContent={button} menuItems={menuItems} />
       );
    },
 
@@ -65,6 +83,7 @@ var FocusBar = React.createClass({
       var intents = [
          { name: 'View Actions', url: '/actions', classNames: 'fa fa-eye fa-2x' },
          { name: 'View Logs', url: '/logs', classNames: 'fa fa-eye fa-2x' },
+         { name: 'View Targets', url: '/targets', classNames: 'fa fa-eye fa-2x' },
       ];
 
       /**
@@ -94,7 +113,7 @@ var FocusBar = React.createClass({
       );
 
       return (
-         <DropdownMenu style={{ float: 'left', padding: '2px', width: '20rem' }} buttonContent={button} menuItems={menuItems} />
+         <DropdownMenu id={'intent'} style={{ float: 'left', padding: '2px', width: '20rem' }} buttonContent={button} menuItems={menuItems} />
       );
    },
 
