@@ -140,6 +140,8 @@ export default class Targets extends React.Component {
    }
 
    renderTargetRow (item, isLast) {
+      var totalPeriods = item.stats.periods.length + (item.progress.value === 'MET' ? 0 : 1); 
+      var periodDescription = item.target.multiplier + ' ' + those(targetStore.getPeriods()).first({ value: item.target.period }).name;
       return (
          <div key={item.target.id} style={styles.targetStyle(isLast)}>
             <div style={styles.title}>{item.target.name}</div>
@@ -165,7 +167,9 @@ export default class Targets extends React.Component {
                   onClick={this.handleTargetClick.bind(null, item.target)}
                />
                <div style={styles.timeLeft}>{item.timeLeft}</div>
-               <div style={styles.edit} onClick={this.handleEditClick.bind(null, item.target) }><i className="fa fa-pencil fa-2x"></i></div>
+               <div style={styles.timeLeft}>{periodDescription}</div>
+               <div style={styles.timeLeft}>{totalPeriods === 1 ? 'First Period' : totalPeriods + ' Periods'}</div>
+               <div style={styles.edit} onClick={this.handleEditClick.bind(null, item.target)}><i className="fa fa-pencil fa-2x"></i></div>
             </div>
          </div>
       );
