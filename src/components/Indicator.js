@@ -33,7 +33,7 @@ class Indicator extends React.Component {
       if (this.props.kind === 'percent' || this.props.kind === 'simple') {
             content = (
                <div style={{textAlign: 'center', backgroundColor: this.props.backgroundColor, color: (this.props.backgroundColor === 'white' ? 'black' : 'white'), fontSize: 'x-large'}}>
-                  {this.props.value + suffix}
+                  {String(this.props.value) === 'NaN' ? '-' : this.props.value + suffix}
                </div>
             );
       }

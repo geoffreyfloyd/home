@@ -7,8 +7,9 @@ import { $background, $click, $content } from 'components/styles';
 import Indicator from 'components/Indicator';
 import babble from 'babble';
 import those from 'those';
+import _ from 'lodash';
 
-export default class LogEntry extends React.Component {
+export default class Targets extends React.Component {
    constructor (props) {
       super(props);
 
@@ -82,56 +83,89 @@ export default class LogEntry extends React.Component {
 
       var targetsStats = targetStore.targetsStats(targets, logentries);
 
-      var sortedList = those(targets).sort('name');
+      //var sortedList = those(targets).sort('name');
+
+      var targetList = targets.map(item => {
+         // find statistics object for this target
+         var stats = those(targetsStats).first({ targetId: item.id });
+         var progress = Indicator.calcProgressProps(item, stats);
+         var longestStreak = stats.periodLongestStreak || 0;
+         var streak = {
+            backgroundColor: stats.periodActive.streak >= longestStreak ? 'hsl(120,90%,40%)' : (stats.periodActive.streak === 0 ? 'hsl(0,90%,40%)' : 'white'),
+            change: stats.periodActive.streak > longestStreak ? stats.periodActive.streak - longestStreak : 0,
+         };
+         var timeTo = new Date(stats.periodActive.ends);
+         timeTo.setHours(23, 59, 59, 999);
+         var timeLeft = new babble.Duration(timeTo - (new Date()).getTime()).toString().split(', ')[0] + ' left in this period';
+
+         return {
+            target: item,
+            stats,
+            progress,
+            longestStreak,
+            streak,
+            timeTo,
+            timeLeft,
+            met: progress.value === 'MET' ? 1 : 0,
+            timeLeftNumber: timeTo.getTime() - (new Date()).getTime(),
+         };
+      });
+
+      //var sortedList = those(targetList).order('timeLeftNumber').order('name').order('met');
+      var unmet = _.chain(targetList)
+         .filter(i => i.progress.value !== 'MET')
+         .sortBy('timeLeftNumber')
+         .groupBy('timeLeft')
+         .value();
+
+      var met = _.chain(targetList)
+         .filter(i => i.progress.value === 'MET')
+         .sortBy('name')
+         .value();
 
       return (
          <div style={$background}>
             <div style={$content}>
-               {sortedList.map(item => {
-                  // find statistics object for this target
-                  var stats = those(targetsStats).first({ targetId: item.id });
-                  var progress = Indicator.calcProgressProps(item, stats);
+               {Object.keys(unmet).map(group => (
+                  <div>
+                     <h2 style={styles.heading}>Unmet targets with {group}</h2>
+                     {unmet[group].map((t, i) => this.renderTargetRow(t, (i === unmet[group].length - 1)))}
+                  </div>
+               ))}
+               <h2 style={styles.heading}>Met Targets</h2>
+               {met.map((t, i) => this.renderTargetRow(t, (i === met.length - 1)))}
+            </div>
+         </div>
+      );
+   }
 
-                  var streak = {
-                     backgroundColor: stats.periodActive.streak >= stats.periodLongestStreak.streak ? 'hsl(120,90%,40%)' : (stats.periodActive.streak === 0 ? 'hsl(0,90%,40%)' : 'white'),
-                     change: stats.periodActive.streak > stats.periodLongestStreak.streak ? stats.periodActive.streak - stats.periodLongestStreak.streak : 0,
-                  };
-
-                  var timeTo = new Date(stats.periodActive.ends);
-                  timeTo.setHours(23, 59, 59, 999);
-                  var timeLeft = new babble.Duration(timeTo - (new Date()).getTime()).toString().split(', ')[0] + ' left in this period';
-
-                  // existing targets
-                  return (
-                    <div key={item.id} style={styles.targetStyle}>
-                        <div style={styles.title}>{item.name}</div>
-                        <div style={{ display: 'flex' }}>
-                           <Indicator kind={progress.kind} title={'Progress'}
-                              backgroundColor={progress.backgroundColor}
-                              value={progress.value}
-                              compareValue={progress.compare}
-                              change={progress.change}
-                              onClick={this.handleTargetClick.bind(null, item)}
-                           />
-                           <Indicator kind={'comparison'} title={'Streak'}
-                              backgroundColor={streak.backgroundColor}
-                              value={stats.periodActive.streak}
-                              compareValue={stats.periodLongestStreak.streak || 0}
-                              change={streak.change}
-                              onClick={this.handleTargetClick.bind(null, item)}
-                           />
-                           <Indicator kind={'percent'} title={'Accuracy'}
-                              backgroundColor={Indicator.calcColor(stats.accuracy) }
-                              value={stats.accuracy}
-                              change={stats.change}
-                              onClick={this.handleTargetClick.bind(null, item)}
-                           />
-                           <div style={styles.timeLeft}>{timeLeft}</div>
-                           <div style={styles.edit} onClick={this.handleEditClick.bind(null, item) }><i className="fa fa-pencil fa-2x"></i></div>
-                        </div>
-                    </div>
-                  );
-               }) }
+   renderTargetRow (item, isLast) {
+      return (
+         <div key={item.target.id} style={styles.targetStyle(isLast)}>
+            <div style={styles.title}>{item.target.name}</div>
+            <div style={{ display: 'flex' }}>
+               <Indicator kind={item.progress.kind} title={'Progress'}
+                  backgroundColor={item.progress.backgroundColor}
+                  value={item.progress.value}
+                  compareValue={item.progress.compare}
+                  change={item.progress.change}
+                  onClick={this.handleTargetClick.bind(null, item.target)}
+               />
+               <Indicator kind={'comparison'} title={'Streak'}
+                  backgroundColor={item.streak.backgroundColor}
+                  value={item.stats.periodActive.streak}
+                  compareValue={item.longestStreak}
+                  change={item.streak.change}
+                  onClick={this.handleTargetClick.bind(null, item.target)}
+               />
+               <Indicator kind={'percent'} title={'Accuracy'}
+                  backgroundColor={Indicator.calcColor(item.stats.accuracy) }
+                  value={item.stats.accuracy}
+                  change={item.stats.change}
+                  onClick={this.handleTargetClick.bind(null, item.target)}
+               />
+               <div style={styles.timeLeft}>{item.timeLeft}</div>
+               <div style={styles.edit} onClick={this.handleEditClick.bind(null, item.target) }><i className="fa fa-pencil fa-2x"></i></div>
             </div>
          </div>
       );
@@ -142,10 +176,15 @@ export default class LogEntry extends React.Component {
  * Inline Styles
    */
 var styles = {
-   targetStyle: {
-      fontSize: 'large',
-      padding: '5px',
-      borderBottom: 'solid 1px #444',
+   heading: {
+      color: '#2B90E8',
+   },
+   targetStyle (isLast) {
+      return {
+         fontSize: 'large',
+         padding: '5px',
+         borderBottom: isLast ? undefined : 'solid 1px #444',
+      };
    },
    timeLeft: {
       flexGrow: '1',
@@ -156,7 +195,7 @@ var styles = {
    title: {
       width: '100%',
       fontSize: 'x-large',
-      color: '#ddd',
+      color: '#DDD', //#00AF27
    },
    edit: {
       ...$click,
@@ -164,6 +203,6 @@ var styles = {
    },
 }
 
-global.APP = LogEntry;
+global.APP = Targets;
 global.React = React;
 global.ReactDOM = ReactDOM;

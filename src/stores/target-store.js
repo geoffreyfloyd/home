@@ -80,7 +80,7 @@ class TargetStore extends GnodeStore {
          periodStarts = new Date(target.starts);
          periodStarts.setHours(0, 0, 0, 0);
 
-         if (today <= periodStarts) {
+         if (today < periodStarts) {
             targetsStats.push({
                targetId: target.id,
                error: 'Today is before Period Starts',
@@ -105,12 +105,17 @@ class TargetStore extends GnodeStore {
                );
             }
             else {
-               activePeriod = this.targetPeriodStats(target,
+               activePeriod = this.targetPeriodStats(
+                  target,
                   logEntries,
                   periodStarts,
                   periodEnds,
                   prevPeriodStats,
-                  true);
+                  true
+               );
+               if (activePeriod.met) {
+                  periodsStats.push(activePeriod);
+               }
             }
 
             // step to next target period
@@ -204,14 +209,13 @@ class TargetStore extends GnodeStore {
          today = new Date();
          daysInPeriod = (periodEnds.getTime() - periodStarts.getTime()) / 86400000;
          today.setHours(0, 0, 0, 0);
-
-         if (periodEnds.getTime() === today.getTime()) {
-            daysLeft = ((new Date()).getTime() - periodEnds.getTime()) / (86400000 * 0.7);
-         }
-         else {
-            daysLeft = (periodEnds.getTime() - today.getTime()) / 86400000;
-         }
-
+         daysLeft = (periodEnds.getTime() - (new Date()).getTime()) / 86400000;
+      //    if (periodEnds.getTime() === today.getTime()) {
+      //       daysLeft = ((new Date()).getTime() - periodEnds.getTime()) / (86400000 * 0.7);
+      //    }
+      //    else {
+      //       daysLeft = (periodEnds.getTime() - today.getTime()) / 86400000;
+      //    }
       }
 
       // return period stats
