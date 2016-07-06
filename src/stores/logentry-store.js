@@ -1,4 +1,5 @@
 import GnodeStore from './gnode-store';
+import { getLocalDateString } from 'libs/date-util';
 
 class LogEntryStore extends GnodeStore {
 
@@ -11,10 +12,11 @@ class LogEntryStore extends GnodeStore {
          isNew: true,
          id: GnodeStore.uuid(),
          actionId: null,
+         actions: [],
          rootActionId: null,
          actionName: '',
          duration: 0,
-         date: (new Date()).toISOString(),
+         date: getLocalDateString(),
          details: '',
          entry: 'performed',
          tags: [],

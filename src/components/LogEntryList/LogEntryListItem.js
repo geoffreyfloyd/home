@@ -101,7 +101,7 @@ var LogEntryListItem = React.createClass({
       host.prompt('Are you sure you want to delete this log entry?\n\nIf so, type DELETE and hit enter', function (response) {
          if ((response || '').toLowerCase() === 'delete') {
             logEntryStore.destroy(this.props.data.id).then(() => {
-               host.go('/logs');
+               window.location.href = '/logs';
             });
          }
       }.bind(this));
@@ -121,12 +121,12 @@ var LogEntryListItem = React.createClass({
    handleDetailsChange (details) {
       var logEntry = Object.assign({}, this.props.data);
       logEntry.details = details;
-      logEntryStore.update(logEntry);
+      logEntryStore.save(logEntry);
    },
    handleDurationChange (duration) {
       var logEntry = Object.assign({}, this.props.data);
       logEntry.duration = duration;
-      logEntryStore.update(logEntry);
+      logEntryStore.save(logEntry);
    },
    handleDropDownClick () {
       this.setState({

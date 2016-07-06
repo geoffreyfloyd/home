@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import http from 'libs/http';
-import logEntryStore from 'stores/logentry-store';
 import { $background, $content } from 'components/styles';
 import LogEntryList from 'components/LogEntryList';
 

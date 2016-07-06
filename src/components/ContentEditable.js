@@ -1,11 +1,17 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 class ContentEditable extends React.Component {
+   constructor (props) {
+      super(props);
+
+      this.emitChange = this.emitChange.bind(this);
+   }
    /***********************************
     * EVENT HANDLING
    ***********************************/
    emitChange () {
-      var html = this.getDOMNode().innerHTML;
+      var html = ReactDOM.findDOMNode(this).innerHTML;
       if (this.props.onChange && html !== this.lastHtml) {
          var brPattern = /<br\/>|<br>/g;
          var spPattern = /&nbsp;/g; // Non-breaking space

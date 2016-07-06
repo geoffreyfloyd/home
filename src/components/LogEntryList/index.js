@@ -1,8 +1,13 @@
 /* globals window document $ */
 import React from 'react';
 import those from 'those';
+
+// Mixins and Subcomponents
 import LogEntryListItem from './LogEntryListItem';
 import focusTags from 'components/focusTags';
+
+// Stores
+import logEntryStore from 'stores/logentry-store';
 
 class LogEntryList extends React.Component {
    /*************************************************************
@@ -12,6 +17,7 @@ class LogEntryList extends React.Component {
       super(props);
       this.state = {
          maxReturn: 10,
+         newModel: logEntryStore.new(),
       };
    }
 
@@ -37,7 +43,7 @@ class LogEntryList extends React.Component {
     * RENDERING
     *************************************************************/
    render () {
-      var { maxReturn } = this.state;
+      var { maxReturn, newModel } = this.state;
       var { list } = this.props;
       var logentries = those(list)
          .order(item => item.date.split('T')[0] + '-' + (['performed', 'skipped'].indexOf(item.kind) > -1 ? '1' : '0'))
@@ -46,6 +52,7 @@ class LogEntryList extends React.Component {
 
       return (
          <div style={styles.container}>
+            <LogEntryListItem key={newModel.id} data={newModel} />
             {logentries.map(log => <LogEntryListItem key={log.id} data={log} />)}
          </div>
       );
