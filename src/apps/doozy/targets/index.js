@@ -95,7 +95,7 @@ export default class Targets extends React.Component {
          };
          var timeTo = new Date(stats.periodActive.ends);
          timeTo.setHours(23, 59, 59, 999);
-         var timeLeft = new babble.Duration(timeTo - (new Date()).getTime()).toString().split(', ')[0] + ' left in this period';
+         var timeLeft = `${new babble.Duration(timeTo - (new Date()).getTime()).toString().split(', ')[0]} left in this period`;
 
          return {
             target: item,
