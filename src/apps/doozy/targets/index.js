@@ -161,9 +161,9 @@ export default class Targets extends React.Component {
                   onClick={this.handleTargetClick.bind(null, item.target)}
                />
                <Indicator kind={'percent'} title={'Accuracy'}
-                  backgroundColor={Indicator.calcColor(item.stats.accuracy) }
-                  value={item.stats.accuracy}
-                  change={item.stats.change}
+                  backgroundColor={Indicator.calcColor(item.stats.periodActive.accuracy) }
+                  value={item.stats.periodActive.accuracy}
+                  change={item.stats.periodActive.change}
                   onClick={this.handleTargetClick.bind(null, item.target)}
                />
                <div style={styles.timeLeft}>{item.timeLeft}</div>

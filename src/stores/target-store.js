@@ -114,19 +114,21 @@ class TargetStore extends GnodeStore {
             return;
          }
 
+         var realToday = new Date();
+         realToday.setHours(0, 0, 0, 0);
+
          // steps through all periods for this target
          while (periodStarts <= today) {
             var periodEnds = targetPeriodEnds(target, periodStarts);
-            var prevPeriodStats = periodsStats.length > 0 ? periodsStats[periodsStats.length - 1] : null;
 
-            if (periodEnds < today) {
+            if (periodEnds < realToday) {
                // add period tally
                periodsStats.push(
                   this.targetPeriodStats(target,
                      logEntries,
                      periodStarts,
                      periodEnds,
-                     prevPeriodStats,
+                     periodsStats,
                      false)
                );
             }
@@ -136,7 +138,7 @@ class TargetStore extends GnodeStore {
                   logEntries,
                   periodStarts,
                   periodEnds,
-                  prevPeriodStats,
+                  periodsStats,
                   true
                );
                if (activePeriod.met) {
@@ -148,29 +150,6 @@ class TargetStore extends GnodeStore {
             nextTargetPeriod(target, periodStarts);
          }
 
-         var filterMet = item => item.met;
-
-         // calculate accuracy
-         accuracy = Math.round((periodsStats.filter(filterMet).length / periodsStats.length) * 10000) / 100;
-
-         if (periodsStats.length === 1) {
-            average = periodsStats[0].number;
-         }
-         else {
-            average = 0;
-            periodsStats.forEach(item => {
-               average += item.number;
-            });
-            average /= periodsStats.length;
-            average = Math.round(average * 100) / 100;
-         }
-
-         if (periodsStats.length > 1) {
-            allButLatestPeriod = periodsStats.slice(0, -1);
-            accuracyBeforeLatestPeriod = Math.round((allButLatestPeriod.filter(filterMet).length / allButLatestPeriod.length) * 10000) / 100;
-            change = Math.round((accuracy - accuracyBeforeLatestPeriod) * 100) / 100;
-         }
-
          longestStreakPeriod = those(periodsStats).max('streak');
 
          targetsStats.push({
@@ -178,16 +157,13 @@ class TargetStore extends GnodeStore {
             periodActive: activePeriod,
             periodLongestStreak: longestStreakPeriod,
             periods: periodsStats,
-            accuracy,
-            change,
-            average,
          });
       });
 
       return targetsStats;
    }
 
-   targetPeriodStats (target, logEntries, periodStarts, periodEnds, prevPeriodStats, isActive) {
+   targetPeriodStats (target, logEntries, periodStarts, periodEnds, periodsStats, isActive) {
       var daysLeft, daysInPeriod, number, performed, today;
       var streak = 0;
 
@@ -218,17 +194,38 @@ class TargetStore extends GnodeStore {
       }
 
       // calculate period streak
-      if (target.number <= number) { // is target met?
-         if (typeof prevPeriodStats !== 'undefined' && prevPeriodStats !== null) {
-            streak = prevPeriodStats.streak + 1;
-         }
-         else {
-            streak += 1;
-         }
+      var isMet = target.number <= number ? 1 : 0; // is target met?
+      var isAccounted = (isMet || !isActive) ? 1 : 0;
+      var prevStreak = periodsStats.length ? periodsStats.slice(-1)[0].streak : 0;
+      var prevAccuracy = periodsStats.length ? periodsStats.slice(-1)[0].accuracy : 100;
+      if (isActive && !isMet) {
+         streak = prevStreak;
       }
-      else if (isActive && typeof prevPeriodStats !== 'undefined' && prevPeriodStats !== null) {
-         streak = prevPeriodStats.streak;
+      else if (!isActive && !isMet) {
+         streak = 0;
       }
+      else if (periodsStats.length) {
+         streak = prevStreak + isMet;
+      }
+      else {
+         streak += isMet;
+      }
+
+      var filterMet = item => item.met;
+
+      // calculate accuracy and average number
+      var totalPeriods = periodsStats.length + isAccounted;
+      var metPeriods = periodsStats.filter(filterMet).length + isMet;
+      var accuracy = Math.round((metPeriods / totalPeriods) * 10000) / 100;
+      var average = (periodsStats.reduce((prev, next) => prev + next.number, 0) + (isAccounted ? number : 0)) / totalPeriods;
+      average = Math.round(average * 100) / 100;
+
+      var change = Math.round((accuracy - prevAccuracy) * 100) / 100;
+      // if (periodsStats.length > 1) {
+      //    allButLatestPeriod = periodsStats.slice(0, -1);
+      //    accuracyBeforeLatestPeriod = Math.round((allButLatestPeriod.filter(filterMet).length / allButLatestPeriod.length) * 10000) / 100;
+      //    change = Math.round((accuracy - accuracyBeforeLatestPeriod) * 100) / 100;
+      // }
 
       // for current period, a few more indicators
       if (isActive) {
@@ -255,6 +252,9 @@ class TargetStore extends GnodeStore {
          logEntries: performed,
          daysLeft,
          daysInPeriod,
+         accuracy,
+         average,
+         change,
       };
    }
 }

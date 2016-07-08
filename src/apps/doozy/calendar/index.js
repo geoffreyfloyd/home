@@ -153,20 +153,17 @@ class Calendar extends React.Component {
       var today = new Date();
       var date = parseISO8601String(this.state.date);
 
+      var targetsStats = targetStore.targetsStats(targets, logentries)[0];
+
       days.forEach(day => {
-         var targetsStats;
-         if (targetId && today > day.date) {
-            var nextDay = new Date(day.date.getTime());
-            nextDay.setDate(nextDay.getDate() + 1);
-            targetsStats = targetStore.targetsStats(targets, logentries, nextDay);
-            if (targetsStats[0].error) {
-               targetsStats = undefined;
-            }
-         }
          day.isMonth = this.calcIsMonth(date, day.date);
          day.isWeek = day.isMonth && beginningOfWeek <= day.date && day.date <= endOfWeek;
          day.isDay = day.isMonth && date.getDate() === day.date.getDate();
-         day.targetsStats = targetsStats;
+         day.targetsStats = targetsStats.periods.filter(period => {
+            var starts = new Date(period.starts);
+            var ends = new Date(period.ends);
+            return day.date >= starts && day.date <= ends;
+         })[0];
       });
    }
 

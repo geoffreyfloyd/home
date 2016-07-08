@@ -28,7 +28,7 @@ class Day extends React.Component {
       // just show first one
       var targetInfo;
       if (data.targetsStats) {
-         var stats = data.targetsStats[0];
+         var stats = data.targetsStats;
          targetInfo = (
             <Indicator kind={'percent'} title={'Accuracy'}
                backgroundColor={Indicator.calcColor(stats.accuracy) }
