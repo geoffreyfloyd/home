@@ -80,10 +80,9 @@ export default class Targets extends React.Component {
     *************************************************************/
    render () {
       var { targets, logentries } = this.state;
+      var elMetTargets;
 
       var targetsStats = targetStore.targetsStats(targets, logentries);
-
-      //var sortedList = those(targets).sort('name');
 
       var targetList = targets.map(item => {
          // find statistics object for this target
@@ -111,7 +110,6 @@ export default class Targets extends React.Component {
          };
       });
 
-      //var sortedList = those(targetList).order('timeLeftNumber').order('name').order('met');
       var unmet = _.chain(targetList)
          .filter(i => i.progress.value !== 'MET')
          .sortBy('timeLeftNumber')
@@ -123,6 +121,13 @@ export default class Targets extends React.Component {
          .sortBy('name')
          .value();
 
+      if (met.length) {
+         elMetTargets = [
+            <h2 style={styles.heading}>Met Targets</h2>,
+            met.map((t, i) => this.renderTargetRow(t, (i === met.length - 1))),
+         ];
+      }
+
       return (
          <div style={$background}>
             <div style={$content}>
@@ -132,8 +137,7 @@ export default class Targets extends React.Component {
                      {unmet[group].map((t, i) => this.renderTargetRow(t, (i === unmet[group].length - 1)))}
                   </div>
                ))}
-               <h2 style={styles.heading}>Met Targets</h2>
-               {met.map((t, i) => this.renderTargetRow(t, (i === met.length - 1)))}
+               {elMetTargets}
             </div>
          </div>
       );
