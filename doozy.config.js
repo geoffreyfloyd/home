@@ -1,8 +1,8 @@
 module.exports = {
    log: {
-      done: ['^= ?(.*)$', '^x ?(.*)$'],
-      note: ['^######+$'], // ['^\/\*', '^\/\/$']
-      todo: ['^- ?(.*)$', '^o ?(.*)$'],
+      done: ['^=(?!=) ?(.*)$', '^x(?!x) ?(.*)$'],
+      note: ['^---+$', '^===+$'], // ['^\/\*', '^\/\/$']
+      todo: ['^-(?!-) ?(.*)$', '^o(?!o) ?(.*)$'],
       tag: ['^## (.*)$'], // SPANNING ONE LINE, PULL SPACE SEPARATED WORDS AS TAGS FOR THE ENTIRE LOG
    },
    meta: {

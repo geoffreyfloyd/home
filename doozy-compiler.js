@@ -21,7 +21,9 @@ logText.split(linePattern).forEach(line => {
    line = line.replace(/ +$/, '');
    
    if (!line) {
-      logKind = 'note';
+      if (stackKind !== 'note') {
+         logKind = 'note';
+      }
       append = line;
    }
    else {
