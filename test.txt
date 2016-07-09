@@ -1,0 +1,10 @@
+A bunch of shite before the todo
+- modify log entry to name tag by focus
+- write a function that loads in a regex config and parses a text file into JSON /*
+   comments about this todo */
+
+######
+Purely textual/thought logging unattached to any todo 
+i can keep going and going     
+forever
+   and indenting will be preserverd
