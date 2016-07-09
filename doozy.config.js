@@ -3,7 +3,7 @@ module.exports = {
       done: ['^=(?!=) ?(.*)$', '^x(?!x) ?(.*)$'],
       note: ['^---+$', '^===+$'], // ['^\/\*', '^\/\/$']
       todo: ['^-(?!-) ?(.*)$', '^o(?!o) ?(.*)$'],
-      tag: ['^## (.*)$'], // SPANNING ONE LINE, PULL SPACE SEPARATED WORDS AS TAGS FOR THE ENTIRE LOG
+      tag: ['^#(?!#)(.*)$'], // SPANNING ONE LINE, PULL SPACE SEPARATED WORDS AS TAGS FOR THE ENTIRE LOG
    },
    meta: {
       comment: ['\/\* ?([\s\S]*) ?\*\//', '\/\/ ?(.*)$'],

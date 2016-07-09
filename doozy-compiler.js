@@ -9,17 +9,18 @@ var stacks = {
    done: [],
    todo: [],
    note: [],
+   tag: [],
 };
 
 var stack = [];
 var stackKind;
-
+var stackable = ['todo', 'done', 'note'];
 var linePattern = /\r?\n/;
 var logText = fs.readFileSync(logPath, { encoding: 'utf8' });
 logText.split(linePattern).forEach(line => {
    var logKind, match, append;
    line = line.replace(/ +$/, '');
-   
+
    if (!line) {
       if (stackKind !== 'note') {
          logKind = 'note';
@@ -45,15 +46,21 @@ logText.split(linePattern).forEach(line => {
       stack.push(line);
    }
    else {
-      // Push `stack` (if exists) onto `stacks` and reset
-      if (stack.length) {
-         stacks[(stackKind || 'note')].push(stack);
+      // Set stack default for next lines if this is a stackable log kind
+      if (stackable.indexOf(logKind) > -1) {
+         // Push `stack` (if exists) onto `stacks`
+         if (stack.length) {
+            stacks[(stackKind || 'note')].push(stack);
+         }
+
+         // Set the stack kind for next lines
+         stackKind = logKind;
+
+         // Add capture group value to a fresh stack
+         stack = append ? [append] : [];
       }
-      stack = [];
-      stackKind = logKind;
-      // Add capture group value to the stack
-      if (append) {
-         stack.push(append);
+      else {
+         stacks[logKind].push(append);
       }
    }
 });
