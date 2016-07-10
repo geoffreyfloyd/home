@@ -9,6 +9,7 @@ import LayeredComponentMixin from 'mixins/LayeredComponentMixin';
 import ContentEditable from 'components/ContentEditable';
 import RelativeTime from 'components/RelativeTime';
 import TagList from 'components/TagList';
+import MarkdonePane from './MarkdonePane';
 
 // Stores
 import logEntryStore from 'stores/logentry-store';
@@ -22,6 +23,7 @@ var LogEntryListItem = React.createClass({
    getInitialState () {
       return {
          isDropDownOpen: false,
+         data: Object.assign({}, this.props.data),
       };
    },
 
@@ -29,21 +31,13 @@ var LogEntryListItem = React.createClass({
     * COMPONENT LIFECYCLE
     *************************************************************/
    componentWillMount () {
-      var detailsChange = EventHandler.create();
-      detailsChange
-         .map(function (event) {
-            return event.target.value;
-         })
+      var saveChanges = EventHandler.create();
+      saveChanges
          .throttle(1000)
-         .filter(function (details) {
-            return details !== this.props.data.details;
-         }.bind(this))
-         .distinctUntilChanged()
-         .subscribe(this.handleDetailsChange);
+         .subscribe(this.handleSaveChanges);
 
       var durationChange = EventHandler.create();
       durationChange
-         .throttle(2000)
          .distinctUntilChanged()
          .map(event => {
             var duration = 0;
@@ -55,18 +49,19 @@ var LogEntryListItem = React.createClass({
             return duration;
          })
          .filter(duration => {
-            return duration !== this.props.data.duration;
+            return duration !== this.state.data.duration;
          })
          .subscribe(this.handleDurationChange);
 
       this.handlers = {
-         detailsChange,
          durationChange,
+         saveChanges,
       };
    },
+
    componentWillUnmount () {
-      this.handlers.detailsChange.dispose();
       this.handlers.durationChange.dispose();
+      this.handlers.saveChanges.dispose();
    },
 
    componentDidUpdate () {
@@ -97,7 +92,6 @@ var LogEntryListItem = React.createClass({
       }
    },
    handleDeleteClick () {
-      
       host.prompt('Are you sure you want to delete this log entry?\n\nIf so, type DELETE and hit enter', function (response) {
          if ((response || '').toLowerCase() === 'delete') {
             logEntryStore.destroy(this.props.data.id).then(() => {
@@ -118,19 +112,27 @@ var LogEntryListItem = React.createClass({
          isDropDownOpen: false
       });
    },
-   handleDetailsChange (details) {
-      var logEntry = Object.assign({}, this.props.data);
-      logEntry.details = details;
-      logEntryStore.save(logEntry);
+   handleDetailsChange (e) {
+      var data = Object.assign({}, this.state.data);
+      data.details = e.target.value;
+      this.setState({ data });
+      this.handlers.saveChanges();
    },
+
    handleDurationChange (duration) {
-      var logEntry = Object.assign({}, this.props.data);
-      logEntry.duration = duration;
-      logEntryStore.save(logEntry);
+      var data = Object.assign({}, this.state.data);
+      data.duration = duration;
+      this.setState({ data });
+      this.handlers.saveChanges();
    },
+
+   handleSaveChanges () {
+      logEntryStore.save(this.state.data);
+   },
+
    handleDropDownClick () {
       this.setState({
-         isDropDownOpen: !this.state.isDropDownOpen
+         isDropDownOpen: !this.state.isDropDownOpen,
       });
    },
 
@@ -143,7 +145,7 @@ var LogEntryListItem = React.createClass({
          return null;
       }
 
-      var data = this.props.data;
+      var data = this.state.data;
       var options = [];
 
       options.push((
@@ -174,7 +176,7 @@ var LogEntryListItem = React.createClass({
    },
    render () {
       var duration, typeOfLogEntry;
-      var data = this.props.data;
+      var data = this.state.data;
       var knownAs = 'You'; // data.knownAs
       // var profilePic = <div style={{minWidth: '45px', paddingRight: '5px'}}><img style={{maxHeight: '45px', padding: '2px'}} src={this.props.data.profileUri} /></div>;
 
@@ -222,7 +224,7 @@ var LogEntryListItem = React.createClass({
                </div>
                <div>
                   <div style={{ padding: '5px', fontSize: '1.8em' }}>
-                     <ContentEditable ref="logdetails" html={data.details} onChange={this.handlers.detailsChange} />
+                     <MarkdonePane ref="logdetails" value={data.details} onChange={this.handleDetailsChange} />
                   </div>
                </div>
             </div>
