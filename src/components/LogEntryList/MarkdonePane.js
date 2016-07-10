@@ -52,6 +52,7 @@ class MarkdonePane extends React.Component {
    }
 
    handleClick () {
+      this.doAutoGrow = true;
       this.doFocus = true;
       this.setState({ hasFocus: true });
    }
