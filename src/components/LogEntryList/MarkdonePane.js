@@ -88,9 +88,9 @@ class MarkdonePane extends React.Component {
                onFocus={this.handleFocus}
                onClick={this.handleClick}
             >
-               {markdone.todo.map(todo => <div style={{ fontSize: '1rem' }}><input type="checkbox" checked={false} />{todo}</div>)}
-               {markdone.done.map(done => <div style={{ fontSize: '1rem' }}><input type="checkbox" checked={true} />{done}</div>)}
-               {markdone.notes.map(note => <div dangerouslySetInnerHTML={{ __html: note }} />)}
+               {markdone.todo.map(todo => <div key={`todo-${todo}`} style={{ fontSize: '1rem' }}><input type="checkbox" checked={false} readOnly />{todo}</div>)}
+               {markdone.done.map(done => <div key={`done-${done}`} style={{ fontSize: '1rem' }}><input type="checkbox" checked readOnly />{done}</div>)}
+               {markdone.notes.map(note => <div key={`note-${note}`} dangerouslySetInnerHTML={{ __html: note }} />)}
             </div>
          );
       }

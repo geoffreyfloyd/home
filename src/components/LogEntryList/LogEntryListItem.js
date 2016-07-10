@@ -2,7 +2,7 @@
 import React from 'react';
 import babble from 'babble';
 import those from 'those';
-import EventHandler from 'libs/event-handler';
+import EventHandler, { getThrottledHandler } from 'libs/event-handler';
 
 // Mixins and Subcomponents
 import LayeredComponentMixin from 'mixins/LayeredComponentMixin';
@@ -31,10 +31,7 @@ var LogEntryListItem = React.createClass({
     * COMPONENT LIFECYCLE
     *************************************************************/
    componentWillMount () {
-      var saveChanges = EventHandler.create();
-      saveChanges
-         .throttle(1000)
-         .subscribe(this.handleSaveChanges);
+      var saveChanges = getThrottledHandler(this.handleSaveChanges, 1000);
 
       var durationChange = EventHandler.create();
       durationChange
@@ -48,9 +45,7 @@ var LogEntryListItem = React.createClass({
 
             return duration;
          })
-         .filter(duration => {
-            return duration !== this.state.data.duration;
-         })
+         .filter(duration => duration !== this.state.data.duration)
          .subscribe(this.handleDurationChange);
 
       this.handlers = {
@@ -219,8 +214,14 @@ var LogEntryListItem = React.createClass({
                      </small>
                   </div>
                   <TagList tags={data.tags}
-                     selectedTags={those(data.tags).pluck('id') } />
-                  <i ref="dropDown" style={{ color: '#b2b2b2', cursor: 'pointer' }} className="fa fa-chevron-down" onClick={this.handleDropDownClick}></i>
+                     selectedTags={those(data.tags).pluck('id') }
+                  />
+                  <i
+                     ref="dropDown"
+                     style={{ color: '#b2b2b2', cursor: 'pointer' }}
+                     className="fa fa-chevron-down"
+                     onClick={this.handleDropDownClick}
+                  />
                </div>
                <div>
                   <div style={{ padding: '5px', fontSize: '1.8em' }}>
@@ -230,7 +231,7 @@ var LogEntryListItem = React.createClass({
             </div>
          </div>
       );
-   }
+   },
 });
 
 
