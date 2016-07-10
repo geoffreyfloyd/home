@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import config from './doozy.config';
+import marked from 'marked';
 
 var logPath = path.resolve('./test.txt');
 
@@ -15,9 +16,18 @@ var stacks = {
 var stack = [];
 var stackKind;
 var stackable = ['todo', 'done', 'note'];
-var linePattern = /\r?\n/;
-var logText = fs.readFileSync(logPath, { encoding: 'utf8' });
-logText.split(linePattern).forEach(line => {
+var indent = '    ';
+var newline = /\n/;
+
+var src = fs.readFileSync(logPath, { encoding: 'utf8' });
+
+src = src
+   .replace(/\r\n|\r/g, '\n')
+   .replace(/\t/g, indent)
+   .replace(/\u00a0/g, ' ')
+   .replace(/\u2424/g, '\n');
+
+src.split(newline).forEach(line => {
    var logKind, match, append;
    line = line.replace(/ +$/, '');
 
@@ -67,4 +77,8 @@ logText.split(linePattern).forEach(line => {
 
 // Push `stack` onto `stacks`
 stacks[(stackKind || 'note')].push(stack);
+
+// Convert notes to markdown html
+stacks.note = stacks.note.map(noteStack => marked(noteStack.join('\n')));
+
 console.log(stacks);
