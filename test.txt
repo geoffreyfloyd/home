@@ -10,3 +10,13 @@ Purely textual/thought logging unattached to any todo
 i can keep going and going     
 forever
    and indenting will be preserverd
+
+- fix Alerts link to open last site
+- Start w/ Fav or Nav opened (Fav if we have favorites, Nav if we don't)
+- Change Script type fields to use MultiLineInput
+- Add more columns to Portfolio sites: Kiosk Status, # Kiosks, Message, Irradiance, Insolation, 
+- Hide ‘Assigned To’ field
+- fix Charts bug
+- fix subscribeTo subscription lifecycle bug
+- default to powertrack app on login
+- fix glphicons defaulting the hover to a sickly green
