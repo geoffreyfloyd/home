@@ -1,12 +1,13 @@
 import React from 'react';
 import babble from 'babble';
+import { parseISO8601String } from 'libs/date-util';
 
 class RelativeTime extends React.Component {
    /*************************************************************
    * METHODS
    *************************************************************/
    calcRelativeTime () {
-      var time = new Date(this.props.isoTime);
+      var time = parseISO8601String(this.props.isoTime.length === 10 ? this.props.isoTime + 'T00:00:00' : this.props.isoTime);
       var now = new Date();
 
       if (this.props.accuracy === 'd') {
