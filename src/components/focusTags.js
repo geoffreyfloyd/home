@@ -174,7 +174,7 @@ export default function focusTags(Component) {
                   tagFilterMode={tagFilterMode}
                   handleTagFilterClick={this.handleTagFilterClick}
                   handleTagFilterModeClick={this.handleTagFilterModeClick} />
-               <Component list={list} />
+               <Component currentFocus={currentFocus} list={list} />
             </div>
          );
       }

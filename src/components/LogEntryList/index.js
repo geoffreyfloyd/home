@@ -15,9 +15,13 @@ class LogEntryList extends React.Component {
     *************************************************************/
    constructor (props) {
       super(props);
+      var newModel = logEntryStore.new();
+      if (props.currentFocus) {
+         newModel.tags.push(props.currentFocus);
+      }      
       this.state = {
          maxReturn: 10,
-         newModel: logEntryStore.new(),
+         newModel,
       };
    }
 
@@ -32,9 +36,15 @@ class LogEntryList extends React.Component {
    }
 
    componentWillReceiveProps (nextProps) {
-      if (nextProps.logentries !== this.props.logentries) {
+      if (nextProps.logentries !== this.props.logentries || nextProps.currentFocus !== this.props.currentFocus) {
+         var newModel = logEntryStore.new();
+         if (nextProps.currentFocus) {
+            newModel.tags.push(nextProps.currentFocus);   
+         }
+         
          this.setState({
             maxReturn: 10,
+            newModel,
          });
       }
    }
