@@ -87,7 +87,7 @@ class TagInput extends React.Component {
       var newValue = (currentValue || []).slice();
 
       var exists;
-      for (var i = 0; i < items; i++) {
+      for (var i = 0; i < items.length; i++) {
          if (items[i].name === tag || items[i].id === tag) {
             newValue.push(items[i]);
             exists = true;
@@ -100,6 +100,7 @@ class TagInput extends React.Component {
             id: tag,
             name: tag,
             kind: 'Tag',
+            descendantOf: [],
          });
       }
 
