@@ -36,10 +36,13 @@ class LogEntryList extends React.Component {
    }
 
    componentWillReceiveProps (nextProps) {
-      if (nextProps.logentries !== this.props.logentries || nextProps.currentFocus !== this.props.currentFocus) {
+      if (nextProps.logentries !== this.props.logentries || nextProps.currentFocus !== this.props.currentFocus || nextProps.tagFilter !== this.props.tagFilter) {
          var newModel = logEntryStore.new();
-         if (nextProps.currentFocus) {
-            newModel.tags.push(nextProps.currentFocus);   
+         if (nextProps.tagFilter && nextProps.tagFilter.length) {
+            newModel.tags = nextProps.tags.filter(tag => nextProps.tagFilter.indexOf(tag.name) > -1);
+         }
+         else if (nextProps.currentFocus) {
+            newModel.tags.push(nextProps.currentFocus);
          }
          
          this.setState({

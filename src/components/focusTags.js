@@ -86,6 +86,7 @@ export default function focusTags(Component) {
        *************************************************************/
       render () {
          var { list, tags } = this.props;
+         var { tagFilter, tagFilterMode } = this.state;
          var { currentFocus, tagFilter, tagFilterMode } = FocusTagsComponent.GetContext(this.state.context);
          var focuses = those(tags).like({ kind: 'Focus' });
 
@@ -113,9 +114,7 @@ export default function focusTags(Component) {
                if (those(tags).has({ id: tag })) {
                   return true;
                }
-               else {
-                  return false;
-               }
+               return false;
             }).slice();
 
          }
@@ -179,7 +178,7 @@ export default function focusTags(Component) {
                   tagFilterMode={tagFilterMode}
                   handleTagFilterClick={this.handleTagFilterClick}
                   handleTagFilterModeClick={this.handleTagFilterModeClick} />
-               <Component currentFocus={currentFocus} list={list} />
+               <Component currentFocus={currentFocus} list={list} tags={tags} tagFilter={tagFilter} tagFilterMode={tagFilterMode} />
             </div>
          );
       }
