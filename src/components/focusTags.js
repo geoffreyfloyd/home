@@ -26,9 +26,14 @@ export default function focusTags(Component) {
 
          // Bind instance to event handlers
          this.handleContextUpdate = this.handleContextUpdate.bind(this);
+
+         // Set initial state
+         this.state = {
+           context: null,
+         };
       }
 
-      componentWillMount() {
+      componentDidMount() {
          host.context.subscribe(this.handleContextUpdate);
       }
 

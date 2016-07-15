@@ -123,7 +123,7 @@ Context.prototype = {
    },
    subscribe (notifyCb) {
       this._subscribers.push(notifyCb);
-      notifyCb(this.get());
+      this.get().then(cache => notifyCb(cache));
    },
    unsubscribe (notifyCb) {
       for (var i = 0; i < this._subscribers.length; i++) {
