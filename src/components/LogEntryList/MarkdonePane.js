@@ -83,7 +83,7 @@ class MarkdonePane extends React.Component {
          var markdone = parse(value);
          return (
             <div
-               style={Object.assign({display: 'inline'}, this.props.style)}
+               style={Object.assign({ minHeight: '1rem' }, this.props.style)}
                onBlur={this.handleBlur}
                onFocus={this.handleFocus}
                onClick={this.handleClick}
