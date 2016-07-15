@@ -301,7 +301,16 @@ module.exports = function (operator) {
                }
             }
             else if (model.tags && model.tags.length) {
-               what = model.tags.map(tag => tag.name).join('_');
+               what = {};
+               model.tags.forEach(tag => {
+                  if (tag.descendantOf.length) {
+                     tag.descendantOf.forEach(ptag => what[ptag] = '');
+                  }
+                  else {
+                     what[tag.name] = '';
+                  }
+               });
+               what = Object.keys(what).join('_');
             }
             else {
                what = model.details;
