@@ -12,7 +12,7 @@
     "deploy": "webpack --release",
     "start-dev": "babel-node src/server/index.js --verbose",
     "start": "babel-node src/server/index.js --release",
-    "doozy": "babel-node doozy-compiler.js --verbose"
+    "debug": "babel src --out-dir build --watch"
   },
   "dependencies": {
     "babble": "git+https://github.com/hoomanlogic/babble.git#master",
