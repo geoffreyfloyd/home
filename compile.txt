@@ -1,0 +1,5 @@
+num = 10
+word = "hello"
+if (word == "hello") {
+    word = "mom"
+}

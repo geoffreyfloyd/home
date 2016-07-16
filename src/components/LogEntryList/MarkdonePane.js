@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { parse } from 'apps/doozy/core/markdone';
+import Lexer from 'apps/doozy/core/markdone';
 
 class MarkdonePane extends React.Component {
    constructor (props) {
@@ -80,7 +80,9 @@ class MarkdonePane extends React.Component {
          );
       }
       else {
-         var markdone = parse(value);
+         var lexer = new Lexer(value);
+         var markdone = lexer.parse();
+         
          return (
             <div
                style={Object.assign({ minHeight: '1rem' }, this.props.style)}
