@@ -61,7 +61,7 @@ export default function focusTags(Component) {
             /**
              * Toggle tag selection
                */
-            var tagFilter = those(ctx.tagFilter).toggle(tag).slice();
+            var tagFilter = those(ctx.tagFilter || []).toggle(tag).slice();
             
             /**
             * Update context
