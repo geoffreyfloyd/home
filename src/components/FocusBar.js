@@ -82,7 +82,9 @@ var FocusBar = React.createClass({
    renderIntentsDropDownMenu () {
       var intents = [
          { name: 'View Actions', url: '/actions', classNames: 'fa fa-eye fa-2x' },
+         { name: 'New Action', url: '/action/new', classNames: 'fa fa-eye fa-2x' },
          { name: 'View Logs', url: '/logs', classNames: 'fa fa-eye fa-2x' },
+         { name: 'New Log', url: '/log/new', classNames: 'fa fa-eye fa-2x' },
          { name: 'View Targets', url: '/targets', classNames: 'fa fa-eye fa-2x' },
       ];
 
@@ -113,7 +115,7 @@ var FocusBar = React.createClass({
       );
 
       return (
-         <DropdownMenu id={'intent'} style={{ float: 'left', padding: '2px', width: '20rem' }} buttonContent={button} menuItems={menuItems} />
+         <DropdownMenu id={'intent'} style={{ cursor: 'pointer', float: 'left', padding: '2px', width: '20rem' }} buttonContent={button} menuItems={menuItems} />
       );
    },
 
