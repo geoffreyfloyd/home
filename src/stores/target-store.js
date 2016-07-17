@@ -217,8 +217,8 @@ class TargetStore extends GnodeStore {
       var totalPeriods = periodsStats.length + isAccounted;
       var metPeriods = periodsStats.filter(filterMet).length + isMet;
       var accuracy = Math.round((metPeriods / totalPeriods) * 10000) / 100;
-      var average = (periodsStats.reduce((prev, next) => prev + next.number, 0) + (isAccounted ? number : 0)) / totalPeriods;
-      average = Math.round(average * 100) / 100;
+      var average = (periodsStats.reduce((prev, next) => prev + next.number, 0) + (isAccounted ? number : 0)) / (totalPeriods * target.number);
+      average = Math.round(average * 10000) / 100;
 
       var change = Math.round((accuracy - prevAccuracy) * 100) / 100;
       // if (periodsStats.length > 1) {

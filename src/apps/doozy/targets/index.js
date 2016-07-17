@@ -151,6 +151,7 @@ export default class Targets extends React.Component {
             <div style={styles.title}>{item.target.name}</div>
             <div style={{ display: 'flex' }}>
                <Indicator kind={item.progress.kind} title={'Progress'}
+                  description={'The progress of logged effort versus targeted effort for the active period.'}
                   backgroundColor={item.progress.backgroundColor}
                   value={item.progress.value}
                   compareValue={item.progress.compare}
@@ -158,21 +159,32 @@ export default class Targets extends React.Component {
                   onClick={this.handleTargetClick.bind(null, item.target)}
                />
                <Indicator kind={'comparison'} title={'Streak'}
+                  description={'The current number of consecutively met periods versus the longest historical number of consecutively met periods.'}
                   backgroundColor={item.streak.backgroundColor}
                   value={item.stats.periodActive.streak}
                   compareValue={item.longestStreak}
                   change={item.streak.change}
                   onClick={this.handleTargetClick.bind(null, item.target)}
                />
-               <Indicator kind={'percent'} title={'Accuracy'}
+               <Indicator kind={'percent'} title={'Flow'}
+                  description={'The average amount of effort in contrast to the targeted amount of effort.'}
+                  backgroundColor={Indicator.calcColor(item.stats.periodActive.average) }
+                  value={item.stats.periodActive.average}
+                  change={0}
+                  onClick={this.handleTargetClick.bind(null, item.target)}
+               />
+               <Indicator kind={'percent'} title={'Consistency'}
+                  description={'The average of targeted periods where the targeted amount of effort was met.'}
                   backgroundColor={Indicator.calcColor(item.stats.periodActive.accuracy) }
                   value={item.stats.periodActive.accuracy}
                   change={item.stats.periodActive.change}
                   onClick={this.handleTargetClick.bind(null, item.target)}
                />
-               <div style={styles.timeLeft}>{item.timeLeft}</div>
-               <div style={styles.timeLeft}>{periodDescription}</div>
-               <div style={styles.timeLeft}>{`Since ${(new Date(item.target.starts)).toLocaleDateString()}`}</div>
+               <div style={styles.textInfo}>
+                  <div>{periodDescription}</div>
+                  <div>{`Since ${(new Date(item.target.starts)).toLocaleDateString()}`}</div>
+                  <div>{item.timeLeft}</div>
+               </div>
                <div style={styles.edit} onClick={this.handleEditClick.bind(null, item.target)}><i className="fa fa-pencil fa-2x"></i></div>
             </div>
          </div>
@@ -194,11 +206,11 @@ var styles = {
          borderBottom: isLast ? undefined : 'solid 1px #444',
       };
    },
-   timeLeft: {
+   textInfo: {
       flexGrow: '1',
       textAlign: 'left',
       color: '#999',
-      padding: '2rem',
+      padding: '0.7rem',
    },
    title: {
       width: '100%',
