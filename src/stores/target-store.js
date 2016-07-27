@@ -1,5 +1,6 @@
 import GnodeStore from './gnode-store';
 import those from 'those';
+import { parseISO8601String } from 'libs/date-util';
 
 class TargetStore extends GnodeStore {
 
@@ -103,8 +104,7 @@ class TargetStore extends GnodeStore {
          var periodsStats = [];
 
          // first period starts
-         periodStarts = new Date(target.starts);
-         periodStarts.setHours(0, 0, 0, 0);
+         periodStarts = parseISO8601String(target.starts);
 
          if (today < periodStarts) {
             targetsStats.push({
@@ -168,7 +168,7 @@ class TargetStore extends GnodeStore {
       var streak = 0;
 
       performed = logEntries.filter(item => {
-         var logDate = new Date(item.date);
+         var logDate = parseISO8601String(item.date);
 
          if (item.entry !== 'performed' || logDate < periodStarts || logDate > periodEnds) {
             return false;

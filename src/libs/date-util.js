@@ -18,6 +18,9 @@ export function parseISO8601String (val) {
         return new Date(Date.parse(val));
     }
     else {
+        if (val.length === 10) {
+            val += 'T00:00:00';
+        }
         var date = [0, 0, 0, 0, 0, 0];
         var isoBasePattern = /(\d+)[^\d]/gi;
 
