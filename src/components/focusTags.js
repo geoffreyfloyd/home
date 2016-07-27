@@ -58,14 +58,10 @@ export default function focusTags(Component) {
 
       handleTagFilterClick(tag) {
          host.context.get().then(ctx => {
-            /**
-             * Toggle tag selection
-               */
+            // Toggle tag selection
             var tagFilter = those(ctx.tagFilter || []).toggle(tag).slice();
             
-            /**
-            * Update context
-            */
+            // Update context
             host.context.set({
                tagFilter,
             });
