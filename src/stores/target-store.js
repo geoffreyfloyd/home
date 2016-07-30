@@ -97,7 +97,8 @@ class TargetStore extends GnodeStore {
             allButLatestPeriod,
             average,
             longestStreakPeriod,
-            periodStarts;
+            periodStarts,
+            thisStreakIndex;
 
          // var actionIds = [];
          var change = 0;
@@ -150,9 +151,15 @@ class TargetStore extends GnodeStore {
             nextTargetPeriod(target, periodStarts);
          }
 
-         longestStreakPeriod = those(periodsStats).max('streak');
+         // Calculate previous best streak, Do not include the latest streak
+         periodsStats.forEach((pstat, pindex) => {
+            if (pstat.streak === 0) {
+               thisStreakIndex = pindex;
+            }
+         });
+         longestStreakPeriod = those(periodsStats.slice(0, thisStreakIndex)).max('streak');
 
-         targetsStats.push({
+         targetsStats.push({ 
             targetId: target.id,
             periodActive: activePeriod,
             periodLongestStreak: longestStreakPeriod,
