@@ -6,6 +6,9 @@ import those from 'those';
 import LogEntryListItem from './LogEntryListItem';
 import focusTags from 'components/focusTags';
 
+// LIBS
+import { getLocalDateString } from 'libs/date-util';
+
 // Stores
 import logEntryStore from 'stores/logentry-store';
 
@@ -15,10 +18,7 @@ class LogEntryList extends React.Component {
     *************************************************************/
    constructor (props) {
       super(props);
-      var newModel = logEntryStore.new();
-      if (props.currentFocus) {
-         newModel.tags.push(props.currentFocus);
-      }      
+      var newModel = this.getNewModel(props);
       this.state = {
          maxReturn: 10,
          newModel,
@@ -36,20 +36,31 @@ class LogEntryList extends React.Component {
    }
 
    componentWillReceiveProps (nextProps) {
-      if (nextProps.logentries !== this.props.logentries || nextProps.currentFocus !== this.props.currentFocus || nextProps.tagFilter !== this.props.tagFilter) {
-         var newModel = logEntryStore.new();
-         if (nextProps.tagFilter && nextProps.tagFilter.length) {
-            newModel.tags = nextProps.tags.filter(tag => nextProps.tagFilter.indexOf(tag.name) > -1);
-         }
-         else if (nextProps.currentFocus) {
-            newModel.tags.push(nextProps.currentFocus);
-         }
-         
+      if (nextProps.list !== this.props.list || nextProps.currentFocus !== this.props.currentFocus || nextProps.tagFilter !== this.props.tagFilter) {
+         var newModel = this.getNewModel(nextProps);
          this.setState({
             maxReturn: 10,
             newModel,
          });
       }
+   }
+
+   getNewModel (props) {
+      var newModel;
+      var latestLog = those(props.list)
+         .order(item => item.date.split('T')[0] + '-' + (['performed', 'skipped'].indexOf(item.kind) > -1 ? '1' : '0'))
+         .flip()
+         .first();
+      if (!latestLog || latestLog.date !== getLocalDateString()) {
+         newModel = logEntryStore.new();
+         if (props.tagFilter && props.tagFilter.length) {
+            newModel.tags = props.tags.filter(tag => props.tagFilter.indexOf(tag.name) > -1);
+         }
+         else if (props.currentFocus && props.currentFocus.name !== 'nofocus') {
+            newModel.tags.push(props.currentFocus);
+         }
+      }
+      return newModel;
    }
 
    /*************************************************************
@@ -62,10 +73,10 @@ class LogEntryList extends React.Component {
          .order(item => item.date.split('T')[0] + '-' + (['performed', 'skipped'].indexOf(item.kind) > -1 ? '1' : '0'))
          .flip()
          .top(maxReturn);
-
+      var today = newModel ? <LogEntryListItem key={newModel.id} data={newModel} /> : null;
       return (
          <div style={styles.container}>
-            <LogEntryListItem key={newModel.id} data={newModel} />
+            {today}
             {logentries.map(log => <LogEntryListItem key={log.id} data={log} />)}
          </div>
       );

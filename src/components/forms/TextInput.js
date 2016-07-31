@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import input from './input';
 import { $control, $focus, $hide } from './style';
 
-class TextInput extends React.Component {
+export class TextInput extends React.Component {
    /*************************************************************
     * DEFINITIONS
     *************************************************************/
@@ -49,7 +49,7 @@ class TextInput extends React.Component {
       return (
          <input ref="input"
             readOnly={readOnly}
-            style={Object.assign({}, $control(hasChanged, hasErrors), focus ? $focus(hasChanged, hasErrors) : {}, style, visible ? {} : $hide) }
+            style={Object.assign({}, (hasChanged !== undefined ? $control(hasChanged, hasErrors) : {}), (hasChanged !== undefined ? (focus ? $focus(hasChanged, hasErrors) : {}) : {}), style, visible || visible === undefined ? {} : $hide) }
             autoComplete="off"
             id={path}
             type={type}

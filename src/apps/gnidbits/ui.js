@@ -10,4 +10,9 @@ module.exports = exports = {
       route: '/bits',
       view: 'gnidbits',
    },
+   lif: {
+      entry: path.resolve(__dirname, './lif/index.js'),
+      route: '/lif',
+      view: 'gnidbits',
+   },
 };
