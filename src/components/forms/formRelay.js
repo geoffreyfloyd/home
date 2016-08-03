@@ -1,9 +1,13 @@
+// PACKAGES
 import React from 'react';
+// LIBS
+import { asArray, extract } from 'libs/object-utils';
+// MIXINS
 import input from './input';
+// COMPONENTS
 import InputTable from './InputTable';
-import { asArray, extract } from './object-utils';
 
-export default function formRelay(Component) {
+export default function formRelay (Component) {
    const displayName = Component.displayName || Component.name;
    const PropTypes = Component.PropTypes;
    const defaultProps = Component.defaultProps;
@@ -16,13 +20,13 @@ export default function formRelay(Component) {
 
       getFormInnerRelayProps (element) {
          // props
-         var { basePath, model, formState, errorMap, changeMap, handleInputRegister, handleInputUnregister, handleUpdateRequest, InputWrapper } = this.props;
+         var { basePath, model, formState, errorMap, changeMap, handleInputRegister, handleInputUnregister, handleUpdateRequest } = this.props;
 
          // Input Group element props
          var props = element ? element.props : {};
 
          return {
-                ...props,
+            ...props,
             basePath: basePath,
             model: model,
             formState: formState,
@@ -31,8 +35,6 @@ export default function formRelay(Component) {
             handleInputRegister: handleInputRegister,
             handleInputUnregister: handleInputUnregister,
             handleUpdateRequest: handleUpdateRequest,
-            InputWrapper: InputWrapper,
-            labelClass: props.labelClass || this.props.labelClass,
             labelExplain: props.labelExplain || this.props.labelExplain,
             labelSpan: props.labelSpan || this.props.labelSpan,
             labelStyle: props.labelStyle || this.props.labelStyle,
@@ -41,7 +43,7 @@ export default function formRelay(Component) {
 
       getFormInnerCollectionRelayProps (element) {
          // Form state and props
-         var { model, formState, errorMap, changeMap, handleInputRegister, handleInputUnregister, handleUpdateRequest, InputWrapper } = this.props;
+         var { model, formState, errorMap, changeMap, handleInputRegister, handleInputUnregister, handleUpdateRequest } = this.props;
 
          // Input element props
          var { path, ...props } = element.props;
@@ -51,7 +53,7 @@ export default function formRelay(Component) {
          var originalValue = extract(model, path);
 
          return {
-                ...props,
+            ...props,
             // Form Collection Input Props
             currentValue: currentValue,
             originalValue: originalValue,
@@ -65,8 +67,6 @@ export default function formRelay(Component) {
             handleInputRegister: handleInputRegister,
             handleInputUnregister: handleInputUnregister,
             handleUpdateRequest: handleUpdateRequest,
-            InputWrapper: InputWrapper,
-            labelClass: props.labelClass || this.props.labelClass,
             labelExplain: props.labelExplain || this.props.labelExplain,
             labelSpan: props.labelSpan || this.props.labelSpan,
             labelStyle: props.labelStyle || this.props.labelStyle,
@@ -103,7 +103,7 @@ export default function formRelay(Component) {
          var dependsOn = this.getInputDependsOn(element);
 
          return {
-                ...props,
+            ...props,
             path: fullPath,
             currentValue: currentValue,
             dependsOn: dependsOn,
@@ -113,7 +113,6 @@ export default function formRelay(Component) {
             register: handleInputRegister.bind(null, fullPath),
             unregister: handleInputUnregister.bind(null, fullPath),
             requestUpdate: handleUpdateRequest.bind(null, fullPath),
-            labelClass: props.labelClass || this.props.labelClass,
             labelExplain: props.labelExplain || this.props.labelExplain,
             labelSpan: props.labelSpan || this.props.labelSpan,
             labelStyle: props.labelStyle || this.props.labelStyle,
@@ -124,26 +123,26 @@ export default function formRelay(Component) {
        * RENDERING
        *************************************************************/
       render () {
-         var { InputWrapper } = this.props;
-
          return (
             <Component {...this.props} {...this.state}>
                {React.Children.map(this.props.children, (child, index) => {
                   // Don't wrap input groups and any children that don't have a field
-                  if (child.type && child.type.derivesFrom === input) {
-                     if (InputWrapper && InputWrapper.displayName !== Component.name) {
-                        return <InputWrapper key={index} {...this.getFormInnerRelayProps() }>{child}</InputWrapper>;
-                     }
+                  if (!child) {
+                     return child;
+                  }
+                  else if (child.type && child.type.derivesFrom === input) {
                      return React.cloneElement(child, { ...this.getInputProps(child) });
                   }
-                  else if (child.type && child.type.derivesFrom === formRelay) {
-                      return React.cloneElement(child, Object.assign({ key: index }, this.getFormInnerRelayProps(child)));
-                  }
-                  else if (child.type === InputTable) {
-                     return React.cloneElement(child, Object.assign({ key: index }, this.getFormInnerCollectionRelayProps(child)));
-                  }
+               else if (child.type && child.type.derivesFrom === formRelay) {
+                  return React.cloneElement(child, Object.assign({ key: index }, this.getFormInnerRelayProps(child)));
+               }
+               else if (child.type === InputTable) {
+                  return React.cloneElement(child, Object.assign({ key: index }, this.getFormInnerCollectionRelayProps(child)));
+               }
+               else {
                   return React.cloneElement(child, { key: index, ...child.props });
-               })}
+               }
+               }) }
             </Component>
          );
       }

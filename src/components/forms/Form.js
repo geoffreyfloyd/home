@@ -1,34 +1,46 @@
+// PACKAGES
 import React from 'react';
-import { asArray, copy, extract, merge } from './object-utils';
+import those from 'those';
+// LIBS
+import { getThrottledHandler } from 'libs/event-handler';
+import { asArray, copy, extract, merge } from 'libs/object-utils';
+// MIXINS
 import input from './input';
 import formRelay from './formRelay';
-import InputGroup from './InputGroup';
+// COMPONENTS
 import InputTable from './InputTable';
-import those from 'those';
 
 class Form extends React.Component {
    /*************************************************************
     * DEFINITIONS
     *************************************************************/
    static defaultProps = {
-      InputWrapper: InputGroup,
       showChanges: true,
    };
 
+   /*************************************************************
+    * COMPONENT LIFECYCLE
+    *************************************************************/
    constructor (props) {
       super(props);
 
+      // Initialize non-state props
       this.changeMap = {};
       this.errorMap = {};
       this.inputMap = {};
 
+      // Set initial state
       this.state = {
-         formState: copy(props.model) || {},
+         formState: copy(this.props.model) || {},
       };
 
+      // Bind event handlers
       this.handleInputRegister = this.handleInputRegister.bind(this);
       this.handleInputUnregister = this.handleInputUnregister.bind(this);
       this.handleUpdateRequest = this.handleUpdateRequest.bind(this);
+
+      // Throttle updates to unmanaged state
+      this.requestUnmanagedStateUpdate = getThrottledHandler(this.requestUnmanagedStateUpdate.bind(this), 500);
    }
 
    componentDidMount () {
@@ -54,7 +66,7 @@ class Form extends React.Component {
       if (this.didReset) {
          this.didReset = false;
          this.notifyOnChange(this.state.formState);
-         this.notifyInputs(undefined, undefined, this.state.formState);
+         this.notifyInputs({ pathFilter: undefined, changeArgs: undefined, formState: this.state.formState });
       }
       else {
          this.initializeNewRegistrations();
@@ -65,16 +77,6 @@ class Form extends React.Component {
       this._isMounted = false;
    }
 
-   initializeNewRegistrations () {
-      Object.keys(this.inputMap).forEach(key => {
-         var inputRef = this.inputMap[key];
-         if (!inputRef.initialized) {
-            inputRef.initialized = true;
-            inputRef.notify(undefined, undefined, this.state.formState);
-         }
-      });
-   }
-
    /*************************************************************
     * EVENT HANDLING
     *************************************************************/
@@ -83,7 +85,7 @@ class Form extends React.Component {
       this.inputMap[path] = {
          notify,
          dependsOn,
-         initialized: false
+         initialized: false,
       };
       // Update change and error maps
       this.changeMap[path] = changeArgs.hasChanged;
@@ -137,13 +139,12 @@ class Form extends React.Component {
       // Update state immediately upon request ONLY if value changed
       // otherwise, we will request an unmanaged state update (250ms throttle)
       if (value !== currentValue) {
-
          this.setState({
             formState: newFormState,
          });
 
          // Notify dependencies of the update
-         this.notifyInputs(path, changeArgs, newFormState);
+         this.notifyInputs({ pathFilter: path, changeArgs, formState: newFormState });
 
          // Notify callback of changeArgs
          this.notifyOnChange(newFormState);
@@ -153,7 +154,20 @@ class Form extends React.Component {
       }
    }
 
-   notifyInputs (pathFilter, changeArgs, formState) {
+   /*************************************************************
+    * METHODS
+    *************************************************************/
+   initializeNewRegistrations () {
+      Object.keys(this.inputMap).forEach(key => {
+         var inputRef = this.inputMap[key];
+         if (!inputRef.initialized) {
+            inputRef.initialized = true;
+            inputRef.notify(undefined, undefined, this.state.formState);
+         }
+      });
+   }
+
+   notifyInputs ({ pathFilter, changeArgs, formState }) {
       // Iterate through all registered inputs
       Object.keys(this.inputMap).forEach((key) => {
          // Get input ref
@@ -172,7 +186,6 @@ class Form extends React.Component {
 
    notifyOnChange (formState) {
       if (typeof this.props.onChange === 'function') {
-
          // Check change status
          var hasFormChanged = those(this.changeMap).first(i => {
             return i === true;
@@ -194,25 +207,6 @@ class Form extends React.Component {
    getValue () {
       // Return the current value
       return this.state.formState;
-   }
-
-   requestUnmanagedStateUpdate () {
-      // Throttle updates of unmanaged state
-      if (this.updateUnmanagedTimeout) {
-         clearTimeout(this.updateUnmanagedTimeout);
-      }
-      this.updateUnmanagedTimeout = setTimeout(() => {
-         // We're not ready
-         if (!this._isMounted) {
-            this.requestUnmanagedStateUpdate();
-            return;
-         }
-
-         this.updateUnmanagedTimeout = null;
-         this.setState({
-            lastUpdate: new Date().toISOString(),
-         });
-      }, 500);
    }
 
    reset () {
@@ -238,7 +232,7 @@ class Form extends React.Component {
       var props = element ? element.props : {};
 
       return {
-            ...props,
+         ...props,
          model: model,
          formState: formState,
          errorMap: errorMap,
@@ -247,10 +241,6 @@ class Form extends React.Component {
          handleInputUnregister: this.handleInputUnregister,
          handleUpdateRequest: this.handleUpdateRequest,
          InputWrapper: InputWrapper,
-         labelClass: props.labelClass || this.props.labelClass,
-         labelExplain: props.labelExplain || this.props.labelExplain,
-         labelSpan: props.labelSpan || this.props.labelSpan,
-         labelStyle: props.labelStyle || this.props.labelStyle,
       };
    }
 
@@ -268,7 +258,7 @@ class Form extends React.Component {
       var originalValue = extract(model, path);
 
       return {
-            ...props,
+         ...props,
          // Form Collection Input Props
          currentValue: currentValue,
          originalValue: originalValue,
@@ -283,7 +273,6 @@ class Form extends React.Component {
          handleInputUnregister: this.handleInputUnregister,
          handleUpdateRequest: this.handleUpdateRequest,
          InputWrapper: InputWrapper,
-         labelClass: props.labelClass || this.props.labelClass,
          labelExplain: props.labelExplain || this.props.labelExplain,
          labelSpan: props.labelSpan || this.props.labelSpan,
          labelStyle: props.labelStyle || this.props.labelStyle,
@@ -305,7 +294,7 @@ class Form extends React.Component {
       var dependsOn = this.getInputDependsOn(element);
 
       return {
-            ...props,
+         ...props,
          currentValue: currentValue,
          dependsOn: dependsOn,
          originalValue: originalValue,
@@ -314,18 +303,29 @@ class Form extends React.Component {
          register: handleInputRegister.bind(null, path),
          unregister: handleInputUnregister.bind(null, path),
          requestUpdate: handleUpdateRequest.bind(null, path),
-         labelClass: props.labelClass || this.props.labelClass,
          labelExplain: props.labelExplain || this.props.labelExplain,
          labelSpan: props.labelSpan || this.props.labelSpan,
          labelStyle: props.labelStyle || this.props.labelStyle,
       };
    }
 
+   requestUnmanagedStateUpdate () {
+      // We're not ready
+      if (!this._isMounted) {
+         this.requestUnmanagedStateUpdate();
+         return;
+      }
+
+      this.updateUnmanagedTimeout = null;
+      this.setState({
+         lastUpdate: new Date().toISOString(),
+      });
+   }
+
    /*************************************************************
     * RENDERING
     *************************************************************/
    renderErrors () {
-
       var domErrors;
 
       var { errorMap } = this;
@@ -344,11 +344,7 @@ class Form extends React.Component {
          domErrors = (
             <div key="errors" className="validation-summary-errors text-danger" dataValmsgSummary="true">
                <ul>
-                  {errors.map(function (error, index) {
-                     return (
-                        <li key={index}>{error}</li>
-                     );
-                  }) }
+                  {errors.map((error, index) => <li key={index}>{error}</li>)}
                </ul>
             </div>
          );
@@ -359,8 +355,6 @@ class Form extends React.Component {
 
    render () {
       // State and props
-      var { InputWrapper } = this.props;
-
       var errors = this.renderErrors();
 
       return (
@@ -369,22 +363,24 @@ class Form extends React.Component {
             <div style={this.props.style}>
                {React.Children.map(this.props.children, (child, index) => {
                   // Don't wrap input groups and any children that don't have a field
-                  if (child.type && child.type.derivesFrom === input) {
-                     if (InputWrapper) {
-                        return <InputWrapper key={index} {...this.getFormRelayProps() }>{child}</InputWrapper>;
-                     }
+                  if (!child) {
+                     return child;
+                  }
+                  else if (child.type && child.type.derivesFrom === input) {
                      return React.cloneElement(child, { ...this.getInputProps(child) });
                   }
-                  else if (child.type && child.type.derivesFrom === formRelay) {
-                     return React.cloneElement(child, Object.assign({ key: index }, this.getFormRelayProps(child)));
-                  }
-                  else if (child.type === InputTable) {
-                     return React.cloneElement(child, Object.assign({ key: index }, this.getFormCollectionRelayProps(child)));
-                  }
+               else if (child.type && child.type.derivesFrom === formRelay) {
+                  return React.cloneElement(child, Object.assign({ key: index }, this.getFormRelayProps(child)));
+               }
+               else if (child.type === InputTable) {
+                  return React.cloneElement(child, Object.assign({ key: index }, this.getFormCollectionRelayProps(child)));
+               }
+               else {
                   return React.cloneElement(child, { key: index, ...child.props });
+               }
                }) }
-               {/* hidden input included to ensure that the enter key submit quirk 
-                   that occurs when there is only one <input> in the form is avoided */}
+               {/* hidden input included to ensure that the enter key submit quirk
+                    that occurs when there is only one <input> in the form is avoided */}
                <input key="hidden" type="text" style={styles.hidden} />
             </div>
          </form>

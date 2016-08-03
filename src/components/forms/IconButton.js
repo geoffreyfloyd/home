@@ -2,7 +2,7 @@ import React from 'react';
 import popupInfo from './popup-info';
 import hover from './hover';
 import icons from './icons';
-import { getReactPropTypes } from './type';
+import { getReactPropTypes } from 'libs/type';
 
 class IconButton extends React.Component {
     /*************************************************************

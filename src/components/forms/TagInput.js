@@ -1,20 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import input from './input';
-import { $control, $focus, $hide } from './style';
 
 class TagInput extends React.Component {
    /*************************************************************
     * DEFINITIONS
     *************************************************************/
    static defaultProps = {
-      type: 'text'
+      type: 'text',
    };
 
    /*************************************************************
     * COMPONENT LIFECYCLE
     *************************************************************/
-   constructor(props) {
+   constructor (props) {
       super(props);
       this.handleInputBlur = this.handleInputBlur.bind(this);
       this.handleInputChange = this.handleInputChange.bind(this);
@@ -25,44 +24,44 @@ class TagInput extends React.Component {
       };
    }
 
-   componentDidMount() {
+   componentDidMount () {
       if (this.props.focus) {
          ReactDOM.findDOMNode(this.input).focus();
       }
    }
 
-   componentDidUpdate() {
+   componentDidUpdate () {
       if (this.giveNextTagFocus) {
          ReactDOM.findDOMNode(this.input).focus();
          this.giveNextTagFocus = false;
       }
    }
 
-   handleInputChange(e) {
+   handleInputChange (e) {
       var { items } = this.props;
       var newValue = e.target.value;
       var suggestions = items.filter(a => {
          return a.name.indexOf(newValue) === 0 || a.id.indexOf(newValue) === 0;
       });
       this.setState({
-         input: e.target.value,
-         suggestions: suggestions
+         inputValue: e.target.value,
+         suggestions: suggestions,
       });
    }
 
-   handleInputBlur() {
-      var input = (this.state.input || '').slice();
-      if (input && this.state.suggestions.length) {
-         input += this.state.suggestions[0].name.slice(input.length);
+   handleInputBlur () {
+      var inputValue = (this.state.inputValue || '').slice();
+      if (inputValue && this.state.suggestions.length) {
+         inputValue += this.state.suggestions[0].name.slice(inputValue.length);
       }
       this.setState({
-         input: null,
+         inputValue: null,
          selectedTag: null,
       });
-      this.addTag(input);
+      this.addTag(inputValue);
    }
 
-   handleTagClick(tagId) {
+   handleTagClick (tagId) {
       var { currentValue, onChange } = this.props;
       var newValue = (currentValue || []).slice();
 
@@ -77,7 +76,7 @@ class TagInput extends React.Component {
       this.giveNextTagFocus = true;
    }
 
-   addTag(tag) {
+   addTag (tag) {
       if (!tag) {
          return;
       }
@@ -108,15 +107,15 @@ class TagInput extends React.Component {
       this.giveNextTagFocus = true;
    }
 
-   render() {
-      var { input, suggestions } = this.state;
+   render () {
+      var { inputValue, suggestions } = this.state;
       var { path, currentValue, errors, focus, hasChanged, onFocus, onBlur, placeholder, readOnly, style, type, visible } = this.props;
       var hasErrors = errors && errors.length;
 
       var tags = (currentValue || []);
       var suggestion;
       if (suggestions.length) {
-         suggestion = <span>{suggestions[0].name.slice((input || '').length) }</span>;
+         suggestion = <span>{suggestions[0].name.slice((inputValue || '').length) }</span>;
       }
       return (
          <div style={styles.container}>
@@ -127,7 +126,7 @@ class TagInput extends React.Component {
                   );
                }) }
             </ul>
-            <input style={styles.inputContainer} ref={r => this.input = r} value={this.state.input} onBlur={this.handleInputBlur} onChange={this.handleInputChange} />
+            <input style={styles.inputContainer} ref={r => { this.input = r; }} value={inputValue} onBlur={this.handleInputBlur} onChange={this.handleInputChange} />
             {suggestion}
          </div>
       );
@@ -154,7 +153,7 @@ const styles = {
    },
    input: {
       display: 'inline-block',
-      border: '0px'
+      border: '0px',
    },
    tagList: {
       display: 'inline',
@@ -171,7 +170,7 @@ const styles = {
          display: 'inline-block',
          padding: '2px 5px',
          margin: '0 0 2px 2px',
-         border: '1px solid $clrBsDefault2'
+         border: '1px solid $clrBsDefault2',
       };
       if (exists) {
          s.backgroundColor = '#1b9dec';

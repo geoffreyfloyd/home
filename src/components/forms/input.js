@@ -1,7 +1,10 @@
+// PACKAGES
 import React from 'react';
-import { asArray, extract } from './object-utils';
+// LIBS
+import { getThrottledHandler } from 'libs/event-handler';
+import { asArray, extract, shallowEqual } from 'libs/object-utils';
 
-export default function input(Component) {
+export default function input (Component) {
    const displayName = Component.displayName || Component.name;
    const PropTypes = Component.PropTypes;
    const defaultProps = Component.defaultProps;
@@ -15,65 +18,65 @@ export default function input(Component) {
       static defaultProps = defaultProps;
       static derivesFrom = input;
 
-      constructor(props) {
+      /*************************************************************
+       * COMPONENT LIFECYCLE
+       *************************************************************/
+      constructor (props) {
          super(props);
+         // Set initial state
          this.state = {
-            readOnly: props.readOnly === undefined || typeof props.readOnly === 'function' ? false : this.props.readOnly,
-            visible: props.visible === undefined || typeof props.visible === 'function' ? true : this.props.visible,
+            readOnly: props.readOnly === undefined || typeof props.readOnly === 'function' ? false : props.readOnly,
+            visible: props.visible === undefined || typeof props.visible === 'function' ? true : props.visible,
             items: props.items === undefined || typeof props.items === 'function' ? [] : props.items,
+            // Keep state close to input so it is more responsive
+            // and sync (throttled) with props from Forms API
+            currentValue: props.currentValue,
+            hasChanged: false,
          };
+         // Bind event handlers
          this.hasChanged = this.hasChanged.bind(this);
          this.handleChange = this.handleChange.bind(this);
          this.handleDependencyChange = this.handleDependencyChange.bind(this);
          this.handleFocus = this.handleFocus.bind(this);
          this.handleBlur = this.handleBlur.bind(this);
+         // Throttle notification to parent form
+         this.notifyForm = getThrottledHandler(this.notifyForm.bind(this), 250);
       }
 
-      /*************************************************************
-       * COMPONENT LIFECYCLE
-       *************************************************************/
-      componentDidMount() {
+      componentDidMount () {
          var changeArgs = this.getChangeArgs(this.props.currentValue);
          this.props.register(this.handleDependencyChange, this.props.dependsOn, changeArgs);
       }
 
-      componentWillUnmount() {
-         this.props.unregister();
+      shouldComponentUpdate (nextProps, nextState) {
+         return !shallowEqual(nextProps, this.props) || !shallowEqual(nextState, this.state);
       }
 
-      componentWillReceiveProps(nextProps) {
-         if (nextProps.items && this.props.items !== nextProps.items) {
-            this.setState({
-               items: nextProps.items
-            });
+      componentWillReceiveProps (nextProps) {
+         if (this.props.currentValue !== nextProps.currentValue && this.state.currentValue !== nextProps.currentValue) {
+            this.setState({ currentValue: nextProps.currentValue, hasChanged: nextProps.hasChanged });
          }
       }
 
-      handleBlur() {
+      componentWillUnmount () {
+         this.props.unregister();
+      }
+
+      /*************************************************************
+       * EVENT HANDLING
+       *************************************************************/
+      handleBlur () {
          this.setState({
-            focus: false
+            focus: false,
          });
       }
 
-      getChangeArgs(value) {
-         // Calc changed
-         var hasChanged = this.hasChanged(value);
-
-         // Calc errors
-         var errors = this.validate(value);
-
-         // Create change args object
-         var changeArgs = { errors: errors, hasChanged: hasChanged, value: value };
-         return changeArgs;
+      handleChange (value) {
+         this.notifyForm(value);
+         this.setState({ currentValue: value, hasChanged: this.hasChanged(value) });
       }
 
-      handleChange(value) {
-         var changeArgs = this.getChangeArgs(value);
-         this.props.requestUpdate(changeArgs);
-      }
-
-      handleDependencyChange(path, changeArgs, formState) {
-
+      handleDependencyChange (path, changeArgs, formState) {
          var bundleArgs;
 
          // Initial validation and non-value state
@@ -87,7 +90,7 @@ export default function input(Component) {
 
             bundleArgs = {
                path: null,
-               formState
+               formState,
             };
          }
          else {
@@ -95,7 +98,7 @@ export default function input(Component) {
             bundleArgs = {
                path,
                formState,
-                    ...changeArgs,
+               ...changeArgs,
             };
          }
 
@@ -114,7 +117,7 @@ export default function input(Component) {
 
                // Set the items state
                this.setState({
-                  items: newItems
+                  items: newItems,
                });
             });
          }
@@ -124,7 +127,7 @@ export default function input(Component) {
             this.props.readOnly(bundleArgs, (newReadonly) => {
                // Set the readOnly state
                this.setState({
-                  readOnly: newReadonly
+                  readOnly: newReadonly,
                });
             });
          }
@@ -139,24 +142,44 @@ export default function input(Component) {
                // Set the visible state on the input (no container handling visibility)
                else {
                   this.setState({
-                     visible: newVisible
+                     visible: newVisible,
                   });
                }
             });
          }
       }
 
-      handleFocus() {
+      handleFocus () {
          this.setState({
-            focus: true
+            focus: true,
          });
       }
 
-      hasChanged(value) {
+      /*************************************************************
+       * METHODS
+       *************************************************************/
+      getChangeArgs (value) {
+         // Calc changed
+         var hasChanged = this.hasChanged(value);
+
+         // Calc errors
+         var errors = this.validate(value);
+
+         // Create change args object
+         var changeArgs = { errors: errors, hasChanged: hasChanged, value: value };
+         return changeArgs;
+      }
+
+      hasChanged (value) {
          return this.props.originalValue !== value;
       }
 
-      validate(value) {
+      notifyForm (value) {
+         var changeArgs = this.getChangeArgs(value);
+         this.props.requestUpdate(changeArgs);
+      }
+
+      validate (value) {
          var error;
          var errors = [];
          asArray(this.props.validate).forEach((validation) => {
@@ -171,14 +194,14 @@ export default function input(Component) {
       /*************************************************************
        * RENDERING
        *************************************************************/
-      render() {
+      render () {
          var props = {
-                ...this.props,
-                ...this.state
-      };
-      return<Component {...props } onBlur = { this.handleBlur } onChange= { this.handleChange } onFocus= { this.handleFocus } />;
-   }
+            ...this.props,
+            ...this.state,
+         };
+         return <Component {...props } onBlur = { this.handleBlur } onChange= { this.handleChange } onFocus= { this.handleFocus } />;
+      }
 }
 
-return InputComponent;
+   return InputComponent;
 }

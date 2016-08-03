@@ -1,9 +1,15 @@
-import browser from 'Libs/browser';
-import CSS from 'Libs/css-supports';
+import browser from 'libs/browser';
+import CSS from 'libs/css-supports';
 
+console.log(browser);
 var abbr = browser.slice(0, 2).toLowerCase();
 
-// Inline styles
+export const $baseImgUrl = 'https://www.alsoenergy.com/pub/images/';
+
+// Company colors
+export const $alsoBlue = 'rgba(46, 109, 164, 0.75)';
+export const $alsoOrange = 'hsl(32, 90%, 53%)';
+
 export const $click = {
    cursor: 'pointer',
 };
@@ -63,7 +69,7 @@ export function $control (hasChanged, hasErrors) {
       backgroundColor: '#fff',
       backgroundImage: 'none',
       border: '1px solid',
-      borderColor,
+      borderColor: borderColor,
       borderRadius: '4px',
       WebkitBoxShadow: 'inset 0 1px 1px rgba(0,0,0,.075)',
       boxShadow: 'inset 0 1px 1px rgba(0,0,0,.075)',
@@ -77,7 +83,7 @@ export function $focus (hasChanged, hasErrors) {
    var borderColor = hasErrors ? '#c00' : (hasChanged ? '#cc0' : '#66afe9');
    var shadowColor = hasErrors ? '175,0,0' : (hasChanged ? '175,175,0' : '102,175,233');
    return {
-      borderColor,
+      borderColor: borderColor,
       outline: '0',
       WebkitBoxShadow: `inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(${shadowColor}, .6)`,
       boxShadow: `inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(${shadowColor}, .6)`,
@@ -109,11 +115,76 @@ export const $flex = (() => {
    }
 })();
 
-export function $getFlex (direction, wrap, alignContent, alignItems, justifyContent) {
-   var flexFlow = (direction || 'row') + ' ' + (wrap ? 'wrap' : 'nowrap');
+export const $flexWrap = {
+   display: $flex,
+   flexWrap: 'wrap',
+};
+
+export const $centerFlex = (() => {
+   var s = {
+      textAlign: 'center',
+      alignItems: 'center',
+      justifyContent: 'center',
+   };
+   switch (abbr) {
+      case ('fi'):
+         break;
+      case ('ie'):
+         s.msFlexAlign = 'center';
+         break;
+      default:
+         s.WebkitAlignItems = 'center';
+         break;
+   }
+   return s;
+})();
+
+export const $leftFlex = (() => {
+   var s = {
+      textAlign: 'left',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+   };
+   switch (abbr) {
+      case ('fi'):
+         break;
+      case ('ie'):
+         s.msFlexAlign = 'flex-start';
+         break;
+      default:
+         s.WebkitAlignItems = 'flex-start';
+         break;
+   }
+   return s;
+})();
+
+export const $rightFlex = (() => {
+   var s = {
+      textAlign: 'right',
+      alignItems: 'flex-end',
+      justifyContent: 'flex-end',
+   };
+   switch (abbr) {
+      case ('fi'):
+         break;
+      case ('ie'):
+         s.msFlexAlign = 'flex-end';
+         break;
+      default:
+         s.WebkitAlignItems = 'flex-end';
+         break;
+   }
+   return s;
+})();
+
+export function flex (direction, wrap, options) {
+   // Declare with defaults
+   var flexFlow = (direction || 'row') + ' ' + (wrap || 'wrap');
+   var { alignContent, alignItems, justifyContent } = (options || {});
+
    var s = {
       display: $flex,
-      flexFlow,
+      flexFlow: flexFlow,
    };
 
    switch (abbr) {
@@ -171,6 +242,68 @@ export function $getFlex (direction, wrap, alignContent, alignItems, justifyCont
             s.WebkitJustifyContent = justifyContent;
             break;
       }
+   }
+   return s;
+}
+
+export function flexItem (style) {
+   style.display = $flex; // Will not resize properly without this
+   if (style.flex) {
+      var args = style.flex.split(' ');
+      switch (abbr) {
+         case ('fi'):
+            style.MozFlex = style.flex;
+            style.MozFlexGrow = args[0];
+            style.MozFlexShrink = args[1] || '1';
+            style.MozFlexBasis = args[2] || '0%';
+            break;
+         case ('ie'):
+            style.msFlex = style.flex;
+            break;
+         default:
+            style.WebkitFlex = style.flex;
+            style.WebkitFlexGrow = args[0];
+            style.WebkitFlexShrink = args[1] || '1';
+            style.WebkitFlexBasis = args[2] || '0%';
+            break;
+      }
+   }
+   if (style.height) {
+      style.minHeight = style.height;
+   }
+   if (style.width) {
+      style.minWidth = style.width;
+   }
+   return style;
+}
+
+// LAYOUT CONSTANTS
+export const $relativeFlex = {
+   ...flexItem({ flex: '1' }),
+   position: 'relative',
+};
+export const $absoluteFill = {
+   position: 'absolute',
+   top: '0',
+   right: '0',
+   bottom: '0',
+   left: '0',
+   height: 'auto',
+   width: 'auto',
+};
+
+export function $transform (value) {
+   var s = {
+      transform: value,
+   };
+   switch (abbr) {
+      case ('ie'):
+         s.msTransform = value;
+         break;
+      case ('fi'):
+         break;
+      default:
+         s.WebkitTransform = value;
    }
    return s;
 }

@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import icons from './icons';
-import { getReactPropTypes } from './type';
+import { getReactPropTypes } from 'libs/type';
 
 class Icon extends React.Component {
     /*************************************************************

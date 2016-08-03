@@ -1,20 +1,14 @@
+// PACKAGES
 import React from 'react';
+// MIXINS
 import formRelay from './formRelay';
 
-class FormDiv extends React.Component {
-    constructor (props) {
-        super(props);
-    }
-    /*************************************************************
-     * RENDERING
-     *************************************************************/
-    render () {
-        return (
-            <div style={this.props.style}>
-                {this.props.children}
-            </div>
-        );
-    }
+function FormDiv (props) {
+   return (
+      <div style={props.style}>
+         {props.children}
+      </div>
+   );
 }
 
 export default formRelay(FormDiv);
