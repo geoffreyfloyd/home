@@ -1,17 +1,23 @@
-// import '../../global.scss';
+// PACKAGES
 import React from 'react';
 import ReactDOM from 'react-dom';
+// LIBS
 import http from 'libs/http';
 import logEntryStore from 'stores/logentry-store';
 import { $background, $content, $form, $formSection, $label, $buttons, $button } from 'components/styles';
+// COMPONENTS
 import Form from 'components/forms/Form';
 import FormSection from 'components/forms/FormSection';
+import InputGroup from 'components/forms/InputGroup';
 import TagInput from 'components/forms/TagInput';
 import TextInput from 'components/forms/TextInput';
 import MultiLineInput from 'components/forms/MultiLineInput';
 import Message from 'components/Message';
 
 export default class LogEntry extends React.Component {
+   /*************************************************************
+    * COMPONENT LIFECYCLE
+    *************************************************************/
    constructor (props) {
       super(props);
       this.handleSaveChanges = this.handleSaveChanges.bind(this);
@@ -72,10 +78,18 @@ export default class LogEntry extends React.Component {
             <div style={$content}>
                <Form ref="form" model={model} style={$form} labelSpan={2} labelStyle={$label}>
                   <FormSection title="General" style={$formSection}>
-                     <TextInput label="Date" path="date" type="date" />
-                     <MultiLineInput label="Details" path="details" autoGrow focus />
-                     <TextInput label="Duration" path="duration" type="text" />
-                     <TagInput label="Tags" path="tags" items={tags} />
+                     <InputGroup label="Date">
+                        <TextInput path="date" type="date" />
+                     </InputGroup>
+                     <InputGroup label="Details">
+                        <MultiLineInput path="details" autoGrow focus />
+                     </InputGroup>
+                     <InputGroup label="Duration">
+                        <TextInput path="duration" type="text" />
+                     </InputGroup>
+                     <InputGroup label="Tags">
+                        <TagInput path="tags" items={tags} />
+                     </InputGroup>
                   </FormSection>
                </Form>
                <div style={$buttons}>
@@ -95,6 +109,9 @@ export default class LogEntry extends React.Component {
 //    });
 // }
 
+/*************************************************************
+ * BOOTSTRAP
+ *************************************************************/
 global.APP = LogEntry;
 global.React = React;
 global.ReactDOM = ReactDOM;

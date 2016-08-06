@@ -53,8 +53,19 @@ export default function input (Component) {
       }
 
       componentWillReceiveProps (nextProps) {
+         var newState = {};
+         var update = false;
          if (this.props.currentValue !== nextProps.currentValue && this.state.currentValue !== nextProps.currentValue) {
-            this.setState({ currentValue: nextProps.currentValue, hasChanged: nextProps.hasChanged });
+            newState.currentValue = nextProps.currentValue;
+            newState.hasChanged = nextProps.hasChanged;
+            update = true;
+         }
+         if (this.props.items !== nextProps.items) {
+            newState.items = nextProps.items;
+            update = true;
+         }
+         if (update) {
+            this.setState(newState);
          }
       }
 

@@ -238,7 +238,9 @@ var headerStyle = {
    width: '100%',
 };
 
-
+/*************************************************************
+ * BOOTSTRAP
+ *************************************************************/
 global.APP = Calendar;
 global.React = React;
 global.ReactDOM = ReactDOM;

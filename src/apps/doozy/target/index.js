@@ -6,12 +6,16 @@ import targetStore from 'stores/target-store';
 import { $background, $content, $form, $formSection, $label, $buttons, $button } from 'components/styles';
 import Form from 'components/forms/Form';
 import FormSection from 'components/forms/FormSection';
+import InputGroup from 'components/forms/InputGroup';
 import TagInput from 'components/forms/TagInput';
 import TextInput from 'components/forms/TextInput';
 import SelectionInput from 'components/forms/SelectionInput';
 import Message from 'components/Message';
 
 export default class LogEntry extends React.Component {
+   /*************************************************************
+    * COMPONENT LIFECYCLE
+    *************************************************************/
    constructor (props) {
       super(props);
       this.handleSaveChanges = this.handleSaveChanges.bind(this);
@@ -77,17 +81,39 @@ export default class LogEntry extends React.Component {
             <div style={$content}>
                <Form ref="form" model={model} style={$form} labelSpan={2} labelStyle={$label}>
                   <FormSection title="General" style={$formSection}>
-                     <TextInput label="Name" path="name" />
-                     <TextInput label="Entity Type" path="entityType" />
-                     <TextInput label="Entity ID" path="entityId" />
-                     <TagInput label="Tags" path="tags" items={tags} />
-                     <SelectionInput label="Measure" path="measure" type="number" items={targetStore.getMeasures()} displayPath="name" valuePath="value" />
-                     <SelectionInput label="Period" path="period" type="number" items={targetStore.getPeriods()} displayPath="name" valuePath="value" />
-                     <TextInput label="Periods" path="multiplier" type="number" />
-                     <TextInput label="Number" path="number" type="number" />
-                     <TextInput label="Starts" path="starts" />
-                     <TextInput label="Retire" path="retire" />
-                     <TextInput label="Created" path="created" readonly />
+                     <InputGroup label="Name">
+                        <TextInput path="name" />
+                     </InputGroup>
+                     <InputGroup label="Entity Type">
+                        <TextInput path="entityType" />
+                     </InputGroup>
+                     <InputGroup label="Entity ID">
+                        <TextInput path="entityId" />
+                     </InputGroup>
+                     <InputGroup label="Tags">
+                        <TagInput path="tags" items={tags} />
+                     </InputGroup>
+                     <InputGroup label="Measure">
+                        <SelectionInput path="measure" type="number" items={targetStore.getMeasures()} displayPath="name" valuePath="value" />
+                     </InputGroup>
+                     <InputGroup label="Period">
+                        <SelectionInput path="period" type="number" items={targetStore.getPeriods()} displayPath="name" valuePath="value" />
+                     </InputGroup>
+                     <InputGroup label="Periods">
+                        <TextInput path="multiplier" type="number" />
+                     </InputGroup>
+                     <InputGroup label="Number">
+                        <TextInput path="number" type="number" />
+                     </InputGroup>
+                     <InputGroup label="Starts">
+                        <TextInput path="starts" />
+                     </InputGroup>
+                     <InputGroup label="Retire">
+                        <TextInput path="retire" />
+                     </InputGroup>
+                     <InputGroup label="Created">
+                        <TextInput path="created" readonly />
+                     </InputGroup>
                   </FormSection>
                </Form>
                <div style={$buttons}>
@@ -99,6 +125,9 @@ export default class LogEntry extends React.Component {
    }
 }
 
+/*************************************************************
+ * BOOTSTRAP
+ *************************************************************/
 global.APP = LogEntry;
 global.React = React;
 global.ReactDOM = ReactDOM;

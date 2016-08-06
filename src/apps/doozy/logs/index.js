@@ -5,6 +5,9 @@ import { $background, $content } from 'components/styles';
 import LogEntryList from 'components/LogEntryList';
 
 export default class LogEntries extends React.Component {
+   /*************************************************************
+    * COMPONENT LIFECYCLE
+    *************************************************************/
    constructor (props) {
       super(props);
 
@@ -62,6 +65,9 @@ export default class LogEntries extends React.Component {
    }
 }
 
+/*************************************************************
+ * BOOTSTRAP
+ *************************************************************/
 global.APP = LogEntries;
 global.React = React;
 global.ReactDOM = ReactDOM;

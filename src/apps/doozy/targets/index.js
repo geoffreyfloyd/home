@@ -1,15 +1,21 @@
-// import '../../global.scss';
+// PACKAGES
+import babble from 'babble';
+import _ from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import those from 'those';
+// LIBS
 import http from 'libs/http';
+// STORES
 import targetStore from 'stores/target-store';
+// COMPONENTS
 import { $background, $click, $content } from 'components/styles';
 import Indicator from 'components/Indicator';
-import babble from 'babble';
-import those from 'those';
-import _ from 'lodash';
 
 export default class Targets extends React.Component {
+   /*************************************************************
+    * COMPONENT LIFECYCLE
+    *************************************************************/
    constructor (props) {
       super(props);
 
@@ -144,7 +150,6 @@ export default class Targets extends React.Component {
    }
 
    renderTargetRow (item, isLast) {
-      var totalPeriods = item.stats.periods.length + (item.progress.value === 'MET' ? 0 : 1); 
       var periodDescription = targetStore.getPeriodDescription(item.target.period, item.target.multiplier);
       return (
          <div key={item.target.id} style={styles.targetStyle(isLast)}>
@@ -221,8 +226,11 @@ var styles = {
       ...$click,
       padding: '1rem',
    },
-}
+};
 
+/*************************************************************
+ * BOOTSTRAP
+ *************************************************************/
 global.APP = Targets;
 global.React = React;
 global.ReactDOM = ReactDOM;
