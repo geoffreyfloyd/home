@@ -1,11 +1,15 @@
+// PACKAGES
 import React from 'react';
 import ReactDOM from 'react-dom';
-import http from 'libs/http';
-import Day from './Day';
+// LIBS
 import { parseISO8601String } from 'libs/date-util';
-import { getJsonFromUrl } from 'libs/url-util';
-import targetStore from 'stores/target-store';
+import http from 'libs/http';
 import { flex } from 'libs/style';
+import { getJsonFromUrl } from 'libs/url-util';
+// STORES
+import targetStore from 'stores/target-store';
+// COMPONENTS
+import Day from './Day';
 
 class Calendar extends React.Component {
    /*************************************************************
