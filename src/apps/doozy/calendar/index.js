@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import http from 'libs/http';
 import Day from './Day';
-import { parseISO8601String, today } from 'libs/date-util';
+import { parseISO8601String } from 'libs/date-util';
 import { getJsonFromUrl } from 'libs/url-util';
 import targetStore from 'stores/target-store';
 import { flex } from 'libs/style';
@@ -113,7 +113,7 @@ class Calendar extends React.Component {
          days.push({
             date: new Date(date.getTime()),
             day: date.getDay(),
-            dayName: Calendar.days[date.getDay()]
+            dayName: Calendar.days[date.getDay()],
          });
          date.setDate(date.getDate() + 1);
       }
@@ -143,14 +143,13 @@ class Calendar extends React.Component {
 
    styleDaysOfMonth (days) {
       var { target, logentries } = this.state;
-      var { targetId, weekStarts } = this.props;
+      var { weekStarts } = this.props;
       var beginningOfWeek = this.getBeginningOfWeek(parseISO8601String(this.state.date), weekStarts);
       var endOfWeek = new Date(beginningOfWeek);
       endOfWeek.setDate(endOfWeek.getDate() + 6);
 
       var targets = [target];
       // just process the first one
-      var today = new Date();
       var date = parseISO8601String(this.state.date);
 
       var targetsStats = targetStore.targetsStats(targets, logentries)[0];
@@ -172,7 +171,7 @@ class Calendar extends React.Component {
    *************************************************************/
    render () {
       // props
-      var { targetId, weekStarts } = this.props;
+      var { weekStarts } = this.props;
       var { date, target } = this.state;
 
       if (!target) {
@@ -199,13 +198,11 @@ class Calendar extends React.Component {
                   <div style={styles.title}>{`${Calendar.months[dateObj.getMonth()]} ${dateObj.getFullYear()}${appendTargetName}`}</div>
                   <div style={styles.navButton} onClick={this.handleRightClick}><i className="clickable fa fa-chevron-right"></i></div>
                </div>
-               {weeks.map(week => {
-                  return (
-                     <div style={{ ...flex('row', 'nowrap'), width: '100%', flex: '1' }}>
+               {weeks.map(week => (
+                  <div style={{ ...flex('row', 'nowrap'), width: '100%', flex: '1' }}>
                         {week.map((day, index) => <Day key={index} data={day} />)}
-                     </div>
-                  );
-               })}
+                  </div>
+               ))}
             </div>
       );
    }
@@ -225,8 +222,8 @@ var styles = {
    title: {
       flexGrow: '1',
       textAlign: 'center',
-   }
-}
+   },
+};
 
 var headerStyle = {
    ...flex('row', 'nowrap'),
