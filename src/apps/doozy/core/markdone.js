@@ -7,8 +7,8 @@ const indent = '    ';
 const newline = /\n/;
 
 const grammar = {
-    true: /true/i,
-    false: /false/i,
+   true: /true/i,
+   false: /false/i,
 
 };
 
@@ -29,18 +29,18 @@ const keywords = {
    do: 'do',
    while: 'while',
    for: 'for',
-}
+};
 
 const equals = {
-    
-}
+
+};
 
 const compare = {
    '>': '>',
    '>=': '>=',
    '<': '<',
-   '<=' : '<=',
-}
+   '<=': '<=',
+};
 
 class Token {
    constructor (tag) {
@@ -228,7 +228,7 @@ export default class Lexer {
 
 function preparse (src) {
     // Normalize the source's whitespace
-    return src
+   return src
       .replace(/\r\n|\r/g, '\n')
       .replace(/\t/g, indent)
       .replace(/\u00a0/g, ' ')
