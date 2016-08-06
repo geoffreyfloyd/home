@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import reactUtil from 'libs/react-util';
-import { $getFlex } from 'libs/style';
+import { flex } from 'libs/style';
 import core from './core';
 
 // many thanks to https://github.com/jsdf/react-layout for base of layout logic
@@ -11,17 +11,17 @@ var LayoutMixin = {
     * DEFINITIONS
     *************************************************************/
    propTypes: {
-      layoutContext: React.PropTypes.object
+      layoutContext: React.PropTypes.object,
    },
    statics: {
-      isReactDomLayout: true
+      isReactDomLayout: true,
    },
 
    getDefaultProps () {
       return {
          component: React.DOM.div,
          layoutHeight: null,
-         layoutWidth: null
+         layoutWidth: null,
       };
    },
 
@@ -49,7 +49,7 @@ var LayoutMixin = {
 
       if (rerender) {
          this.setState({
-            ts: (new Date()).toISOString()
+            ts: (new Date()).toISOString(),
          });
       }
    },
@@ -77,7 +77,7 @@ var LayoutMixin = {
                width: core.isNumber(this.props.layoutWidth) ? this.props.layoutWidth : undefined,
                height: core.isNumber(this.props.layoutHeight) ? this.props.layoutHeight : undefined,
                fontSize: core.isNumber(this.props.layoutFontSize) ? this.props.layoutFontSize : undefined,
-               visible: this.props.layoutVisible || true
+               visible: this.props.layoutVisible || true,
             };
          }
       }
@@ -165,7 +165,7 @@ var LayoutMixin = {
 
       if (local.visible === false) {
          return {
-            display: 'none'
+            display: 'none',
          };
       }
 
@@ -182,7 +182,7 @@ var LayoutMixin = {
 
       // If flex is enabled, get the style props for flex
       if (options.flex) {
-         containerStyle = $getFlex(options.flexDirection, options.flexWrap, options.flexAlignContent, options.flexAlignItem, options.flexJustifyContent);
+         containerStyle = flex(options.flexDirection, options.flexWrap, { alignContent: options.flexAlignContent, alignItem: options.flexAlignItem, justifyContent: options.flexJustifyContent });
       }
 
       // Set the overflow behavior
@@ -207,13 +207,13 @@ var LayoutMixin = {
       var newWrap = function (available) {
          return {
             available: available,
-            elements: []
+            elements: [],
          };
       };
 
       layout = core.DIMENSIONS.reduce(function (lay, dim) {
          lay[dim] = {
-            wraps: [newWrap(parentLayout[dim])]
+            wraps: [newWrap(parentLayout[dim])],
          };
          return lay;
       }, {});
@@ -293,7 +293,7 @@ var LayoutMixin = {
                arg: arg,
                calculate: calculate,
                fontSize: fontSize,
-               measure: min
+               measure: min,
             });
          });
       });
@@ -368,20 +368,19 @@ var LayoutMixin = {
          if (measure.layout.styles[childIndex] !== undefined &&
             measure.layout.styles[childIndex].visible !== undefined &&
             measure.layout.styles[childIndex].visible === false) {
-
             childIndex++;
             if (core.isLayout(child)) {
                return React.cloneElement(child, {
                   key: child.props.key || childIndex,
                   layoutContext: Object.assign(child.props.layoutContext || {}, {
-                     visible: false
-                  })
+                     visible: false,
+                  }),
                });
             }
             else {
                return React.cloneElement(child, {
                   key: child.props.key || childIndex,
-                  style: Object.assign(((child.props ? child.props.style : undefined) || {}), { display: 'none' })
+                  style: Object.assign(((child.props ? child.props.style : undefined) || {}), { display: 'none' }),
                });
             }
          }
@@ -423,11 +422,10 @@ var LayoutMixin = {
             childIndex++;
             return React.cloneElement(child, {
                key: child.props.key || childIndex,
-               layoutContext: layout
+               layoutContext: layout,
             });
          }
          else {
-
             // if it didn't have a layout at all
             // then only pass the context so that
             // it can be passed on, however, do
@@ -444,7 +442,7 @@ var LayoutMixin = {
 
                return React.cloneElement(child, {
                   key: child.props.key || childIndex,
-                  layoutContext: layout
+                  layoutContext: layout,
                });
             }
 
@@ -478,7 +476,7 @@ var LayoutMixin = {
             return React.cloneElement(child, {
                key: child.props.key || childIndex,
                layoutContext: layout,
-               style: style
+               style: style,
             });
          }
       };
@@ -528,7 +526,7 @@ var LayoutMixin = {
 /*************************************************************
  * INTERNAL METHODS
  *************************************************************/
-function getWrap(index, wraps) {
+function getWrap (index, wraps) {
    var wrap;
    var wrapsIndex = 0;
    while (!wrap && wrapsIndex < wraps.length) {
@@ -549,7 +547,7 @@ function getWrap(index, wraps) {
    return wrap;
 }
 
-function getChildLayout(component, context) {
+function getChildLayout (component, context) {
    var defaultSetting, definition, prop;
 
    // React Element is just a string
@@ -563,7 +561,7 @@ function getChildLayout(component, context) {
          height: component.props.layoutHeight,
          width: component.props.layoutWidth,
          fontSize: component.props.layoutFontSize,
-         visible: component.props.layoutVisible
+         visible: component.props.layoutVisible,
       };
    }
    else {
@@ -572,7 +570,7 @@ function getChildLayout(component, context) {
          height: component.props.layoutHeight,
          width: component.props.layoutWidth,
          fontSize: component.props.layoutFontSize,
-         visible: component.props.layoutVisible
+         visible: component.props.layoutVisible,
       };
 
       // strip off unused props
@@ -618,7 +616,7 @@ function getChildLayout(component, context) {
    return definition;
 }
 
-function getChildLayoutFromStyle(component) {
+function getChildLayoutFromStyle (component) {
    if (component.props && component.props.style) {
       var style = reactUtil.reduceStyle(component.props.style);
       var definition = {};

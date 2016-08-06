@@ -5,7 +5,7 @@ import Day from './Day';
 import { parseISO8601String, today } from 'libs/date-util';
 import { getJsonFromUrl } from 'libs/url-util';
 import targetStore from 'stores/target-store';
-import { $getFlex } from 'libs/style';
+import { flex } from 'libs/style';
 
 class Calendar extends React.Component {
    /*************************************************************
@@ -193,7 +193,7 @@ class Calendar extends React.Component {
 
       // html
       return (
-            <div style={{ ...$getFlex('column', false), minHeight: '100vh', minWidth: '50rem' }}>
+            <div style={{ ...flex('column', 'nowrap'), minHeight: '100vh', minWidth: '50rem' }}>
                <div style={headerStyle}>
                   <div style={styles.navButton} onClick={this.handleLeftClick}><i className="clickable fa fa-chevron-left"></i></div>
                   <div style={styles.title}>{`${Calendar.months[dateObj.getMonth()]} ${dateObj.getFullYear()}${appendTargetName}`}</div>
@@ -201,7 +201,7 @@ class Calendar extends React.Component {
                </div>
                {weeks.map(week => {
                   return (
-                     <div style={{ ...$getFlex('row', false), width: '100%', flex: '1' }}>
+                     <div style={{ ...flex('row', 'nowrap'), width: '100%', flex: '1' }}>
                         {week.map((day, index) => <Day key={index} data={day} />)}
                      </div>
                   );
@@ -229,7 +229,7 @@ var styles = {
 }
 
 var headerStyle = {
-   ...$getFlex(),
+   ...flex('row', 'nowrap'),
    color: '#e2ff63',
    backgroundColor: '#444',
    padding: '0.5rem',
