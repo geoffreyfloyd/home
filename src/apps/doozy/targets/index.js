@@ -4,9 +4,9 @@ import _ from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import those from 'those';
-// LIBS
-import http from 'libs/http';
 // STORES
+import logentryStore from 'stores/logentry-store';
+import tagStore from 'stores/tag-store';
 import targetStore from 'stores/target-store';
 // COMPONENTS
 import { $background, $click, $content } from 'components/styles';
@@ -21,6 +21,9 @@ export default class Targets extends React.Component {
 
       this.handleTargetClick = this.handleTargetClick.bind(this);
       this.handleEditClick = this.handleEditClick.bind(this);
+      this.handleLogentryStoreUpdate = this.handleLogentryStoreUpdate.bind(this);
+      this.handleTagStoreUpdate = this.handleTagStoreUpdate.bind(this);
+      this.handleTargetStoreUpdate = this.handleTargetStoreUpdate.bind(this);
 
       this.state = {
          logentries: [],
@@ -30,46 +33,9 @@ export default class Targets extends React.Component {
    }
 
    componentDidMount () {
-      // Get Data
-      http(`/graphql?query={
-         targets{
-            id,
-            created,
-            starts,
-            retire,
-            name,
-            entityType,
-            entityId,
-            measure,
-            period,
-            multiplier,
-            number,
-            retireWhenMet
-         },
-         logentries{
-            id,
-            kind,
-            date,
-            details,
-            duration,
-            entry,
-            actions{id,name},
-            tags{id,name,kind,descendantOf}
-         },
-         tags{
-            id,
-            name,
-            kind,
-            descendantOf
-         }
-      }`.replace(/ /g, '')).requestJson().then(json => {
-         // Set data
-         this.setState({
-            logentries: json.data.logentries,
-            targets: json.data.targets,
-            tags: json.data.tags,
-         });
-      });
+      logentryStore.subscribe(this.handleLogentryStoreUpdate, { key: JSON.stringify({ key: '*' }) });
+      tagStore.subscribe(this.handleTagStoreUpdate, { key: JSON.stringify({ key: '*' }) });
+      targetStore.subscribe(this.handleTargetStoreUpdate, { key: JSON.stringify({ key: '*' }) });
    }
 
    handleEditClick (target) {
@@ -79,6 +45,24 @@ export default class Targets extends React.Component {
 
    handleTargetClick (target) {
       window.location.href = `/calendar?targetId=${target.id}`;
+   }
+
+   handleLogentryStoreUpdate (value) {
+      this.setState({
+         logentries: value.results || this.state.logentries,
+      });
+   }
+
+   handleTagStoreUpdate (value) {
+      this.setState({
+         tags: value.results || this.state.tags,
+      });
+   }
+
+   handleTargetStoreUpdate (value) {
+      this.setState({
+         targets: value.results || this.state.targets,
+      });
    }
 
    /*************************************************************

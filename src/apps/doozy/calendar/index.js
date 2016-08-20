@@ -3,10 +3,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 // LIBS
 import { parseISO8601String } from 'libs/date-util';
-import http from 'libs/http';
 import { flex } from 'libs/style';
 import { getJsonFromUrl } from 'libs/url-util';
 // STORES
+import logentryStore from 'stores/logentry-store';
+import tagStore from 'stores/tag-store';
 import targetStore from 'stores/target-store';
 // COMPONENTS
 import Day from './Day';
@@ -21,7 +22,9 @@ class Calendar extends React.Component {
       // Bind event handlers
       this.handleLeftClick = this.handleLeftClick.bind(this);
       this.handleRightClick = this.handleRightClick.bind(this);
-
+      this.handleLogentryStoreUpdate = this.handleLogentryStoreUpdate.bind(this);
+      this.handleTagStoreUpdate = this.handleTagStoreUpdate.bind(this);
+      this.handleTargetStoreUpdate = this.handleTargetStoreUpdate.bind(this);
       // Set initial state
       this.state = {
          date: (new Date()).toISOString(),
@@ -29,46 +32,9 @@ class Calendar extends React.Component {
    }
 
    componentDidMount () {
-      // Get Data
-      http(`/graphql?query={
-         targets(id:"${this.props.targetId}"){
-            id,
-            created,
-            starts,
-            retire,
-            name,
-            entityType,
-            entityId,
-            measure,
-            period,
-            multiplier,
-            number,
-            retireWhenMet
-         },
-         logentries{
-            id,
-            kind,
-            date,
-            details,
-            duration,
-            entry,
-            actions{id,name},
-            tags{id,name,kind,descendantOf}
-         },
-         tags{
-            id,
-            name,
-            kind,
-            descendantOf
-         }
-      }`.replace(/ /g, '')).requestJson().then(json => {
-         // Set data
-         this.setState({
-            logentries: json.data.logentries,
-            target: json.data.targets[0],
-            tags: json.data.tags,
-         });
-      });
+      logentryStore.subscribe(this.handleLogentryStoreUpdate, { key: JSON.stringify({ key: '*' }) });
+      tagStore.subscribe(this.handleTagStoreUpdate, { key: JSON.stringify({ key: '*' }) });
+      targetStore.subscribe(this.handleTargetStoreUpdate, { key: this.props.targetId });
    }
 
    /*************************************************************
@@ -89,6 +55,24 @@ class Calendar extends React.Component {
       dateObj.setMonth(dateObj.getMonth() + 1);
       this.setState({
          date: dateObj.toISOString(),
+      });
+   }
+
+   handleLogentryStoreUpdate (value) {
+      this.setState({
+         logentries: value.results || this.state.logentries,
+      });
+   }
+
+   handleTagStoreUpdate (value) {
+      this.setState({
+         tags: value.results || this.state.tags,
+      });
+   }
+
+   handleTargetStoreUpdate (value) {
+      this.setState({
+         target: value,
       });
    }
 
@@ -176,9 +160,9 @@ class Calendar extends React.Component {
    render () {
       // props
       var { weekStarts } = this.props;
-      var { date, target } = this.state;
+      var { date, target, logentries, tags } = this.state;
 
-      if (!target) {
+      if (!target || !logentries || !tags) {
          return <div>Loading...</div>;
       }
 

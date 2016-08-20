@@ -273,12 +273,12 @@ export default class GnodeStore extends ContextStore {
                 }
                 else {
                     // Value contains an Entity Set
-                    if (value && this.subEntities && getType(value[this.subEntities]) === 'array') {
+                    if (value && getType(value.results) === 'array') {
                         // call for each individual entity
                         // Flatten Sub Entity Results in Cache
-                        value[this.subEntities].forEach(each => {
+                        value.results.forEach(each => {
                             // Recursive call to add/update this entity
-                            cache.entities[each.key] = { ...each, lastChecked };
+                            cache.entities[each.id] = { ...each, lastChecked };
                             
                             // Get the latest last changed value
                             // from the entities in the array

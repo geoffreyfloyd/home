@@ -1,9 +1,11 @@
+// PACKAGES
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Promise from 'bluebird';
-import http from 'libs/http';
+// STORES
 import bitStore from 'stores/bit-store';
 import tagStore from 'stores/tag-store';
+// COMPONENTS
 import { $background, $content, $formSection, $inputRow, $inlineLabel, $buttons, $button } from 'components/styles';
 import Message from 'components/Message';
 import Form from 'components/forms/Form';
@@ -19,7 +21,7 @@ export default class Bit extends React.Component {
       super(props);
       // Bind event handlers
       this.handleSaveChanges = this.handleSaveChanges.bind(this);
-      this.handleStoreUpdate = this.handleStoreUpdate.bind(this);
+      this.handleBitStoreUpdate = this.handleBitStoreUpdate.bind(this);
       this.handleTagStoreUpdate = this.handleTagStoreUpdate.bind(this);
       // Set initial state
       this.state = {
@@ -29,33 +31,7 @@ export default class Bit extends React.Component {
    }
 
    componentDidMount () {
-      // Get Data
-      // http(`/graphql?query={
-      //    bits(id:"${this.props.id}"){
-      //       id,
-      //       caption,
-      //       images{src},
-      //       links{src,description},
-      //       notes{note},
-      //       texts{text},
-      //       videos{src,start,end},
-      //       tags{id,name,kind,descendantOf}
-      //    },
-      //    tags{
-      //       id,
-      //       name,
-      //       kind,
-      //       descendantOf
-      //    }
-      // }`.replace(/ /g, '')).requestJson().then(json =>
-      //    // Set data
-      //    this.setState({
-      //       model: json.data.bits[0] || this.state.model,
-      //       tags: json.data.tags,
-      //    })
-      // );
-
-      bitStore.subscribe(this.handleStoreUpdate, { key: this.props.id });
+      bitStore.subscribe(this.handleBitStoreUpdate, { key: this.props.id });
       tagStore.subscribe(this.handleTagStoreUpdate, { key: JSON.stringify({ key: '*' }) });
    }
 
@@ -73,7 +49,7 @@ export default class Bit extends React.Component {
       });
    }
 
-   handleStoreUpdate (value) {
+   handleBitStoreUpdate (value) {
       this.setState({
          model: value
       });
@@ -81,7 +57,7 @@ export default class Bit extends React.Component {
 
    handleTagStoreUpdate (value) {
       this.setState({
-         tags: value
+         tags: value.results
       });
    }
 

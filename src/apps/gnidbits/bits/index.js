@@ -1,6 +1,10 @@
+// PACKAGES
 import React from 'react';
 import ReactDOM from 'react-dom';
-import http from 'libs/http';
+// STORES
+import bitStore from 'stores/bit-store';
+import tagStore from 'stores/tag-store';
+// COMPONENTS
 import Form from 'components/forms/Form';
 import TagInput from 'components/forms/TagInput';
 import SelectionInput from 'components/forms/SelectionInput';
@@ -42,34 +46,26 @@ class Presenter extends React.Component {
       super(props);
       this.state = getDefaultFilter();
       this.model = getDefaultFilter();
+      // Bind event handlers
       this.handleFormChange = this.handleFormChange.bind(this);
+      this.handleBitStoreUpdate = this.handleBitStoreUpdate.bind(this);
+      this.handleTagStoreUpdate = this.handleTagStoreUpdate.bind(this);
    }
 
    componentDidMount () {
-      // Get Data
-      var response = http(`/graphql?query={
-         bits{
-            id,
-            caption,
-            images{src},
-            links{src,description},
-            notes{note},
-            texts{text},
-            videos{src,start,end},
-            tags{id,name,kind,descendantOf}
-         },
-         tags{
-            id,
-            name,
-            kind,
-            descendantOf
-         }
-      }`).requestJson().then(json => {
-         // Set data
-         return this.setState({
-            content: json.data.bits || this.state.content,
-            tags: json.data.tags
-         });      
+      bitStore.subscribe(this.handleBitStoreUpdate, { key: JSON.stringify({ key: '*' }) });
+      tagStore.subscribe(this.handleTagStoreUpdate, { key: JSON.stringify({ key: '*' }) });
+   }
+
+   handleBitStoreUpdate (value) {
+      this.setState({
+         content: value.results || this.state.content
+      });
+   }
+
+   handleTagStoreUpdate (value) {
+      this.setState({
+         tags: value.results
       });
    }
 

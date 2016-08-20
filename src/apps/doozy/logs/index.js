@@ -1,6 +1,10 @@
+// PACKAGES
 import React from 'react';
 import ReactDOM from 'react-dom';
-import http from 'libs/http';
+// STORES
+import logentryStore from 'stores/logentry-store';
+import tagStore from 'stores/tag-store';
+// COMPONENTS
 import { $background, $content } from 'components/styles';
 import LogEntryList from 'components/LogEntryList';
 
@@ -10,7 +14,9 @@ export default class LogEntries extends React.Component {
     *************************************************************/
    constructor (props) {
       super(props);
-
+      // Bind event handlers
+      this.handleLogentryStoreUpdate = this.handleLogentryStoreUpdate.bind(this);
+      this.handleTagStoreUpdate = this.handleTagStoreUpdate.bind(this);
       // Set initial state
       this.state = {
          list: [],
@@ -19,29 +25,22 @@ export default class LogEntries extends React.Component {
    }
 
    componentDidMount () {
-      // Get Data
-      http(`/graphql?query={
-         logentries{
-            id,
-            kind,
-            date,
-            details,
-            duration,
-            actions{id,name},
-            tags{id,name,kind,descendantOf}
-         },
-         tags{
-            id,
-            name,
-            kind,
-            descendantOf
-         }
-      }`.replace(/ /g, '')).requestJson().then(json => {
-         // Set data
-         this.setState({
-            list: json.data.logentries,
-            tags: json.data.tags,
-         });
+      logentryStore.subscribe(this.handleLogentryStoreUpdate, { key: JSON.stringify({ key: '*' }) });
+      tagStore.subscribe(this.handleTagStoreUpdate, { key: JSON.stringify({ key: '*' }) });
+   }
+
+   /*************************************************************
+    * EVENT HANDLING
+    *************************************************************/
+   handleLogentryStoreUpdate (value) {
+      this.setState({
+         list: value.results || this.state.list,
+      });
+   }
+
+   handleTagStoreUpdate (value) {
+      this.setState({
+         tags: value.results || this.state.tags,
       });
    }
 

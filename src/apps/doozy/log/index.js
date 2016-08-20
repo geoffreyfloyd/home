@@ -1,11 +1,11 @@
 // PACKAGES
 import React from 'react';
 import ReactDOM from 'react-dom';
-// LIBS
-import http from 'libs/http';
-import logEntryStore from 'stores/logentry-store';
-import { $background, $content, $form, $formSection, $label, $buttons, $button } from 'components/styles';
+// STORES
+import logentryStore from 'stores/logentry-store';
+import tagStore from 'stores/tag-store';
 // COMPONENTS
+import { $background, $content, $form, $formSection, $label, $buttons, $button } from 'components/styles';
 import Form from 'components/forms/Form';
 import FormSection from 'components/forms/FormSection';
 import InputGroup from 'components/forms/InputGroup';
@@ -20,51 +20,45 @@ export default class LogEntry extends React.Component {
     *************************************************************/
    constructor (props) {
       super(props);
+      // Bind event handlers
+      this.handleLogentryStoreUpdate = this.handleLogentryStoreUpdate.bind(this);
       this.handleSaveChanges = this.handleSaveChanges.bind(this);
+      this.handleTagStoreUpdate = this.handleTagStoreUpdate.bind(this);
+      // Set initial state
       this.state = {
-         model: logEntryStore.new(),
+         model: logentryStore.new(),
          tags: [],
       };
    }
 
    componentDidMount () {
-      // Get Data
-      http(`/graphql?query={
-         logentries(id:"${this.props.id}"){
-            id,
-            kind,
-            date,
-            details,
-            duration,
-            actions{id,name},
-            tags{id,name,kind,descendantOf}
-         },
-         tags{
-            id,
-            name,
-            kind,
-            descendantOf
-         }
-      }`.replace(/ /g, '')).requestJson().then(json => {
-         // Set data
-         this.setState({
-            model: json.data.logentries[0] || this.state.model,
-            tags: json.data.tags,
-         });
-      });
+      logentryStore.subscribe(this.handleTargetStoreUpdate, { key: this.props.id });
+      tagStore.subscribe(this.handleTagStoreUpdate, { key: JSON.stringify({ key: '*' }) });
    }
 
    /*************************************************************
     * EVENT HANDLING
     *************************************************************/
+   handleLogentryStoreUpdate (value) {
+      this.setState({
+         model: value,
+      });
+   }
+
    handleSaveChanges () {
       var form = this.refs.form.getValue();
       var newModel = Object.assign({}, this.state.model, form);
 
       Message.notify('Saving...');
-      logEntryStore.save(newModel).then(serverModel => {
+      logentryStore.save(newModel).then(serverModel => {
          this.setState({ model: serverModel });
          Message.notify('Saved...');
+      });
+   }
+
+   handleTagStoreUpdate (value) {
+      this.setState({
+         tags: value.results || this.state.tags,
       });
    }
 

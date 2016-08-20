@@ -247,14 +247,14 @@ var stripModel = function (model, stripOut) {
 };
 
 export async function getAll(operator, kind) {
-   var result = [];
+   var results = [];
    await operator.getDb(function (db) {
       db.allOf(kind).forEach(function (gnode) {
          var model = getModel(gnode, db, kind);
-         result.push(model);
+         results.push(model);
       });
    });
-   return result;
+   return { results };
 }
 
 export async function get(operator, id, kind) {
