@@ -11,6 +11,7 @@ import schema from '../data/schema';
 
 import Operator from '../libs/operator';
 import config from '../../home.config';
+import appsConfig from '../../apps.config';
 
 const DEBUG = process.argv.indexOf('--release') === -1;
 var port = require('../../server.config')(DEBUG).port;
@@ -29,7 +30,7 @@ server.use(methodOverride());
 server.use(session({
    resave: true,
    saveUninitialized: false,
-   secret: config.sessionSecret
+   secret: config.sessionSecret,
 }));
 
 //
@@ -41,7 +42,7 @@ server.set('view engine', 'pug');
 //
 // Enable CORS
 // -----------------------------------------------------------------------------
-server.use(function (req, res, next) {
+server.use((req, res, next) => {
    res.setHeader('Access-Control-Allow-Origin', '*');
    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
@@ -51,7 +52,8 @@ server.use(function (req, res, next) {
 //
 // Configure Operator core
 // -----------------------------------------------------------------------------
-var operator = new Operator(config, server, express, socketServer, ensureAuthenticated, ensureAuthorized, { publicPath: publicPath + '/' });
+var operatorConfig = { ...config, ...appsConfig };
+var operator = new Operator(operatorConfig, server, express, socketServer, ensureAuthenticated, ensureAuthorized, { publicPath: publicPath + '/' });
 
 //
 // Register GraphQL API Endpoint
@@ -87,16 +89,15 @@ server.listen(port, () => {
    console.log(`HTTP Server is listening on port ${port}`);
 });
 
-/** 
+/**
  * Simple route middleware to ensure user is authenticated.
  * Use this route middleware on any resource that needs to be protected.  If
  * the request is authenticated (typically via a persistent login session),
  * the request will proceed.  Otherwise, the user will be redirected to the
  * login page.
  */
-function ensureAuthenticated(req, res, next) {
-
-   // Check is user is authenticated. Continue if authenticated, 
+function ensureAuthenticated (req, res, next) {
+   // Check is user is authenticated. Continue if authenticated,
    // and redirect to google auth if not authenticated.
    var isAuth = DEBUG || req.isAuthenticated();
    if (isAuth || (req.session.passport && req.session.passport.user && req.session.passport.user.providerId)) {
@@ -112,7 +113,7 @@ function ensureAuthenticated(req, res, next) {
 
 const allowConsumersOnReadOnlyUrls = ['/', '/bits', '/strips'];
 
-function ensureAuthorized(req, res, next) {
+function ensureAuthorized (req, res, next) {
    if (DEBUG) {
       return next();
    }

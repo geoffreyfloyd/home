@@ -1,6 +1,6 @@
-var webpack = require("webpack");
-var path = require("path");
-var homeConfig = require('./home.config.js');
+var webpack = require('webpack');
+var path = require('path');
+var homeConfig = require('./apps.config.js');
 
 var DEBUG = process.argv.indexOf('--release') === -1;
 process.env.NODE_ENV = DEBUG ? 'development' : 'production';
@@ -29,10 +29,10 @@ module.exports = function (options) {
    var entry, loaders, output;
    if (options.hotdev) {
       entry = {};
-      Object.keys(homeConfig.apps).forEach(function (appKey) {         
+      Object.keys(homeConfig.apps).forEach(appKey => {
          var entryPoints = require(path.join(homeConfig.apps[appKey], 'ui.js'));
 
-         Object.keys(entryPoints).forEach(function (uiKey) {
+         Object.keys(entryPoints).forEach(uiKey => {
             entry[`${appKey}-${uiKey}`] = [
                'webpack-dev-server/client?http://localhost:3000',
                'webpack/hot/dev-server',
@@ -87,9 +87,9 @@ module.exports = function (options) {
    }
    else {
       entry = {};
-      Object.keys(homeConfig.apps).forEach(function (appKey) {
+      Object.keys(homeConfig.apps).forEach(appKey => {
          var entryPoints = require(path.join(homeConfig.apps[appKey], 'ui.js'));
-         Object.keys(entryPoints).forEach( function (uiKey) {
+         Object.keys(entryPoints).forEach(uiKey => {
             entry[`${appKey}-${uiKey}`] = entryPoints[uiKey].entry;
          });
       });
@@ -119,7 +119,7 @@ module.exports = function (options) {
          {
             test: /\.json$/,
             loader: 'json',
-         }
+         },
       ];
       output = {
          path: './build',
@@ -141,7 +141,7 @@ module.exports = function (options) {
          // you can now require('file') instead of require('file.coffee')
          extensions: ['', '.js', '.json'],
          root: path.resolve('./src'),
-      }
+      },
    };
 
    if (!DEBUG) {
@@ -150,9 +150,9 @@ module.exports = function (options) {
          loader: 'jsx?stripTypes',
       });
       config.plugins.push(new webpack.DefinePlugin({
-         "process.env": {
-            NODE_ENV: JSON.stringify("production"),
-         }
+         'process.env': {
+            NODE_ENV: JSON.stringify('production'),
+         },
       }));
    }
    else {
