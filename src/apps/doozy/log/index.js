@@ -32,7 +32,7 @@ export default class LogEntry extends React.Component {
    }
 
    componentDidMount () {
-      logentryStore.subscribe(this.handleTargetStoreUpdate, { key: this.props.id });
+      logentryStore.subscribe(this.handleLogentryStoreUpdate, { key: this.props.id });
       tagStore.subscribe(this.handleTagStoreUpdate, { key: JSON.stringify({ key: '*' }) });
    }
 
