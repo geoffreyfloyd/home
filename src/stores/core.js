@@ -6,12 +6,10 @@ var baseModel = function (gnode) {
       return {
          id: gnode.tag,
          version: gnode.version,
-         isNew: false
+         isNew: false,
       };
    }
-   else {
-      return null;
-   }
+   return null;
 };
 
 var getModel = function (gnode, db, kind) {
@@ -25,7 +23,6 @@ var getModel = function (gnode, db, kind) {
 
       // Merge state and calc into model
       model = Object.assign({}, gnode.state, strap, baseModel(gnode));
-
    }
    return model;
 };
@@ -106,7 +103,7 @@ var modelStraps = {
 
       // Add direct tags
       gnode.siblings('tag').forEach(function (tagGnapse) {
-         var tagGnode = tagGnapse.getTarget()
+         var tagGnode = tagGnapse.getTarget();
          if (tagGnode) {
             tags.push(getModel(tagGnode, db, 'tag'));
          }
@@ -117,7 +114,6 @@ var modelStraps = {
 
       // Add actions
       var actionGnapses = gnode.siblings('doozy.action').forEach(function (actionGnapse) {
-
          var actionGnode = actionGnapse.getTarget();
          if (actionGnode) {
             // Get model from gnode
@@ -167,7 +163,7 @@ var modelStraps = {
    'doozy.target' (gnode, db) {
       var strap = {};
       var tags = [];
-      
+
       /**
        * calculations
          */
@@ -233,7 +229,7 @@ var modelStraps = {
 
       return strap;
    },
-}
+};
 
 var stripModel = function (model, stripOut) {
    var state = {};
@@ -246,7 +242,7 @@ var stripModel = function (model, stripOut) {
    return state;
 };
 
-export async function getAll(operator, kind) {
+export async function getAll (operator, kind) {
    var results = [];
    await operator.getDb(function (db) {
       db.allOf(kind).forEach(function (gnode) {
@@ -257,7 +253,7 @@ export async function getAll(operator, kind) {
    return { results };
 }
 
-export async function get(operator, id, kind) {
+export async function get (operator, id, kind) {
    var result;
    await operator.getDb(function (db) {
       var gnode = db.get(kind + '.' + id);
@@ -272,7 +268,7 @@ export async function get(operator, id, kind) {
    return result;
 }
 
-export function create(operator, kind, model, createConnections, generateTag) {
+export function create (operator, kind, model, createConnections, generateTag) {
    return new Promise(function (resolve) {
       operator.getDb(function (db) {
          var name;
@@ -305,7 +301,7 @@ export function create(operator, kind, model, createConnections, generateTag) {
    });
 }
 
-export function update(operator, kind, model, updateConnections) {
+export function update (operator, kind, model, updateConnections) {
    return new Promise(function (resolve) {
       operator.getDb(function (db) {
          // Get gnode from db
@@ -332,7 +328,7 @@ export function update(operator, kind, model, updateConnections) {
    });
 }
 
-export function remove(operator, kind, id, beforeRemove) {
+export function remove (operator, kind, id, beforeRemove) {
    return new Promise(function (resolve) {
       operator.getDb(function (db) {
          var gnode = db.find(id, kind).first();

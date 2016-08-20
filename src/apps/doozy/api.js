@@ -1,4 +1,4 @@
-import { create, get, getAll, remove, update } from '../../data/queries/core';
+import { create, get, getAll, remove, update } from '../../stores/core';
 import those from 'those';
 
 /**

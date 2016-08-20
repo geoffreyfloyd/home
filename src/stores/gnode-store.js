@@ -40,17 +40,11 @@ export default class GnodeStore extends ContextStore {
       cacheStore.register(storeName, {
          entities: {},
          lastChanged: '1900-01-01T00:00:00.000Z',
-         version: version
+         version: version,
       });
 
       // Initialize server failure retry interval to 15 seconds
       this.retry = 15;
-
-      // Bind methods to this (this likely isn't needed')
-      // this.create = this.create.bind(this);
-      // this.destroy = this.create.bind(this);
-      // this.get = this.create.bind(this);
-      // this.update = this.create.bind(this);
    }
 
    /**
@@ -78,14 +72,13 @@ export default class GnodeStore extends ContextStore {
             console.log(e);
          }
       }
-      
+
       if (requestBody === null) {
          return http(`${this.url}/${key}`).withCreds().requestJson();
       }
       else {
          return http(`${this.url}/filter`).post().withCreds().withJsonBody(requestBody).requestJson();
       }
-      
    }
 
    update (model) {
@@ -98,212 +91,210 @@ export default class GnodeStore extends ContextStore {
     /**
      * Override in inherited store to reduce calls to server
      */
-    isCacheValid (cacheItem) {
-        if (this.defaultRefresh && cacheItem && (cacheItem.lastChecked || cacheItem.lastChanged) && (cacheItem.isCacheInvalid || false) === false ) {
-            var preferDate = cacheItem.lastChecked || cacheItem.lastChanged;
-            var compareTime = new Date(Date.parse(preferDate)).getTime();
-            var timeNow = new Date().getTime();
+   isCacheValid (cacheItem) {
+       if (this.defaultRefresh && cacheItem && (cacheItem.lastChecked || cacheItem.lastChanged) && (cacheItem.isCacheInvalid || false) === false) {
+           var preferDate = cacheItem.lastChecked || cacheItem.lastChanged;
+           var compareTime = new Date(Date.parse(preferDate)).getTime();
+           var timeNow = new Date().getTime();
             // Check if enough time has passed to expect new data
-            return Math.abs(timeNow - compareTime) < (this.defaultRefresh * 1000);
+           return Math.abs(timeNow - compareTime) < (this.defaultRefresh * 1000);
         }
-        else {
-            return false;
+       else {
+           return false;
         }
     }
-    
-    _onSubscribe (need) {
-        if (need.context.key === undefined) {
-            throw new Error('Key cannot be undefined!');
+
+   _onSubscribe (need) {
+       if (need.context.key === undefined) {
+           throw new Error('Key cannot be undefined!');
         }
 
         // Get entity from cache and update value / subscribers
-        cacheStore.getCache(this.storeName).then(store => {
-            var entity = store.entities[need.context.key];
-            if (entity) {
-                this.updateContext(entity, need.context);
+       cacheStore.getCache(this.storeName).then(store => {
+           var entity = store.entities[need.context.key];
+           if (entity) {
+               this.updateContext(entity, need.context);
             }
 
             // Is the current cache sufficient?
-            if (!entity || !this.isCacheValid(entity)) {
+           if (!entity || !this.isCacheValid(entity)) {
                 // If this need already has a request in progress
                 // then do not start another request
-                if (!need.requestInProgress) {
-                    var funcFinally = function () {
-                        need.requestInProgress = null;
+               if (!need.requestInProgress) {
+                   var funcFinally = function () {
+                       need.requestInProgress = null;
                     };
                     // Check server for update to this entity, passing entity with
                     // lastChanged value if available
-                    need.requestInProgress = this.requestLatestData(need.context.key);
-                    var abort = need.requestInProgress.abort;
-                    
-                    need.requestInProgress = need.requestInProgress.then(funcFinally).catch(funcFinally);
-                    need.requestInProgress.abort = abort;
+                   need.requestInProgress = this.requestLatestData(need.context.key);
+                   var abort = need.requestInProgress.abort;
+
+                   need.requestInProgress = need.requestInProgress.then(funcFinally).catch(funcFinally);
+                   need.requestInProgress.abort = abort;
                 }
-            }    
+            }
         });
     }
 
     // Call Web API to request new data
-    requestLatestData (key, done, fail) {
-        var promisePlus = this.get(key);
-        var abort = promisePlus.abort;
-        promisePlus = promisePlus.then(result => {
+   requestLatestData (key, done, fail) {
+       var promisePlus = this.get(key);
+       var abort = promisePlus.abort;
+       promisePlus = promisePlus.then(result => {
             // Reset retry interval to 5 seconds
             // on a successful call
-            this.retry = 15;
+           this.retry = 15;
 
             // Returns null when no update is available
             // based on the latest update
-            if (!result) {
+           if (!result) {
                 // done callback
-                this.updateCache(key, result);
-                (done || function () { })(null);
-                return;
+               this.updateCache(key, result);
+               (done || function () { })(null);
+               return;
             }
-            
+
             // Merge Result Store Hook (result must have truthy `merge` prop)
-            if (result.merge && this._onMergeResult) {
-                var entity = cacheStore.cache[this.storeName].entities[key];
-                if (entity) {
-                    this._onMergeResult(key, result, entity);
-                }      
+           if (result.merge && this._onMergeResult) {
+               var entity = cacheStore.cache[this.storeName].entities[key];
+               if (entity) {
+                   this._onMergeResult(key, result, entity);
+                }
             }
-            
+
             // Process Result Store Hook
-            if (this._onProcessResult) {
-                this._onProcessResult(key, result);
+           if (this._onProcessResult) {
+               this._onProcessResult(key, result);
             }
 
             // Update the local stash of entities
-            this.updateCache(key, result);
-            
+           this.updateCache(key, result);
+
             // Call Got New Data handler
-            if (typeof this.onGotNewData === 'function') {
-                this.onGotNewData(result);
+           if (typeof this.onGotNewData === 'function') {
+               this.onGotNewData(result);
             }
 
             // if a specific need exists for this key
             // then update the value and notify subscribers
-            this.updateContext(result, { key: key });
+           this.updateContext(result, { key: key });
 
             // Update the global need
-            this.updateContext(cacheStore.cache[this.storeName].entities, {});
+           this.updateContext(cacheStore.cache[this.storeName].entities, {});
 
             // done callback
-            (done || function () { })(result);
+           (done || function () { })(result);
         }).catch(err => {
-            
             // Get response object
-            var response;
-            if (err && err.response) {
-                response = err.response;
+           var response;
+           if (err && err.response) {
+               response = err.response;
             }
-            else {
-                response = err;
+           else {
+               response = err;
             }
-            
+
             // jQuery Promise Aborted
-            if (response && response.statusText && response.statusText === 'abort') {
-                return;
+           if (response && response.statusText && response.statusText === 'abort') {
+               return;
             }
 
             // Bad Request
-            if (response && response.status === 400) {
+           if (response && response.status === 400) {
                 // Notify subscribers of bad request
                 // if a specific need exists for this key
                 // then update the value and notify subscribers
-                this.updateContext({ error: err }, { key: key });
-                (fail || function () { })(err);
-                return;
+               this.updateContext({ error: err }, { key: key });
+               (fail || function () { })(err);
+               return;
             }
 
-            // These http response statuses could be 
+            // These http response statuses could be
             // temporary problems and should be retried
-            var retryOnHttpStatusCodes = [
-                404, // Not Found (but may be available in the future)
-                408, // Request Timed Out
-                429, // Too many requests
-                503, // Service unavailable
-                504, // Gateway Timeout
+           var retryOnHttpStatusCodes = [
+               404, // Not Found (but may be available in the future)
+               408, // Request Timed Out
+               429, // Too many requests
+               503, // Service unavailable
+               504, // Gateway Timeout
             ];
-            
+
             // Check if this request should be retried
-            if (response && response.status && this.retry <= 120 && retryOnHttpStatusCodes.indexOf(response.status) > -1) {
-                
+           if (response && response.status && this.retry <= 120 && retryOnHttpStatusCodes.indexOf(response.status) > -1) {
                 // Log to console that an error occurred
-                if (process.env.NODE_ENV !== 'production') {
-                    console.log(this.storeName + ' store got an error response from the server, trying again in ' + this.retry + ' seconds...');
+               if (process.env.NODE_ENV !== 'production') {
+                   console.log(this.storeName + ' store got an error response from the server, trying again in ' + this.retry + ' seconds...');
                 }
-                
+
                 // Retry this request in 15-120 seconds
-                setTimeout(() => this.requestLatestData(key), this.retry * 1000);
-                
+               setTimeout(() => this.requestLatestData(key), this.retry * 1000);
+
                 // If it fails again, we'll wait 15 additional
-                // seconds to give it enough time to resolve itself 
-                this.retry += 15;
+                // seconds to give it enough time to resolve itself
+               this.retry += 15;
             }
-            
-            if (!response || retryOnHttpStatusCodes.indexOf(response.status) === -1) {
+
+           if (!response || retryOnHttpStatusCodes.indexOf(response.status) === -1) {
                 // fail callback
-                (fail || function () { })(err);
+               (fail || function () { })(err);
                 // Throw the error so the global error handler catches this
-                throw err;
+               throw err;
             }
         });
-        promisePlus.abort = abort;
-        return promisePlus;
+       promisePlus.abort = abort;
+       return promisePlus;
     }
 
-    updateCache (key, value) {
-        return new Promise(resolve => {
-            cacheStore.getCache(this.storeName).then(cache => {
-                var lastChecked = new Date().toISOString();
+   updateCache (key, value) {
+       return new Promise(resolve => {
+           cacheStore.getCache(this.storeName).then(cache => {
+               var lastChecked = new Date().toISOString();
                 // Value is null when there is nothing new from the server
-                if (value === null) {
+               if (value === null) {
                     // Update a lastChecked field to help validate cache
-                    if (key) {
-                        var entity = cache.entities[key];
-                        if (entity) {
-                            entity.lastChecked = lastChecked;
+                   if (key) {
+                       var entity = cache.entities[key];
+                       if (entity) {
+                           entity.lastChecked = lastChecked;
                         }
                     }
-                    else {
-                        cache.lastChecked = lastChecked;
+                   else {
+                       cache.lastChecked = lastChecked;
                     }
                 }
-                else {
+               else {
                     // Value contains an Entity Set
-                    if (value && getType(value.results) === 'array') {
+                   if (value && getType(value.results) === 'array') {
                         // call for each individual entity
                         // Flatten Sub Entity Results in Cache
-                        value.results.forEach(each => {
+                       value.results.forEach(each => {
                             // Recursive call to add/update this entity
-                            cache.entities[each.id] = { ...each, lastChecked };
-                            
+                           cache.entities[each.id] = { ...each, lastChecked };
+
                             // Get the latest last changed value
                             // from the entities in the array
-                            if (each.lastChanged > cache.lastChanged) {
-                                cache.lastChanged = each.lastChanged;
+                           if (each.lastChanged > cache.lastChanged) {
+                               cache.lastChanged = each.lastChanged;
                             }
                             // Get the version value
                             // from the entities in the array
-                            if (each.version > cache.version) {
-                                cache.version = each.version;
+                           if (each.version > cache.version) {
+                               cache.version = each.version;
                             }
                         });
                     }
 
                     // Value is an Entity
-                    cache.entities[key] = { ...value, lastChecked };
+                   cache.entities[key] = { ...value, lastChecked };
                 }
 
                 // Request persistance of updated cache
-                cacheStore.update(this.storeName, cache);
-                
+               cacheStore.update(this.storeName, cache);
+
                 // Resolve promise
-                resolve(cache);
+               resolve(cache);
             });
-            return true;
+           return true;
         });
     }
 }

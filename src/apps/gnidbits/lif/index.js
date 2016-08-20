@@ -1,12 +1,13 @@
+// PACKAGES
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Promise from 'bluebird';
+// LIBS
 import http from 'libs/http';
-import { $background, $content } from 'components/styles';
+// COMPONENTS
 import { TextInput } from 'components/forms/TextInput';
 import { getThrottledHandler } from 'libs/event-handler';
-
-const giphyUrl = 'api.giphy.com/v1/gifs/search?q='
+// CONSTANTS
+const giphyUrl = 'api.giphy.com/v1/gifs/search?q=';
 const apiKey = '&api_key=dc6zaTOxFJmzC';
 
 export default class Lif extends React.Component {
@@ -22,7 +23,7 @@ export default class Lif extends React.Component {
     *************************************************************/
    handleInputChange (val) {
       console.log(val);
-      http(`http://api.giphy.com/v1/gifs/search?q=${encodeURIComponent(val) + apiKey}`).requestJson().then(res => {
+      http(`http://${giphyUrl}${encodeURIComponent(val) + apiKey}`).requestJson().then(res => {
          if (this.nextIndex) {
             clearTimeout(this.nextIndex);
          }
@@ -48,15 +49,19 @@ export default class Lif extends React.Component {
     * RENDERING
     *************************************************************/
    render () {
-      var { data, index, meta } = this.state;
+      var { data, index } = this.state;
       var gif;
-      //embed_
+      // embed_
       if (data && data.length) {
-         gif = <div style={{ display: 'flex', flex: '1', height: '100%', width: '100vw' }}><iframe src={data[index].embed_url} style={{ width: '100%' }} /></div>;
-      } 
-      
+         gif = (
+            <div style={{ display: 'flex', flex: '1', height: '100%', width: '100vw' }}>
+               <iframe src={data[index].embed_url} style={{ width: '100%' }} />
+            </div>
+         );
+      }
+
       return (
-         <div style={{ display: 'flex', 'flexDirection': 'column', 'flexWrap': 'nowrap', height: '100vh', width: '100vw' }}>
+         <div style={{ display: 'flex', flexDirection: 'column', flexWrap: 'nowrap', height: '100vh', width: '100vw' }}>
             <TextInput path="caption" onChange={this.handleInputChange} style={{ width: '100%', height: '1.5rem' }} />
             {gif}
          </div>

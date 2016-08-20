@@ -5,9 +5,7 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import session from 'express-session';
-import expressGraphQL from 'express-graphql';
 import PrettyError from 'pretty-error';
-import schema from '../data/schema';
 
 import Operator from '../libs/operator';
 import config from '../../home.config';
@@ -56,16 +54,6 @@ server.use((req, res, next) => {
 // -----------------------------------------------------------------------------
 var operatorConfig = { ...config, ...appsConfig };
 var operator = new Operator(operatorConfig, server, express, socketServer, ensureAuthenticated, ensureAuthorized, { publicPath: publicPath + '/' });
-
-//
-// Register GraphQL API Endpoint
-// -----------------------------------------------------------------------------
-server.use('/graphql', expressGraphQL(req => ({
-   schema: schema(operator),
-   graphiql: true,
-   rootValue: { request: req },
-   pretty: process.env.NODE_ENV !== 'production',
-})));
 
 //
 // Error handling
