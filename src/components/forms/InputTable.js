@@ -3,6 +3,7 @@ import React from 'react';
 // LIBS
 import { copy, extract, shallowEqual } from 'libs/object-utils';
 import { getReactPropTypes } from 'libs/type';
+import { flex, flexItem } from 'libs/style';
 // COMPONENTS
 import Button from './Button';
 import IconButton from './IconButton';
@@ -66,8 +67,13 @@ class InputTable extends React.Component {
     *************************************************************/
    getRowKeyPath (rowKey) {
       var obj = {};
-      obj[this.props.rowKey] = rowKey;
-      return JSON.stringify(obj);
+      if (this.props.rowKey) {
+         obj[this.props.rowKey] = rowKey;
+         return JSON.stringify(obj);
+      }
+      else {
+         return '[' + rowKey + ']';
+      }
    }
 
    getRowInputProps (element, rowKey) {
@@ -194,7 +200,7 @@ class InputTable extends React.Component {
 
       // Build add row button
       if (this.props.canAdd) {
-         addRowButton = <IconButton icon="add" color="#555555" style={Object.assign({}, styles.button, styles.padLeft) } onClick={this.handleAddClick} />;
+         addRowButton = <IconButton icon="plus" style={{ ...styles.button, ...styles.padLeft, color: '#555' }} onClick={this.handleAddClick} />;
       }
 
       // Build footer
@@ -211,7 +217,7 @@ class InputTable extends React.Component {
             {header}
             {this.props.currentValue.map((row, rowIndex) => {
                // Get unique identifier from the row
-               var rowKey = row[this.props.rowKey];
+               var rowKey = row[this.props.rowKey] || rowIndex;
 
                // Setup Dialog for this row (if FormDialog child exists)
                var dialogButtonCell = this.renderDialogButtonCell(dialogElement, rowKey);
@@ -220,11 +226,11 @@ class InputTable extends React.Component {
                var removeRowButtonCell = this.renderRemoveRowButtonCell(rowIndex);
 
                return (
-                  <div key={'row_' + rowKey} className="input-group" style={this.props.style}>
+                  <div key={'row_' + rowKey} className="input-group" style={{ ...this.props.style, ...flex('row', 'nowrap') }}>
                      {removeRowButtonCell}
                      {cells.map((child, fieldIndex) => {
                         return (
-                           <div key={'cell_' + rowKey + '_' + fieldIndex} className="input-group-addon" style={Object.assign({}, styles.noPad, this.props.styleInput, this.getInputStyle(fieldIndex)) }>
+                           <div key={'cell_' + rowKey + '_' + fieldIndex} className="input-group-addon" style={{ ...styles.noPad, ...this.props.styleInput, ...this.getInputStyle(fieldIndex), ...child.props.cellStyle, ...flexItem({ flex: '1' }) }}>
                               {React.cloneElement(child, this.getRowInputProps(child, rowKey)) }
                            </div>
                         );
@@ -260,8 +266,8 @@ class InputTable extends React.Component {
    var removeRowButtonCell;
    if (this.props.canRemove) {
       removeRowButtonCell = (
-         <div className="input-group-addon" style={Object.assign({}, styles.clearWidth, this.props.styleInput) }>
-            <IconButton color="#555555" icon="remove" style={styles.button} onClick={this.handleRemoveClick.bind(null, rowIndex) } />
+         <div className="input-group-addon" style={{ ...styles.clearWidth, ...this.props.styleInput, width: '1.9rem' }}>
+            <IconButton icon="minus" style={{ ...styles.button, color: '#f00' }} onClick={this.handleRemoveClick.bind(null, rowIndex) } />
          </div>
       );
    }
@@ -276,8 +282,8 @@ InputTable.propTypes = getReactPropTypes(InputTable.PropTypes);
 var styles = {
    clearWidth: {
       padding: 0,
-      width: '0.001%',
       background: '#ddd',
+      ...flexItem({ flex: '0 1 auto' })
    },
    dialogButton: {
       padding: 0,
