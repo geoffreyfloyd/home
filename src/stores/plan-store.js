@@ -3,7 +3,7 @@ import GnodeStore from './gnode-store';
 class PlanStore extends GnodeStore {
 
    constructor () {
-      super('Doozy', 'Plan');
+      super('Doozy', 'Plan', 1);
    }
 
    new (name) {

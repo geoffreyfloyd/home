@@ -15,7 +15,7 @@ const TAG_PREFIXES = ['!', '@', '>', '$', '#'];
 class TagStore extends GnodeStore {
 
    constructor () {
-      super('Doozy', 'Tag');
+      super('Doozy', 'Tag', 1);
       this.TAG_KIND = TAG_KIND;
       this.TAG_PREFIXES = TAG_PREFIXES;
    }

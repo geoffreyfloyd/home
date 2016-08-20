@@ -2,7 +2,7 @@ import GnodeStore from './gnode-store';
 
 class BitStore extends GnodeStore {
    constructor () {
-      super('Gnidbits', 'Bit');
+      super('Gnidbits', 'Bit', 1);
    }
 
    new () {

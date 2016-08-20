@@ -3,7 +3,7 @@ import GnodeStore from './gnode-store';
 class FocusStore extends GnodeStore {
 
    constructor () {
-      super('Doozy', 'Focus');
+      super('Doozy', 'Focus', 1);
    }
 
    new (name) {

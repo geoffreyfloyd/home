@@ -5,6 +5,18 @@ module.exports = function (operator) {
    /*****************************************************
    * BITS
    ****************************************************/
+   operator.server.post('/api/gnidbits/bit/filter', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+      getAll(operator, 'gnidbits.bit').then(result => {
+         res.end(JSON.stringify(result));
+      });
+   });
+
+   operator.server.get('/api/gnidbits/bit/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
+      get(operator, req.params.id, 'gnidbits.bit').then(result => {
+         res.end(JSON.stringify(result));
+      });
+   });
+
    operator.server.post('/api/gnidbits/bit', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       create(operator, 'gnidbits.bit', req.body, function (gnode, db, model) {
          // Create tag connections

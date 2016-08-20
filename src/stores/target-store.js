@@ -5,7 +5,7 @@ import { parseISO8601String } from 'libs/date-util';
 class TargetStore extends GnodeStore {
 
    constructor () {
-      super('Doozy', 'Target');
+      super('Doozy', 'Target', 1);
    }
 
    new (name) {

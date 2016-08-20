@@ -4,7 +4,7 @@ import those from 'those';
 class PlanStepStore extends GnodeStore {
 
    constructor () {
-      super('Doozy', 'PlanStep');
+      super('Doozy', 'PlanStep', 1);
    }
 
    new (planId, parentId, name, ordinal) {

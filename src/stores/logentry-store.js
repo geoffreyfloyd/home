@@ -4,7 +4,7 @@ import { getLocalDateString } from 'libs/date-util';
 class LogEntryStore extends GnodeStore {
 
    constructor () {
-      super('Doozy', 'LogEntry');
+      super('Doozy', 'LogEntry', 1);
    }
 
    new () {
