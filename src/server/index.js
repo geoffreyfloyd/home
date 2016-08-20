@@ -22,6 +22,8 @@ const server = global.server = express();
 // -----------------------------------------------------------------------------
 var publicPath = path.resolve(__dirname, '../../build');
 server.use('/static', express.static(publicPath));
+server.use('/media', express.static(path.resolve(__dirname, './media')));
+server.use('/favicon.ico', express.static(path.resolve(__dirname, './root/favicon.ico')));
 server.use(cookieParser());
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
