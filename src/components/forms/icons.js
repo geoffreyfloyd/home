@@ -10,6 +10,7 @@ const glyphs = [
     'refresh',
     'info-sign',
     'menu-hamburger',
+    'minus',
     'remove',
     'plus',
 ];

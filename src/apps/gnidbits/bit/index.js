@@ -7,6 +7,7 @@ import { $background, $content, $formSection, $inputRow, $inlineLabel, $buttons,
 import Message from 'components/Message';
 import Form from 'components/forms/Form';
 import FormSection from 'components/forms/FormSection';
+import InputGroup from 'components/forms/InputGroup';
 import InputTable from 'components/forms/InputTable';
 import TagInput from 'components/forms/TagInput';
 import TextInput from 'components/forms/TextInput';
@@ -75,8 +76,8 @@ export default class Bit extends React.Component {
             <div style={$content}>
                <Form ref="form" model={model} style={{ color: '#2B90E8' }}>
                   <FormSection title="General" style={$formSection} labelSpan={2} labelStyle={{ color: '#00AF27' }}>
-                     <TextInput label="Caption" path="caption" />
-                     <TagInput label="Tags" path="tags" items={tags} />
+                     <InputGroup label="Caption"><TextInput path="caption" /></InputGroup>
+                     <InputGroup label="Tags"><TagInput path="tags" items={tags} /></InputGroup>
                   </FormSection>
                   <FormSection title="Images" style={$formSection}>
                      <InputTable path="images" getNewRow={newImage}>

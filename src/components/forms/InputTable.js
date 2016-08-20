@@ -267,7 +267,7 @@ class InputTable extends React.Component {
    if (this.props.canRemove) {
       removeRowButtonCell = (
          <div className="input-group-addon" style={{ ...styles.clearWidth, ...this.props.styleInput, width: '1.9rem' }}>
-            <IconButton icon="minus" style={{ ...styles.button, color: '#f00' }} onClick={this.handleRemoveClick.bind(null, rowIndex) } />
+            <IconButton icon="minus" style={{ ...styles.button, color: '#555' }} onClick={this.handleRemoveClick.bind(null, rowIndex) } />
          </div>
       );
    }
