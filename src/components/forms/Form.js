@@ -279,11 +279,26 @@ class Form extends React.Component {
       };
    }
 
+   getInputDependsOn (element) {
+      // No binding path to prepend to dependency path
+      if (!this.props.basePath) {
+         return element.props.dependsOn;
+      }
+
+      // Cast dependsOn prop to an array to simplify logic
+      var dependsOn = asArray(element.props.dependsOn);
+
+      // Get row-modified depends on values
+      dependsOn = dependsOn.map(d => this.props.basePath + '.' + d);
+
+      return dependsOn;
+   }
+
    getInputProps (element) {
       // Form state and props
       var { changeMap, errorMap } = this;
       var { formState } = this.state;
-      var { model, handleInputRegister, handleInputUnregister, handleUpdateRequest } = this.props;
+      var { model } = this.props;
 
       // Input element props
       var { path, ...props } = element.props;
@@ -300,9 +315,9 @@ class Form extends React.Component {
          originalValue: originalValue,
          hasChanged: changeMap[path] || false,
          errors: errorMap[path] || [],
-         register: handleInputRegister.bind(null, path),
-         unregister: handleInputUnregister.bind(null, path),
-         requestUpdate: handleUpdateRequest.bind(null, path),
+         register: this.handleInputRegister.bind(null, path),
+         unregister: this.handleInputUnregister.bind(null, path),
+         requestUpdate: this.handleUpdateRequest.bind(null, path),
          labelExplain: props.labelExplain || this.props.labelExplain,
          labelSpan: props.labelSpan || this.props.labelSpan,
          labelStyle: props.labelStyle || this.props.labelStyle,

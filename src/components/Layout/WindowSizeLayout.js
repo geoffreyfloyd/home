@@ -23,7 +23,7 @@ var WindowSizeLayout = React.createClass({
    /*************************************************************
     * COMPONENT LIFECYCLE
     *************************************************************/
-   componentWillMount () {
+   componentDidMount () {
       // Clear margin on body
       try {
          var margin = window.getComputedStyle(document.body).getPropertyValue('margin');
@@ -38,7 +38,7 @@ var WindowSizeLayout = React.createClass({
 
       // Create a throttled (100ms) event handler
       this.handlers = {
-         windowSizeChange: getThrottledHandler(this.handleStoreUpdate, 100)
+         windowSizeChange: getThrottledHandler(this.handleStoreUpdate, 100),
       };
 
       // Subscribe to window size store with throttled event handler
@@ -84,7 +84,7 @@ var WindowSizeLayout = React.createClass({
     *************************************************************/
    render () {
       return this.renderLayout();
-   }
+   },
 });
 
 export default WindowSizeLayout;
