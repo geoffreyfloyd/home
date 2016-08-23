@@ -20,11 +20,11 @@ export default class LogEntry extends React.Component {
    *************************************************************/
    constructor (props) {
       super(props);
-    // Bind event handlers
+      // Bind event handlers
       this.handleSaveChanges = this.handleSaveChanges.bind(this);
       this.handleTagStoreUpdate = this.handleTagStoreUpdate.bind(this);
       this.handleTargetStoreUpdate = this.handleTargetStoreUpdate.bind(this);
-    // Set initial state
+      // Set initial state
       this.state = {
          model: targetStore.new(),
          tags: [],
