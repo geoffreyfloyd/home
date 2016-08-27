@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import logentryStore from 'stores/logentry-store';
 import tagStore from 'stores/tag-store';
 // COMPONENTS
-import { $background, $content, $form, $formSection, $label, $buttons, $button } from 'components/styles';
+import appStyle from 'apps/gnidbits/style';
 import Form from 'components/forms/Form';
 import FormSection from 'components/forms/FormSection';
 import InputGroup from 'components/forms/InputGroup';
@@ -68,10 +68,10 @@ export default class LogEntry extends React.Component {
    render () {
       var { model, tags } = this.state;
       return (
-         <div style={$background}>
-            <div style={$content}>
-               <Form ref="form" model={model} style={$form} labelSpan={2} labelStyle={$label}>
-                  <FormSection title="General" style={$formSection}>
+         <div style={appStyle.background}>
+            <div style={appStyle.content}>
+               <Form ref="form" model={model} style={appStyle.form} labelSpan={2} labelStyle={appStyle.label}>
+                  <FormSection title="General" style={appStyle.formSection}>
                      <InputGroup label="Date">
                         <TextInput path="date" type="date" />
                      </InputGroup>
@@ -86,8 +86,8 @@ export default class LogEntry extends React.Component {
                      </InputGroup>
                   </FormSection>
                </Form>
-               <div style={$buttons}>
-                  <button style={$button} onClick={this.handleSaveChanges}>Save Changes</button>
+               <div style={appStyle.buttons}>
+                  <button style={appStyle.button} onClick={this.handleSaveChanges}>Save Changes</button>
                </div>
             </div>
          </div>

@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import logentryStore from 'stores/logentry-store';
 import tagStore from 'stores/tag-store';
 // COMPONENTS
-import { $background, $content } from 'components/styles';
+import appStyle from 'apps/gnidbits/style';
 import LogEntryList from 'components/LogEntryList';
 
 export default class LogEntries extends React.Component {
@@ -55,8 +55,8 @@ export default class LogEntries extends React.Component {
       }
 
       return (
-         <div style={$background}>
-            <div style={$content}>
+         <div style={appStyle.background}>
+            <div style={appStyle.content}>
                <LogEntryList list={list} tags={tags} />
             </div>
          </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { $click } from 'components/styles';
+import defaultStyle from 'apps/style';
 
 class Indicator extends React.Component {
    /*************************************************************
@@ -47,7 +47,7 @@ class Indicator extends React.Component {
       }
 
       return (
-            <div {...this.props} style={{ ...$click, minWidth: width, margin: '5px', ...style }}>
+            <div {...this.props} style={{ ...defaultStyle.click, minWidth: width, margin: '5px', ...style }}>
                <div style={{textAlign: 'center', borderRadius: '8px 8px 0 0', backgroundColor: 'rgb(68, 68, 68)', color: 'white', marginBottom: '2px'}}>{title}</div>
                {content}
                <div style={{textAlign: 'center', borderRadius: '0 0 8px 8px', backgroundColor: 'rgb(68, 68, 68)', color: changeColor, marginTop: '2px'}}>{changePrefix + change + suffix}</div>

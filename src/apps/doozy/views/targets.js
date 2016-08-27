@@ -9,7 +9,7 @@ import logentryStore from 'stores/logentry-store';
 import tagStore from 'stores/tag-store';
 import targetStore from 'stores/target-store';
 // COMPONENTS
-import { $background, $click, $content } from 'components/styles';
+import appStyle from 'apps/gnidbits/style';
 import Indicator from 'components/Indicator';
 
 export default class Targets extends React.Component {
@@ -119,8 +119,8 @@ export default class Targets extends React.Component {
       }
 
       return (
-         <div style={$background}>
-            <div style={$content}>
+         <div style={appStyle.background}>
+            <div style={appStyle.content}>
                {Object.keys(unmet).map(group => (
                   <div>
                      <h2 style={styles.heading}>Unmet targets with {group}</h2>
@@ -207,7 +207,7 @@ var styles = {
       color: '#DDD', //#00AF27
    },
    edit: {
-      ...$click,
+      ...appStyle.click,
       padding: '1rem',
    },
 };

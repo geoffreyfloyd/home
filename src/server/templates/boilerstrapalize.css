@@ -422,3 +422,18 @@ th {
     page-break-after: avoid;
   }
 }
+
+.spin {
+  animation: spinner .7s infinite linear;
+  -webkit-animation: spinner2 .7s infinite linear;
+}
+
+@-webkit-keyframes spinner2 {
+  from { -webkit-transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spinner {
+  from { transform: scale(1) rotate(0deg); }
+  to { transform: scale(1) rotate(360deg); }
+}

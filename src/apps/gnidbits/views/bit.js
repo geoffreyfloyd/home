@@ -6,7 +6,7 @@ import Promise from 'bluebird';
 import bitStore from 'stores/bit-store';
 import tagStore from 'stores/tag-store';
 // COMPONENTS
-import { $background, $content, $formSection, $inputRow, $inlineLabel, $buttons, $button } from 'components/styles';
+import appStyle from 'apps/gnidbits/style';
 import Message from 'components/Message';
 import Form from 'components/forms/Form';
 import FormSection from 'components/forms/FormSection';
@@ -73,54 +73,56 @@ export default class Bit extends React.Component {
 
       if (!model) {
          return (
-            <div style={$background}>
-               <LoadingIndicator />
+            <div style={appStyle.background}>
+               <div style={appStyle.loading}>
+                  <LoadingIndicator />
+               </div>
             </div>
          );
       }
 
       return (
-         <div style={$background}>
-            <div style={$content}>
+         <div style={appStyle.background}>
+            <div style={appStyle.content}>
                <Form ref="form" model={model} style={{ color: '#2B90E8' }}>
-                  <FormSection title="General" style={$formSection} labelSpan={2} labelStyle={{ color: '#00AF27' }}>
+                  <FormSection title="General" style={appStyle.formSection} labelSpan={2} labelStyle={{ color: '#00AF27' }}>
                      <InputGroup label="Caption"><TextInput path="caption" /></InputGroup>
                      <InputGroup label="Tags"><TagInput path="tags" items={tags} /></InputGroup>
                   </FormSection>
-                  <FormSection title="Images" style={$formSection}>
+                  <FormSection title="Images" style={appStyle.formSection}>
                      <InputTable path="images" getNewRow={newImage}>
                         <TextInput path="src" />
                      </InputTable>
                   </FormSection>
-                  <FormSection title="Videos" style={$formSection}>
-                     <InputTable path="videos" getNewRow={newVideo} style={$inputRow}>
-                        <label className="control-label" style={$inlineLabel}>Source</label>
+                  <FormSection title="Videos" style={appStyle.formSection}>
+                     <InputTable path="videos" getNewRow={newVideo} style={appStyle.inputRow}>
+                        <label className="control-label" style={appStyle.inlineLabel}>Source</label>
                         <TextInput path="src" cellStyle={{ flex: '1' }} />
-                        <label className="control-label" style={$inlineLabel}>Start At</label>
+                        <label className="control-label" style={appStyle.inlineLabel}>Start At</label>
                         <TextInput type="number" path="start" cellStyle={{ maxWidth: '5rem' }} />
-                        <label className="control-label" style={$inlineLabel}>End At</label>
+                        <label className="control-label" style={appStyle.inlineLabel}>End At</label>
                         <TextInput type="number" path="end" cellStyle={{ maxWidth: '5rem' }} />
                      </InputTable>
                   </FormSection>
-                  <FormSection title="Texts" style={$formSection}>
+                  <FormSection title="Texts" style={appStyle.formSection}>
                      <InputTable path="texts" getNewRow={newText}>
                         <MultiLineInput path="text" />
                      </InputTable>
                   </FormSection>
-                  <FormSection title="Notes" style={$formSection}>
+                  <FormSection title="Notes" style={appStyle.formSection}>
                      <InputTable path="notes" getNewRow={newNote}>
                         <MultiLineInput path="note" />
                      </InputTable>
                   </FormSection>
-                  <FormSection title="Links" style={$formSection}>
+                  <FormSection title="Links" style={appStyle.formSection}>
                      <InputTable path="links" getNewRow={newLink}>
                         <TextInput path="src" />
                         <TextInput path="description" />
                      </InputTable>
                   </FormSection>
                </Form>
-               <div style={$buttons}>
-                  <button style={$button} onClick={this.handleSaveChanges}>Save Changes</button>
+               <div style={appStyle.buttons}>
+                  <button style={appStyle.button} onClick={this.handleSaveChanges}>Save Changes</button>
                </div>
             </div>
          </div>

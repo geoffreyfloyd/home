@@ -4,10 +4,12 @@ import ReactDOM from 'react-dom';
 // STORES
 import bitStore from 'stores/bit-store';
 import tagStore from 'stores/tag-store';
-// COMPONENTS
+// components
+import appStyle from 'apps/gnidbits/style';
 import Form from 'components/forms/Form';
 import TagInput from 'components/forms/TagInput';
 import SelectionInput from 'components/forms/SelectionInput';
+import LoadingIndicator from 'components/LoadingIndicator';
 import ComicStrip from './comic-strip';
 
 const mediaTypes = [
@@ -77,12 +79,18 @@ class Presenter extends React.Component {
       var { content, mediaType, selectedTags, tags, index } = this.state;
 
       if (!content && !index) {
-         return <div>Loading...</div>;
+         return (
+            <div style={appStyle.background}>
+               <div style={appStyle.loading}>
+                  <LoadingIndicator />
+               </div>
+            </div>
+         );
       }
 
       if (index) {
          return (
-            <div style={styles.body}>
+            <div style={appStyle.background}>
                {Object.keys(index).map(key => <ComicStrip mode="wrap" strip={index[key]} />)}
             </div>
          );
@@ -102,7 +110,7 @@ class Presenter extends React.Component {
       }
 
       return (
-         <div style={styles.body}>
+         <div style={appStyle.background}>
             <Form
               model={this.model}
               style={{ color: '#2B90E8', padding: '0.5rem', maxWidth: '30rem' }}
@@ -118,32 +126,6 @@ class Presenter extends React.Component {
       );
    }
 }
-
-const styles = {
-   body: {
-      backgroundColor: '#444',
-   },
-};
-
-var testMediaStrip = [
-   {
-      uri: '2',
-      prev: '1',
-      next: '3',
-      videos: [
-         {
-            src: 'http://www.w3schools.com/html/mov_bbb.mp4',
-         }
-      ],
-      captions: [
-         'Bunny!'
-      ],
-      images: [
-
-      ]
-   },
-
-];
 
 global.APP = Presenter;
 global.React = React;
