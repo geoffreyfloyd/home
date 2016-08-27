@@ -1,4 +1,4 @@
-var Gnodes = require('gnodes');
+import Gnodes from '../libs/gnodes/index.js';
 var uuid = require('uuid');
 var fs = require('bluebird').promisifyAll(require('fs-extra'));
 var path = require('path');

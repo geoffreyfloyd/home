@@ -5,7 +5,10 @@
          "name": "Launch",
          "type": "node",
          "request": "launch",
-         "program": "${workspaceRoot}/debug.js",
+         // Debug Code Bit
+         // "program": "${workspaceRoot}/debug.js",
+         // Debug Server
+         "program": "${workspaceRoot}/build/server/index.js",
          "stopOnEntry": false,
          "args": [],
          "cwd": "${workspaceRoot}",

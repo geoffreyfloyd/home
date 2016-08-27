@@ -85,10 +85,10 @@ export default class LogEntry extends React.Component {
                 <TagInput path="tags" items={tags} />
               </InputGroup>
               <InputGroup label="Measure">
-                <SelectionInput path="measure" type="number" items={targetStore.getMeasures() } displayPath="name" valuePath="value" />
+                <SelectionInput path="measure" type="number" items={targetStore.getMeasures()} displayPath="name" valuePath="value" />
               </InputGroup>
               <InputGroup label="Period">
-                <SelectionInput path="period" type="number" items={targetStore.getPeriods() } displayPath="name" valuePath="value" />
+                <SelectionInput path="period" type="number" items={targetStore.getPeriods()} displayPath="name" valuePath="value" />
               </InputGroup>
               <InputGroup label="Periods">
                 <TextInput path="multiplier" type="number" />

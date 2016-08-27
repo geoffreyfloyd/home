@@ -100,9 +100,9 @@ var modelStraps = {
       // calc tags data
       var actions = [];
       var tags = [];
-
       // Add direct tags
       gnode.siblings('tag').forEach(function (tagGnapse) {
+        
          var tagGnode = tagGnapse.getTarget();
          if (tagGnode) {
             tags.push(getModel(tagGnode, db, 'tag'));
