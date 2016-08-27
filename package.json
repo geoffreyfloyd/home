@@ -6,13 +6,15 @@
   "license": "ISC",
   "homepage": "https://home.hoomanlogic.com",
   "scripts": {
+    "build": "npm run build-client && npm run build-server",
+    "build-client": "webpack --verbose",
+    "build-server": "./node_modules/.bin/babel src --out-dir build && cp ./src/server/templates/boilerstrapalize.css ./build && cp -r -force ./src/server/templates ./build/server",
+    "debug": "./node_modules/.bin/babel src --out-dir debug --watch",
+    "deploy": "webpack --release && npm run build-server",
     "dev": "node dev-server.js -c ./webpack.hotdev.config",
     "eslint": "eslint src",
-    "build": "webpack --verbose && cp ./src/server/templates/boilerstrapalize.css ./build",
-    "deploy": "webpack --release",
-    "start-dev": "babel-node src/server/index.js --verbose",
-    "start": "babel-node src/server/index.js --release",
-    "debug": "babel src --out-dir debug --watch"
+    "start-dev": "./node_modules/.bin/babel-node src/server/index.js --verbose",
+    "start": "node build/server/index.js --release"
   },
   "dependencies": {
     "bluebird": "^3.3.4",

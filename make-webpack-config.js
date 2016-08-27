@@ -120,6 +120,12 @@ module.exports = function (options) {
             test: /\.json$/,
             loader: 'json',
          },
+         // Just strip them out until we bother with localization
+         {
+            test: /\.js(x|on)?$/,
+            loader: 'l10n-loader',
+            include: path.resolve(__dirname, 'src'),
+         },
       ];
       output = {
          path: './build',
