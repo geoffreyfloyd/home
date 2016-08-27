@@ -2,5 +2,11 @@
 {
     // The number of spaces a tab is equal to.
     "editor.tabSize": 3,
-    "javascript.validate.enable": false
+    "javascript.validate.enable": false,
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/debug": true,
+        "**/build": true
+    }
 }
