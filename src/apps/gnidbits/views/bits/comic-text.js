@@ -1,21 +1,13 @@
 import React from 'react';
 
 export default class ComicText extends React.Component {
-
-   constructor(props) {
-      super(props);
-   }
-   
-   renderParagraphs() {
-      
-      var paragraphs = [];
-      
+   renderParagraphs () {
       var { text } = this.props;
-      
+
       return text.split('\n').map(line => {
          var l = line.slice();
          var s = [{}, styles.line];
-         
+
          // MD Headers
          if (l.slice(0, 1) === '#') {
             s.push(styles.h1);
@@ -29,12 +21,12 @@ export default class ComicText extends React.Component {
                }
             }
          }
-         
+
          return <p style={Object.assign(...s)}>{l}</p>;
       });
    }
 
-   render() {
+   render () {
       return (
          <div style={styles.container} onClick={this.props.onClick}>
             {this.renderParagraphs()}

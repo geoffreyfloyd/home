@@ -4,24 +4,17 @@ import ComicImage from './comic-image';
 import ComicCaption from './comic-caption';
 import ComicVideo from './comic-video';
 import ComicText from './comic-text';
-import those from 'those';
 import ReactDOM from 'react-dom';
 
-function isElementInViewport (el) {
-   var rect = el.getBoundingClientRect();
-   return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (global.window.innerHeight || global.document.documentElement.clientHeight) && /* or $(window).height() */
-      rect.right <= (global.window.innerWidth || global.document.documentElement.clientWidth) /* or $(window).width() */
-   );
-}
-
 export default class ComicPane extends React.Component {
+   /*************************************************************
+    * COMPONENT LIFECYCLE
+    *************************************************************/
    constructor (props) {
       super(props);
       this.handleMediaClick = this.handleMediaClick.bind(this);
       this.handleMediaDone = this.handleMediaDone.bind(this);
+      this.handleCaptionClick = this.handleCaptionClick.bind(this);
       this.handleClearFocusClick = this.handleClearFocusClick.bind(this);
       this.state = {
          focusOn: null,
@@ -54,6 +47,13 @@ export default class ComicPane extends React.Component {
       }
    }
 
+   /*************************************************************
+    * EVENT HANDLING
+    *************************************************************/
+   handleCaptionClick () {
+      window.location.href = '/bit/' + this.props.uri;
+   }
+
    handleMediaClick (kind) {
       // Give attention to this media item, and get others out of the way
       this.setState({
@@ -81,6 +81,9 @@ export default class ComicPane extends React.Component {
       }
    }
 
+   /*************************************************************
+    * METHODS
+    *************************************************************/
    calcMedia (props) {
       var images = [];
       var texts = [];
@@ -134,30 +137,33 @@ export default class ComicPane extends React.Component {
       };
    }
 
-   renderPane () {
+   /*************************************************************
+    * RENDERING
+    *************************************************************/
+   render () {
+      var { active, caption, mode, onClick } = this.props;
       var inactiveOverlay;
-      if (!this.props.active) {
-         inactiveOverlay = <div style={styles.inactive} onClick={this.props.onClick} />;
+      if (!active) {
+         inactiveOverlay = <div style={styles.inactive} onClick={onClick} />;
       }
 
       return (
-         <div style={styles[this.props.mode]}>
+         <div style={styles[mode]}>
             <div style={styles.pane} onClick={this.handlePaneClick}>
                {this.state.images}
                {this.state.videos[this.state.mediaIndex]}
                {this.state.texts}
             </div>
-            <ComicCaption>{this.props.caption}</ComicCaption>
+            <ComicCaption onClick={this.handleCaptionClick}>{caption}</ComicCaption>
             {inactiveOverlay}
          </div>
       );
    }
-
-   render () {
-      return this.renderPane();
-   }
 }
 
+/*************************************************************
+ * STYLES
+ *************************************************************/
 const styles = {
    pane: {
       height: '20rem',
@@ -187,3 +193,16 @@ const styles = {
       bottom: 0,
    },
 };
+
+/*************************************************************
+ * PRIVATE
+ *************************************************************/
+function isElementInViewport (el) {
+   var rect = el.getBoundingClientRect();
+   return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= (global.window.innerHeight || global.document.documentElement.clientHeight) && /* or $(window).height() */
+      rect.right <= (global.window.innerWidth || global.document.documentElement.clientWidth) /* or $(window).width() */
+   );
+}

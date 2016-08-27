@@ -1,16 +1,14 @@
 import React from 'react';
 
-export default class ComicCaption extends React.Component {
-   render() {
-         return (
-            <div style={styles.container}>
-               <div style={styles.pane} onClick={this.props.onClick}>
-                  {this.props.children}
-               </div>
-            </div>
-         );
-   }
-}
+const ComicCaption = function ({ onClick, children }) {
+   return (
+      <div style={styles.container}>
+         <div style={styles.pane} onClick={onClick}>
+            {children}
+         </div>
+      </div>
+   );
+};
 
 const styles = {
    container: {
@@ -27,3 +25,5 @@ const styles = {
       borderRadius: '0.25rem',
    },
 };
+
+export default ComicCaption;

@@ -15,7 +15,7 @@ export default class ComicStrip extends React.Component {
       this.handlePaneActivate = this.handlePaneActivate.bind(this);
       this.handlePaneDone = this.handlePaneDone.bind(this);
       if (global.window) {
-         global.window.document.addEventListener('keydown', this.handleKeyDown, false);   
+         global.window.document.addEventListener('keydown', this.handleKeyDown, false);
       }
    }
 
@@ -65,11 +65,11 @@ export default class ComicStrip extends React.Component {
    renderImage (image, index) {
       return <ComicImage key={'image-' + index} {...image} />;
    }
-   
+
    renderText (text, index) {
-      return <ComicText key={'text-' + index} {...text} />
+      return <ComicText key={'text-' + index} {...text} />;
    }
-   
+
    render () {
       return (
          <div style={styles[this.props.mode]}>
@@ -78,20 +78,20 @@ export default class ComicStrip extends React.Component {
                var captions = [];
                var videos = [];
                var texts = [];
-               
+
                if (node.videos && node.videos.length) {
-                  videos = node.videos.map((vid, index) => this.renderVideo(vid, index));
+                  videos = node.videos.map((vid, i) => this.renderVideo(vid, i));
                }
                if (node.images && node.images.length) {
-                  images = node.images.map((img, index) => this.renderImage(img, index));
+                  images = node.images.map((img, i) => this.renderImage(img, i));
                }
                if (node.texts && node.texts.length) {
-                  texts = node.texts.map((txt, index) => this.renderText(txt, index));
+                  texts = node.texts.map((txt, i) => this.renderText(txt, i));
                }
-               
-               return ( 
-                  <ComicPane 
-                    uri={node.uri || String(index)}
+
+               return (
+                  <ComicPane
+                    uri={node.uri || node.id || String(index)}
                     caption={node.caption}
                     onClick={this.handlePaneActivate.bind(null, index)}
                     onDone={this.handlePaneDone.bind(null, index)}
@@ -119,7 +119,7 @@ const styles = {
       width: '31rem',
       marginLeft: 'auto',
       marginRight: 'auto',
-      
+
    },
    pan: {
       overflowX: 'auto',
