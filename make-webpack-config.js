@@ -1,8 +1,8 @@
 var webpack = require('webpack');
 var path = require('path');
-var homeConfig = require('./apps.config.js');
 
 var DEBUG = process.argv.indexOf('--release') === -1;
+var homeConfig = require('./apps.config.js')(DEBUG);
 process.env.NODE_ENV = DEBUG ? 'development' : 'production';
 
 module.exports = function (options) {

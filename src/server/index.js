@@ -1,17 +1,20 @@
+// NATIVES
 import path from 'path';
+// PACKAGES
 import express from 'express';
-import socketServer from './socket-server';
-import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import methodOverride from 'method-override';
+import cookieParser from 'cookie-parser';
 import session from 'express-session';
+import methodOverride from 'method-override';
 import PrettyError from 'pretty-error';
-
+// LIBS
+import socketServer from './socket-server';
 import Operator from '../libs/operator';
+// CONFIGS
 import config from '../../home.config';
-import appsConfig from '../../apps.config';
 
 const DEBUG = process.argv.indexOf('--release') === -1;
+var appsConfig = require('../../apps.config')(DEBUG);
 var port = require('../../server.config')(DEBUG).port;
 const server = global.server = express();
 
