@@ -2,7 +2,7 @@ import localForage from 'localforage';
 import AES from 'crypto-js/aes';
 import utf8 from 'crypto-js/enc-utf8';
 import Promise from 'bluebird';
-import EventHandler from 'libs/event-handler';
+import EventHandler from '../libs/event-handler';
 
 const defaultCache = {
    version: 1, // increment this when changes to the caching could fail with old cache

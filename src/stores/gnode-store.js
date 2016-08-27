@@ -6,8 +6,8 @@
 // PACKAGES
 import uuid from 'uuid';
 // LIBS
-import http from 'libs/http';
-import { getType } from 'libs/type';
+import http from '../libs/http';
+import { getType } from '../libs/type';
 // STORES
 import cacheStore from './cache-store';
 import ContextStore from './context-store';

@@ -26,7 +26,7 @@ export default class Bit extends React.Component {
       this.handleTagStoreUpdate = this.handleTagStoreUpdate.bind(this);
       // Set initial state
       this.state = {
-         model: bitStore.new(),
+         model: null,
          tags: [],
       };
    }
@@ -51,7 +51,9 @@ export default class Bit extends React.Component {
    }
 
    handleBitStoreUpdate (value) {
-      this.refs.form.reset();
+      if (this.refs.form) {
+         this.refs.form.reset();
+      }
       this.setState({
          model: value
       });

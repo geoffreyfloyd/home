@@ -1,4 +1,5 @@
 import { create, get, getAll, remove, update } from '../../stores/core';
+import bitStore from '../../stores/bit-store';
 import those from 'those';
 
 module.exports = function (operator) {
@@ -13,7 +14,13 @@ module.exports = function (operator) {
 
    operator.server.get('/api/gnidbits/bit/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       get(operator, req.params.id, 'gnidbits.bit').then(result => {
-         res.end(JSON.stringify(result));
+         if (result === null) {
+            // Send a new model
+            res.end(JSON.stringify(bitStore.new(req.params.id)));
+         }
+         else {
+            res.end(JSON.stringify(result));
+         }
       });
    });
 

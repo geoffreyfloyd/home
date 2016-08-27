@@ -5,10 +5,10 @@ class BitStore extends GnodeStore {
       super('Gnidbits', 'Bit', 1);
    }
 
-   new () {
+   new (id) {
       return {
          isNew: true,
-         id: GnodeStore.uuid(),
+         id: id || GnodeStore.uuid(),
          caption: '',
          videos: [],
          images: [],

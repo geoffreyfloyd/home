@@ -3,7 +3,7 @@
  * @description A function that wraps fetch api for semantically creating
  *              and dispatching an http request with functional chaining.
  */
-import 'libs/fetch';
+import './fetch';
 
 class HttpRequest {
     constructor (url, opts) {
