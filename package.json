@@ -8,7 +8,8 @@
   "scripts": {
     "build": "npm run build-client && npm run build-server",
     "build-client": "webpack --verbose",
-    "build-server": "./node_modules/.bin/babel src --out-dir build && cp ./src/server/templates/boilerstrapalize.css ./build && cp -r -force ./src/server/templates ./build/server",
+    "build-server": "./node_modules/.bin/babel src --out-dir build && npm run build-static",
+    "build-static": "cp -r -f ./src/server/templates ./build/server && cp -f ./src/server/templates/boilerstrapalize.css ./build",
     "debug": "./node_modules/.bin/babel src --out-dir debug --watch",
     "deploy": "webpack --release && npm run build-server",
     "dev": "node dev-server.js -c ./webpack.hotdev.config",

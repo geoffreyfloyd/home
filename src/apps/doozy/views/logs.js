@@ -6,6 +6,7 @@ import logentryStore from 'stores/logentry-store';
 import tagStore from 'stores/tag-store';
 // COMPONENTS
 import appStyle from 'apps/gnidbits/style';
+import LoadingIndicator from 'components/LoadingIndicator';
 import LogEntryList from 'components/LogEntryList';
 
 export default class LogEntries extends React.Component {
@@ -51,7 +52,13 @@ export default class LogEntries extends React.Component {
       var { list, tags } = this.state;
 
       if (!list.length || !tags.length) {
-         return <div>Loading...</div>;
+         return (
+            <div style={appStyle.background}>
+               <div style={appStyle.loading}>
+                  <LoadingIndicator />
+               </div>
+            </div>
+         );
       }
 
       return (

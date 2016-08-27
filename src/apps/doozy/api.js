@@ -1,5 +1,6 @@
 import { create, get, getAll, remove, update } from '../../stores/core';
 import those from 'those';
+import logentryStore from '../../stores/logentry-store';
 
 /**
  * Set the context for data access
@@ -316,7 +317,13 @@ module.exports = function (operator) {
 
    operator.server.get('/api/doozy/logentry/:id', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
       get(operator, req.params.id, 'doozy.logentry').then(result => {
-         res.end(JSON.stringify(result));
+         if (result === null) {
+            // Send a new model
+            res.end(JSON.stringify(logentryStore.new(req.params.id)));
+         }
+         else {
+            res.end(JSON.stringify(result));
+         }
       });
    });
 

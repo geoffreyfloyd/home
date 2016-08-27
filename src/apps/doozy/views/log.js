@@ -13,6 +13,7 @@ import TagInput from 'components/forms/TagInput';
 import TextInput from 'components/forms/TextInput';
 import MultiLineInput from 'components/forms/MultiLineInput';
 import Message from 'components/Message';
+import LoadingIndicator from 'components/LoadingIndicator';
 
 export default class LogEntry extends React.Component {
    /*************************************************************
@@ -26,7 +27,7 @@ export default class LogEntry extends React.Component {
       this.handleTagStoreUpdate = this.handleTagStoreUpdate.bind(this);
       // Set initial state
       this.state = {
-         model: logentryStore.new(),
+         model: null,
          tags: [],
       };
    }
@@ -40,6 +41,9 @@ export default class LogEntry extends React.Component {
     * EVENT HANDLING
     *************************************************************/
    handleLogentryStoreUpdate (value) {
+      if (this.refs.form) {
+         this.refs.form.reset();
+      }
       this.setState({
          model: value,
       });
@@ -67,6 +71,17 @@ export default class LogEntry extends React.Component {
     *************************************************************/
    render () {
       var { model, tags } = this.state;
+
+      if (!model) {
+         return (
+            <div style={appStyle.background}>
+               <div style={appStyle.loading}>
+                  <LoadingIndicator />
+               </div>
+            </div>
+         );
+      }
+
       return (
          <div style={appStyle.background}>
             <div style={appStyle.content}>

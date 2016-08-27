@@ -1,5 +1,5 @@
 import GnodeStore from './gnode-store';
-import { getLocalDateString } from 'libs/date-util';
+import { getLocalDateString } from '../libs/date-util';
 
 class LogEntryStore extends GnodeStore {
 
@@ -7,10 +7,10 @@ class LogEntryStore extends GnodeStore {
       super('Doozy', 'Logentry', 1);
    }
 
-   new () {
+   new (id) {
       return {
          isNew: true,
-         id: GnodeStore.uuid(),
+         id: id || GnodeStore.uuid(),
          actionId: null,
          actions: [],
          rootActionId: null,
