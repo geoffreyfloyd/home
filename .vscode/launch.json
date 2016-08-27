@@ -8,7 +8,7 @@
          // Debug Code Bit
          // "program": "${workspaceRoot}/debug.js",
          // Debug Server
-         "program": "${workspaceRoot}/build/server/index.js",
+         "program": "${workspaceRoot}/debug/server/index.js",
          "stopOnEntry": false,
          "args": [],
          "cwd": "${workspaceRoot}",
