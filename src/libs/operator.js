@@ -68,7 +68,7 @@ class Operator {
                   entry: DEBUG ? (`http://localhost:3000/static/${appKey}-${uiKey}.js`) : (`/static/${appKey}-${uiKey}.js`),
                   params: req.params,
                };
-               res.render(entry.view, data);
+               res.render(entry.template, data);
             });
          });
       });

@@ -36,7 +36,7 @@ server.use(session({
 //
 // Set View Template Provider
 // -----------------------------------------------------------------------------
-server.set('views', path.resolve(__dirname, './views'));
+server.set('views', path.resolve(__dirname, './templates'));
 server.set('view engine', 'pug');
 
 //

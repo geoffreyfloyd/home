@@ -1,18 +1,18 @@
 var path = require('path');
 module.exports = exports = {
    bit: {
-      entry: path.resolve(__dirname, './bit/index.js'),
+      entry: path.resolve(__dirname, './views/bit.js'),
       route: '/bit/:id',
-      view: 'index',
+      template: 'index',
    },
    bits: {
-      entry: path.resolve(__dirname, './bits/index.js'),
+      entry: path.resolve(__dirname, './views/bits/index.js'),
       route: '/bits',
-      view: 'gnidbits',
+      template: 'gnidbits',
    },
    lif: {
-      entry: path.resolve(__dirname, './lif/index.js'),
+      entry: path.resolve(__dirname, './views/lif.js'),
       route: '/lif',
-      view: 'gnidbits',
+      template: 'gnidbits',
    },
 };

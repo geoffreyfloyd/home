@@ -3,26 +3,26 @@ module.exports = exports = {
    calendar: {
       entry: path.resolve(__dirname, './views/calendar/index.js'),
       route: '/calendar',
-      view: 'index',
+      template: 'index',
    },
    log: {
       entry: path.resolve(__dirname, './views/log.js'),
       route: '/log/:id',
-      view: 'index',
+      template: 'index',
    },
    logs: {
       entry: path.resolve(__dirname, './views/logs.js'),
       route: '/logs',
-      view: 'index',
+      template: 'index',
    },
    target: {
       entry: path.resolve(__dirname, './views/target.js'),
       route: '/target/:id',
-      view: 'index',
+      template: 'index',
    },
    targets: {
       entry: path.resolve(__dirname, './views/targets.js'),
       route: '/targets',
-      view: 'index',
+      template: 'index',
    },
 };
