@@ -45,17 +45,19 @@ export default class GnodeStore extends ContextStore {
 
       // Initialize server failure retry interval to 15 seconds
       this.retry = 15;
+
+      this.updateStore = this.updateStore.bind(this);
    }
 
    /**
     * Store Methods
     */
    create (model) {
-      return http(this.url).post().withCreds().withJsonBody(model).requestJson();
+      return http(this.url).post().withCreds().withJsonBody(model).requestJson().then(this.updateStore);
    }
 
    destroy (id) {
-      return http(`${this.url}/${id}`, { method: 'DELETE' }).withCreds().requestJson().then(newModel => this.updateCache(newModel.id || newModel.key, newModel));
+      return http(`${this.url}/${id}`, { method: 'DELETE' }).withCreds().requestJson().then(this.updateStore);
    }
 
    get (key) {
@@ -80,15 +82,22 @@ export default class GnodeStore extends ContextStore {
    }
 
    update (model) {
-      return http(this.url).put().withCreds().withJsonBody(model).requestJson().then(newModel => this.updateCache(newModel.id || newModel.key, newModel));
+      return http(this.url).put().withCreds().withJsonBody(model).requestJson().then(this.updateStore);
    }
 
-    /***********************************************************************
-     * VIRTUALS
-     **********************************************************************/
-    /**
-     * Override in inherited store to reduce calls to server
-     */
+   updateStore (newModel) {
+      this.updateCache(newModel.id || newModel.key, newModel);
+      this.updateContext(newModel, { key: newModel.id || newModel.key });
+      this.updateContext(cacheStore.cache[this.storeName].entities, { key: '*' });
+      return newModel;
+   }
+
+   /***********************************************************************
+    * VIRTUALS
+    **********************************************************************/
+   /**
+    * Override in inherited store to reduce calls to server
+    */
    isCacheValid (cacheItem) {
       if (this.defaultRefresh && cacheItem && (cacheItem.lastChecked || cacheItem.lastChanged) && (cacheItem.isCacheInvalid || false) === false) {
          var preferDate = cacheItem.lastChecked || cacheItem.lastChanged;
@@ -137,20 +146,20 @@ export default class GnodeStore extends ContextStore {
       var promisePlus = this.get(key);
       var abort = promisePlus.abort;
       promisePlus = promisePlus.then(result => {
-            // Reset retry interval to 5 seconds
-            // on a successful call
+         // Reset retry interval to 5 seconds
+         // on a successful call
          this.retry = 15;
 
-            // Returns null when no update is available
-            // based on the latest update
+         // Returns null when no update is available
+         // based on the latest update
          if (!result) {
-                // done callback
+            // done callback
             this.updateCache(key, result);
             (done || function () { })(null);
             return;
          }
 
-            // Merge Result Store Hook (result must have truthy `merge` prop)
+         // Merge Result Store Hook (result must have truthy `merge` prop)
          if (result.merge && this._onMergeResult) {
             var entity = cacheStore.cache[this.storeName].entities[key];
             if (entity) {
@@ -158,30 +167,30 @@ export default class GnodeStore extends ContextStore {
             }
          }
 
-            // Process Result Store Hook
+         // Process Result Store Hook
          if (this._onProcessResult) {
             this._onProcessResult(key, result);
          }
 
-            // Update the local stash of entities
+         // Update the local stash of entities
          this.updateCache(key, result);
 
-            // Call Got New Data handler
+         // Call Got New Data handler
          if (typeof this.onGotNewData === 'function') {
             this.onGotNewData(result);
          }
 
-            // if a specific need exists for this key
-            // then update the value and notify subscribers
+         // if a specific need exists for this key
+         // then update the value and notify subscribers
          this.updateContext(result, { key: key });
 
-            // Update the global need
-         this.updateContext(cacheStore.cache[this.storeName].entities, {});
+         // Update the global need
+         this.updateContext(cacheStore.cache[this.storeName].entities, { key: '*' });
 
-            // done callback
+         // done callback
          (done || function () { })(result);
       }).catch(err => {
-            // Get response object
+         // Get response object
          var response;
          if (err && err.response) {
             response = err.response;
@@ -190,12 +199,12 @@ export default class GnodeStore extends ContextStore {
             response = err;
          }
 
-            // jQuery Promise Aborted
+         // jQuery Promise Aborted
          if (response && response.statusText && response.statusText === 'abort') {
             return;
          }
 
-            // Bad Request
+         // Bad Request
          if (response && response.status === 400) {
                 // Notify subscribers of bad request
                 // if a specific need exists for this key
@@ -205,8 +214,8 @@ export default class GnodeStore extends ContextStore {
             return;
          }
 
-            // These http response statuses could be
-            // temporary problems and should be retried
+         // These http response statuses could be
+         // temporary problems and should be retried
          var retryOnHttpStatusCodes = [
             404, // Not Found (but may be available in the future)
             408, // Request Timed Out
@@ -215,25 +224,25 @@ export default class GnodeStore extends ContextStore {
             504, // Gateway Timeout
          ];
 
-            // Check if this request should be retried
+         // Check if this request should be retried
          if (response && response.status && this.retry <= 120 && retryOnHttpStatusCodes.indexOf(response.status) > -1) {
-                // Log to console that an error occurred
+            // Log to console that an error occurred
             if (process.env.NODE_ENV !== 'production') {
                console.log(this.storeName + ' store got an error response from the server, trying again in ' + this.retry + ' seconds...');
             }
 
-                // Retry this request in 15-120 seconds
+            // Retry this request in 15-120 seconds
             setTimeout(() => this.requestLatestData(key), this.retry * 1000);
 
-                // If it fails again, we'll wait 15 additional
-                // seconds to give it enough time to resolve itself
+            // If it fails again, we'll wait 15 additional
+            // seconds to give it enough time to resolve itself
             this.retry += 15;
          }
 
          if (!response || retryOnHttpStatusCodes.indexOf(response.status) === -1) {
-                // fail callback
+            // fail callback
             (fail || function () { })(err);
-                // Throw the error so the global error handler catches this
+            // Throw the error so the global error handler catches this
             throw err;
          }
       });
@@ -245,10 +254,10 @@ export default class GnodeStore extends ContextStore {
       return new Promise(resolve => {
          cacheStore.getCache(this.storeName).then(cache => {
             var lastChecked = new Date().toISOString();
-                // Value is null when there is nothing new from the server
+            // Value is null when there is nothing new from the server
             if (value === null) {
-                    // Update a lastChecked field to help validate cache
-               if (key) {
+               // Update a lastChecked field to help validate cache
+               if (key !== '*') {
                   var entity = cache.entities[key];
                   if (entity) {
                      entity.lastChecked = lastChecked;
@@ -259,35 +268,35 @@ export default class GnodeStore extends ContextStore {
                }
             }
             else {
-                    // Value contains an Entity Set
+               // Value contains an Entity Set
                if (value && getType(value.results) === 'array') {
-                        // call for each individual entity
-                        // Flatten Sub Entity Results in Cache
+                  // call for each individual entity
+                  // Flatten Sub Entity Results in Cache
                   value.results.forEach(each => {
-                            // Recursive call to add/update this entity
+                     // Recursive call to add/update this entity
                      cache.entities[each.id] = { ...each, lastChecked };
 
-                            // Get the latest last changed value
-                            // from the entities in the array
+                     // Get the latest last changed value
+                     // from the entities in the array
                      if (each.lastChanged > cache.lastChanged) {
                         cache.lastChanged = each.lastChanged;
                      }
-                            // Get the version value
-                            // from the entities in the array
+                     // Get the version value
+                     // from the entities in the array
                      if (each.version > cache.version) {
                         cache.version = each.version;
                      }
                   });
                }
 
-                    // Value is an Entity
+               // Value is an Entity
                cache.entities[key] = { ...value, lastChecked };
             }
 
-                // Request persistance of updated cache
+            // Request persistance of updated cache
             cacheStore.update(this.storeName, cache);
 
-                // Resolve promise
+            // Resolve promise
             resolve(cache);
          });
          return true;

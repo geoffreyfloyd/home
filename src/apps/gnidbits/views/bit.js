@@ -43,13 +43,14 @@ export default class Bit extends React.Component {
       var newModel = Object.assign({}, this.state.model, form);
 
       Message.notify('Saving...');
-      bitStore.save(newModel).then(serverModel => {
-         this.setState({ model: serverModel });
+      bitStore.save(newModel).then(() => {
+         // this.setState({ model: serverModel });
          Message.notify('Saved...');
       });
    }
 
    handleBitStoreUpdate (value) {
+      this.refs.form.reset();
       this.setState({
          model: value
       });
