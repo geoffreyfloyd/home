@@ -15,6 +15,7 @@ import InputTable from 'components/forms/InputTable';
 import TagInput from 'components/forms/TagInput';
 import TextInput from 'components/forms/TextInput';
 import MultiLineInput from 'components/forms/MultiLineInput';
+import LoadingIndicator from 'components/LoadingIndicator';
 
 export default class Bit extends React.Component {
    constructor (props) {
@@ -67,6 +68,14 @@ export default class Bit extends React.Component {
    *************************************************************/
    render () {
       var { model, tags } = this.state;
+
+      if (!model) {
+         return (
+            <div style={$background}>
+               <LoadingIndicator />
+            </div>
+         );
+      }
 
       return (
          <div style={$background}>
