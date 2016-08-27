@@ -59,6 +59,14 @@ var LogEntryListItem = React.createClass({
       this.handlers.saveChanges.dispose();
    },
 
+   componentWillReceiveProps (nextProps) {
+      if (nextProps.data !== this.props.data) {
+         this.setState({
+            data: { ...nextProps.data }
+         });
+      }
+   },
+
    componentDidUpdate () {
       if (this.state.isDropDownOpen) {
          $(window).on('click.Bst', this.handleOutsideClick);
@@ -122,7 +130,11 @@ var LogEntryListItem = React.createClass({
    },
 
    handleSaveChanges () {
-      logEntryStore.save(this.state.data);
+      logEntryStore.save(this.state.data).then(() => {
+         if (!this.props.data.id) {
+            window.location.href = '/logs';
+         }
+      });
    },
 
    handleDropDownClick () {
@@ -135,7 +147,6 @@ var LogEntryListItem = React.createClass({
     * RENDERING
     *************************************************************/
    renderLayer () {
-
       if (!this.state.isDropDownOpen) {
          return null;
       }
@@ -144,21 +155,41 @@ var LogEntryListItem = React.createClass({
       var options = [];
 
       options.push((
-         <li key="1"><a className="clickable hoverable" style={styles.userOptionsItem} onClick={this.handleDeleteClick}><i className="fa fa-trash"></i> Delete Log Entry</a></li>
+         <li key="1">
+            <a className="clickable hoverable" style={styles.userOptionsItem} onClick={this.handleDeleteClick}>
+               <i className="fa fa-trash"></i> Delete Log Entry
+            </a>
+         </li>
       ));
       options.push((
-         <li key="2"><a className="clickable hoverable" href={'/log/' + data.id} style={styles.userOptionsItem}><i className="fa fa-pencil"></i> Edit Entry</a></li>
+         <li key="2">
+            <a className="clickable hoverable" href={'/log/' + data.id} style={styles.userOptionsItem}>
+               <i className="fa fa-pencil"></i> Edit Entry
+            </a>
+         </li>
       ));
       if (data.actions && data.actions.length) {
          options.push((
-            <li key="3"><a className="clickable hoverable"  href={'/action/' + data.actions[0].id} style={styles.userOptionsItem}><i className="fa fa-pencil"></i> Edit Action</a></li>
+            <li key="3">
+               <a className="clickable hoverable" href={'/action/' + data.actions[0].id} style={styles.userOptionsItem}>
+                  <i className="fa fa-pencil"></i> Edit Action
+               </a>
+            </li>
          ));
       }
       options.push((
-         <li key="4"><a className="clickable hoverable" style={styles.userOptionsItem} onClick={this.handleEditDetailsClick}><i className="fa fa-pencil"></i> Edit Details</a></li>
+         <li key="4">
+            <a className="clickable hoverable" style={styles.userOptionsItem} onClick={this.handleEditDetailsClick}>
+               <i className="fa fa-pencil"></i> Edit Details
+            </a>
+         </li>
       ));
       options.push((
-         <li key="5"><a className="clickable hoverable" style={styles.userOptionsItem} onClick={this.handleEditDurationClick}><i className="fa fa-pencil"></i> Edit Duration</a></li>
+         <li key="5">
+            <a className="clickable hoverable" style={styles.userOptionsItem} onClick={this.handleEditDurationClick}>
+               <i className="fa fa-pencil"></i> Edit Duration
+            </a>
+         </li>
       ));
 
       return (
@@ -172,8 +203,7 @@ var LogEntryListItem = React.createClass({
    render () {
       var duration, typeOfLogEntry;
       var data = this.state.data;
-      var knownAs = 'You'; // data.knownAs
-      // var profilePic = <div style={{minWidth: '45px', paddingRight: '5px'}}><img style={{maxHeight: '45px', padding: '2px'}} src={this.props.data.profileUri} /></div>;
+      var knownAs = 'You';
 
       if (data.duration) {
          duration = new babble.Duration(data.duration * 60000).toString();
@@ -235,9 +265,9 @@ var LogEntryListItem = React.createClass({
 });
 
 
-/**
- * Inline Styles
- */
+/*************************************************************
+ * STYLES
+ *************************************************************/
 var styles = {
    logEntryBox: {
       display: 'flex',

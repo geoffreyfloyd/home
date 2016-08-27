@@ -53,6 +53,7 @@ class LogEntryList extends React.Component {
          .first();
       if (!latestLog || latestLog.date !== getLocalDateString()) {
          newModel = logEntryStore.new();
+         newModel.id = '';
          if (props.tagFilter && props.tagFilter.length) {
             newModel.tags = props.tags.filter(tag => props.tagFilter.indexOf(tag.name) > -1);
          }
