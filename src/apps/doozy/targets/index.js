@@ -1,5 +1,5 @@
 // PACKAGES
-import babble from 'babble';
+import babble from 'libs/babble';
 import _ from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';

@@ -1,4 +1,4 @@
-import babble from 'babble';
+import babble from 'libs/babble';
 import those from 'those';
 
 export function calcNaturalDays (date) {

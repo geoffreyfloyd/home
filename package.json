@@ -15,7 +15,6 @@
     "debug": "babel src --out-dir debug --watch"
   },
   "dependencies": {
-    "babble": "git+https://github.com/hoomanlogic/babble.git#master",
     "bluebird": "^3.3.4",
     "body-parser": "1.15.0",
     "cookie-parser": "1.4.1",

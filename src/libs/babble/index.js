@@ -1,7 +1,7 @@
 'use strict';
 
-var core = require('./src/core');
-Object.assign(core, require('./src/durations'));
-Object.assign(core, require('./src/moments'));
-Object.assign(core, require('./src/numbers'));
+var core = require('./core');
+Object.assign(core, require('./durations'));
+Object.assign(core, require('./moments'));
+Object.assign(core, require('./numbers'));
 module.exports = core;

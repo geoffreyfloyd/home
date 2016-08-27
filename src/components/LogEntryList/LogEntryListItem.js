@@ -1,6 +1,6 @@
 /* globals window $ */
 import React from 'react';
-import babble from 'babble';
+import babble from 'libs/babble';
 import those from 'those';
 import EventHandler, { getThrottledHandler } from 'libs/event-handler';
 
