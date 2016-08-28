@@ -82,10 +82,12 @@ class Session extends React.Component {
 
       return (
          <Layout layoutContext={this.props.layoutContext} layoutOptions={{ overflow: 'y' }} style={styles.appContainer}>
-            <a onClick={this.handleCloseClick} style={{ float: 'right', marginLeft: '0.2em' }}><i className={'fa fa-2x fa-close'} style={styles.close}></i></a>
-            {unselectedDom}
-            <h3 style={{ margin: '0', lineHeight: '40px' }}>{title}</h3>
-            {this.state.collapsed ? [] : requests.map(request => <Request key={request.id} data={request} />)}
+            <div style={{ width: '100%' }}>
+               <a onClick={this.handleCloseClick} style={{ float: 'right', marginLeft: '0.2em' }}><i className={'fa fa-2x fa-close'} style={styles.close}></i></a>
+               {unselectedDom}
+               <h3 style={{ margin: '0', lineHeight: '40px' }}>{title}</h3>
+               {this.state.collapsed ? [] : requests.map(request => <Request key={request.id} data={request} />)}
+            </div>
          </Layout>
       );
    }

@@ -1,5 +1,7 @@
 // PACKAGES
 import React from 'react';
+// LIBS
+import { flex, flexItem } from 'libs/style';
 // MIXINS
 import formRelay from './formRelay';
 
@@ -49,61 +51,49 @@ class InputGroup extends React.Component {
     * RENDERING
     *************************************************************/
    render () {
-      // Detect if any children of the input group have the noBootstrap prop
-      // and not set bootstrap classes when any have it set
-      var noBootStrap;
-      React.Children.forEach(this.props.children, child => {
-         noBootStrap = child.props.noBootStrap || noBootStrap;
-      });
-      // Wrap inputs
+      // Single input wrap
       if (React.Children.count(this.props.children) === 1) {
          return (
-            <div className={noBootStrap ? '' : 'form-group'} style={this.state.visible ? {} : styles.hide}>
+            <div style={this.state.visible ? styles.root : styles.hide}>
                {React.Children.map(this.props.children, child => {
                   return this.renderLabel(React.cloneElement(child, { ...child.props, handleVisible: this.setVisible }), child);
                }) }
             </div>
          );
       }
-      else {
-         return (
-            <div className={noBootStrap ? '' : 'form-group'} style={this.state.visible ? {} : styles.hide}>
-               {this.renderLabel(
-                  <div className={noBootStrap ? '' : 'input-group'} style={this.props.style}>
-                     {React.Children.map(this.props.children, (child, index) => {
-                        return (
-                           <div className={noBootStrap ? '' : 'input-group-addon'} style={Object.assign({}, styles.noPad, this.props.styleInput, child.props.groupStyle, this.getInputStyle(index)) }>
-                              {React.cloneElement(child, { ...child.props, handleVisible: this.setVisible }) }
-                           </div>
-                        );
-                     }) }
-                  </div>
-               ) }
-            </div>
-         );
-      }
+      // Wrap multiple inputs
+      return (
+         <div style={this.state.visible ? styles.root : styles.hide}>
+            {this.renderLabel(
+               <div style={this.props.style}>
+                  {React.Children.map(this.props.children, (child, index) => {
+                     return (
+                        <div style={{ ...styles.noPad, ...this.props.styleInput, ...child.props.groupStyle, ...this.getInputStyle(index) }}>
+                           {React.cloneElement(child, { ...child.props, handleVisible: this.setVisible }) }
+                        </div>
+                     );
+                  }) }
+               </div>
+            ) }
+         </div>
+      );
    }
 
    renderLabel (rendered, child) {
-      var { label, labelExplain, labelSpan, labelStyle } = this.props;
+      var { label, labelExplain, labelBoxStyle, labelStyle, inputStyle } = this.props;
 
       if (label) {
          var path = child ? child.props.path : this.props.label;
-         var inputSpan = 12 - labelSpan;
-         var labelClass = labelStyle ? '' : 'col-md-' + labelSpan;
-         var inputClass = labelStyle ? '' : 'col-md-' + inputSpan;
          return (
-            <div>
-               <label className={[labelClass, 'control-label'].join(' ') } style={labelStyle} title={labelExplain} htmlFor={path}>{label}</label>
-               <div className={inputClass}>
+            <div style={{ ...styles.labelBox, ...labelBoxStyle }}>
+               <label style={{ ...styles.label, ...labelStyle }} title={labelExplain} htmlFor={path}>{label}</label>
+               <div style={{ ...styles.input, ...inputStyle }}>
                   {rendered}
                </div>
             </div>
          );
       }
-      else {
-         return rendered;
-      }
+      return rendered;
    }
 }
 
@@ -111,6 +101,24 @@ class InputGroup extends React.Component {
  * STYLES
  *************************************************************/
 var styles = {
+   labelBox: {
+      ...flex('row', 'nowrap', { alignContent: 'flex-start' })
+   },
+   label: {
+      width: '10rem',
+      minWidth: '10rem',
+      textAlign: 'right',
+      padding: '0.35rem 1rem',
+      fontSize: '1rem',
+      fontWeight: '700',
+      marginBottom: '0',
+   },
+   input: {
+      ...flexItem({ flex: '1', maxWidth: '30rem' }),
+   },
+   root: {
+      paddingBottom: '1rem'
+   },
    hide: {
       display: 'none',
    },

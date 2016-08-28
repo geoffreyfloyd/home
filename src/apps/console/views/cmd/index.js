@@ -69,6 +69,12 @@ class Cmd extends React.Component {
 
    handleClickNewSession () {
       requestStore.new();
+      requestStore.startTerminal().then(json => {
+         console.log(json);
+         requestStore.sendTerminal(json.pid, { msg: 'ls' }).then(res => {
+            console.log(res);
+         });
+      });
    }
 
    handleSelectSession (sessionId) {

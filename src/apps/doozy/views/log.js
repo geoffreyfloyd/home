@@ -97,7 +97,7 @@ export default class LogEntry extends React.Component {
          <HostContainer>
             <div style={appStyle.background}>
                <div style={appStyle.content}>
-                  <Form ref="form" model={model} style={appStyle.form} labelSpan={2} labelStyle={appStyle.label}>
+                  <Form ref="form" model={model} style={appStyle.form} labelStyle={appStyle.label}>
                      <FormSection title="General" style={appStyle.formSection}>
                         <InputGroup label="Date">
                            <TextInput path="date" type="date" />

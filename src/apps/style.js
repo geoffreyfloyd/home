@@ -38,7 +38,7 @@ export default {
       margin: 'auto',
    },
    form: {
-      color: '#2B90E8'
+      color: '#2B90E8',
    },
    formSection: {
       padding: '0.5rem 1rem',

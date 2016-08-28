@@ -8,7 +8,8 @@ client.onerror = () => {
    console.log('Connection Error');
 };
 
-client.onopen = () => {
+client.onopen = (conn) => {
+   console.log(conn);
    console.log('WebSocket Client Connected');
 };
 
@@ -17,7 +18,7 @@ client.onclose = () => {
 };
 
 client.onmessage = function (e) {
-   callbacks.map(cb => cb(e.data));
+   callbacks.forEach(cb => cb(e.data));
    if (typeof e.data === 'string') {
       console.log(`Received: '${e.data}'`);
    }

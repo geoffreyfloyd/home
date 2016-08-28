@@ -5,20 +5,35 @@ import those from 'those';
 
 var callbacks = [];
 var requests = [];
+var keys = {};
+
+// Set base url
+var baseUrl = '';
+if (global.window) {
+   baseUrl = window.location.href.split('/').slice(0, 3).join('/');
+}
 
 var api = {
-   sendRequest (request, callback) {
-      http(`http://${window.location.href.split('/').slice(2, 3).join('/')}/_/cmd/`).withJsonBody(request).requestJson(json => {
-         request.response = json;
-         callback(request);
+   sendRequest (req) {
+      return http(`${baseUrl}/api/console/cmd`).post().withJsonBody(req).requestJson().then(json => {
+         // Add key for subsequent requests
+         if (json.type === 'key') {
+            keys = { ...keys, ...json.result };
+         }
+         var request = those(requests).first(r => r.id && r.id === req.id);
+         // Append response to request object
+         if (!request.response) {
+            request.response = json;
+         }
+         return request;
       }).catch(err => {
-         request.response = {
+         req.response = {
             status: 'ERR',
             date: (new Date()).toISOString(),
             result: err.statusText,
             type: 'text',
          };
-         callback(request);
+         return req;
       });
    },
 };
@@ -27,22 +42,34 @@ function handleSocketMessage (data) {
    // Parse json string to an object
    data = JSON.parse(data);
 
+   // Add key for subsequent requests
+   if (data.type === 'key') {
+      keys = { ...keys, ...data.result };
+      return;
+   }
+
+   console.log(data.result);
+
    // Find appropriate request
-   var request = those(requests).first(req => req.context && req.context.processId === data.id);
+   var request = those(requests).first(req => req.id && req.id === data.context);
    if (request === null) {
       return;
    }
 
    if (data.result === null || data.processEnded) {
       // process ended
-      request.context.processId = void 0;
+      request.context = undefined;
    }
 
    if (data.result !== null) {
-      if (request.response === null) {
-         request.response = {};
+      if (!request.response) {
+         request.response = {
+            type: 'text',
+            status: 'OK',
+            result: data.result
+         };
       }
-      if (typeof request.response.result === 'string' && typeof data.result === 'string') {
+      else if (typeof request.response.result === 'string' && typeof data.result === 'string') {
          request.response.result += `\r\n${data.result}`;
       }
       else {
@@ -51,7 +78,7 @@ function handleSocketMessage (data) {
    }
 
    // Notify
-   f.notify(request);
+   f.notify({ ...request });
 }
 
 WebSocketClient.onmessage(handleSocketMessage);
@@ -60,16 +87,32 @@ function wrapRequest (cmd, sessionId) {
    return {
       id: uuid.v4(),
       sessionId,
-      context: {},
       date: (new Date()).toISOString(),
       cmd,
       response: null,
+      keys: keys
    };
 }
 
 var f = {
+   // startTerminal (query) {
+   //    return http(`${baseUrl}/api/console/terminal`).post().withJsonBody(query).requestJson(json => {
+   //       return json;
+   //    })
+   //    .catch(err => {
+   //       console.log(err);
+   //    });
+   // },
+   // sendTerminal (pid, req) {
+   //    return http(`${baseUrl}/api/console/terminal/${pid}`).post().withJsonBody(req).requestJson(json => {
+   //       return json;
+   //    })
+   //    .catch(err => {
+   //       console.log(err);
+   //    });
+   // },
    send (cmd, sessionId, callback) {
-
+      // No command was given
       if (!cmd) {
          return;
       }
@@ -94,7 +137,7 @@ var f = {
       //    }
       // }
 
-      api.sendRequest(request, req => {
+      api.sendRequest(request).then(req => {
          // if (req.response.hasOwnProperty('setContext')) {
          //    var context = req.response.setContext;
          //    req.response.setContext = void 0;

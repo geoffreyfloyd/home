@@ -241,6 +241,8 @@ class Form extends React.Component {
          handleInputUnregister: this.handleInputUnregister,
          handleUpdateRequest: this.handleUpdateRequest,
          InputWrapper: InputWrapper,
+         labelExplain: props.labelExplain || this.props.labelExplain,
+         labelStyle: props.labelStyle || this.props.labelStyle,
       };
    }
 
@@ -274,7 +276,6 @@ class Form extends React.Component {
          handleUpdateRequest: this.handleUpdateRequest,
          InputWrapper: InputWrapper,
          labelExplain: props.labelExplain || this.props.labelExplain,
-         labelSpan: props.labelSpan || this.props.labelSpan,
          labelStyle: props.labelStyle || this.props.labelStyle,
       };
    }

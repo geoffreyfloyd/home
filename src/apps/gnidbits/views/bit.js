@@ -96,8 +96,8 @@ export default class Bit extends React.Component {
          <HostContainer>
             <div style={appStyle.background}>
                <div style={appStyle.content}>
-                  <Form ref="form" model={model} style={{ color: '#2B90E8' }}>
-                     <FormSection title="General" style={appStyle.formSection} labelSpan={2} labelStyle={{ color: '#00AF27' }}>
+                  <Form ref="form" model={model} style={appStyle.form} labelStyle={appStyle.label}>
+                     <FormSection title="General" style={appStyle.formSection}>
                         <InputGroup label="Caption"><TextInput path="caption" /></InputGroup>
                         <InputGroup label="Tags"><TagInput path="tags" items={tags} /></InputGroup>
                      </FormSection>
