@@ -73,7 +73,7 @@ var closeHandlers = [];
 
 module.exports = exports = {
    getConnections: function () {
-      return connections; //Object.keys(connections).map(key => connections[key]);
+      return connections;
    },
    onMessage: function (uri, callback) {
       messageHandlers[uri] = callback;

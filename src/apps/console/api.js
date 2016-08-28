@@ -107,6 +107,11 @@ module.exports = function (operator) {
                type: 'text',
                context: requests[term.pid] || null
             };
+            var processEnded = /\[00m\$/.test(data);
+            if (processEnded) {
+               sendData.processEnded = true;
+            }
+            console.log(processEnded, data.slice(-10));
             socketClient.sendUTF(JSON.stringify(sendData));
          }
          catch (ex) {

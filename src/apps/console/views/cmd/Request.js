@@ -116,14 +116,15 @@ class Request extends React.Component {
       var statusStyle = styles.waiting;
       var onClick;
       if (data.response && data.response.status === 'OK') {
-         // if (data.context && data.context.processId) {
-         //    // in a process - still expecting more responses
-         //    statusStyle = styles.inprocess;
-         // }
-         // else {
-         statusStyle = styles.ok;
-         // }
-         onClick = this.handleRequestClick;
+         if (data.response.context) {
+            // in a process - still expecting more responses
+            console.log('in process');
+            statusStyle = styles.inprocess;
+         }
+         else {
+            statusStyle = styles.ok;
+            onClick = this.handleRequestClick;
+         }
       }
       else if (data.response && data.response.status === 'ERR') {
          statusStyle = styles.err;

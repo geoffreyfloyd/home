@@ -58,16 +58,12 @@ function handleSocketMessage (data) {
 
    if (data.result === null || data.processEnded) {
       // process ended
-      request.context = undefined;
+      request.response.context = null;
    }
 
    if (data.result !== null) {
       if (!request.response) {
-         request.response = {
-            type: 'text',
-            status: 'OK',
-            result: data.result
-         };
+         request.response = data;
       }
       else if (typeof request.response.result === 'string' && typeof data.result === 'string') {
          request.response.result += `\r\n${data.result}`;
@@ -95,22 +91,6 @@ function wrapRequest (cmd, sessionId) {
 }
 
 var f = {
-   // startTerminal (query) {
-   //    return http(`${baseUrl}/api/console/terminal`).post().withJsonBody(query).requestJson(json => {
-   //       return json;
-   //    })
-   //    .catch(err => {
-   //       console.log(err);
-   //    });
-   // },
-   // sendTerminal (pid, req) {
-   //    return http(`${baseUrl}/api/console/terminal/${pid}`).post().withJsonBody(req).requestJson(json => {
-   //       return json;
-   //    })
-   //    .catch(err => {
-   //       console.log(err);
-   //    });
-   // },
    send (cmd, sessionId, callback) {
       // No command was given
       if (!cmd) {
