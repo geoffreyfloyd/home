@@ -1,10 +1,15 @@
-import pty from 'pty.js';
+var pty;
+try {
+   pty = require('pty.js');
+} 
+catch (ex) {
+   // do nothing
+}
 
 module.exports = function (operator) {
 
    var logs = {};
    var terminals = {};
-   var connectionTerminalMap = {};
    var requests = {};
 
    operator.server.get('/api/gnodes/pretty', operator.authenticate, operator.authorize, operator.jsonResponse, (req, res) => {
@@ -66,6 +71,16 @@ module.exports = function (operator) {
    function terminalStart (req, res) {
       // var cols = req.body.cols;
       // var rows = req.body.rows;
+
+      if (!pty) {
+         res.end(JSON.stringify({
+            status: 'ERR',
+            date: (new Date()).toISOString(),
+            result: 'pty not found',
+            type: 'text',
+         }));
+         return true;
+      }
 
       // Initialize terminal
       var term = pty.spawn(process.platform === 'win32' ? 'cmd.exe' : 'bash', [], {
