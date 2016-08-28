@@ -1,8 +1,8 @@
 import React from 'react';
-import Layout from 'components/Layout/Layout';
 import requestStore from 'stores/request-store';
 import Request from './Request';
 import { $clrLowContrast, $clrKeyword } from './style';
+import { flexItem } from 'libs/style';
 
 class Session extends React.Component {
    /*************************************************************
@@ -69,26 +69,26 @@ class Session extends React.Component {
 
       if (!this.props.selected) {
          unselectedDom = ([
-            <a onClick={this.handleSelectClick} style={{ float: 'right', marginLeft: '0.4em', fontSize: '0.8em', marginTop: '0.42em' }}><i className={'fa fa-2x fa-circle-o'} style={styles.close}></i></a>,
+            <a onClick={this.handleSelectClick} style={styles.select}><i className={'fa fa-2x fa-circle-o'} style={styles.close}></i></a>,
          ]);
 
          if (this.state.collapsed) {
-            unselectedDom.push(<a onClick={this.handleCollapseClick} style={{ float: 'right', fontSize: '0.8em', marginTop: '0.42em' }}><i className={'fa fa-2x fa-plus'} style={styles.close}></i></a>);
+            unselectedDom.push(<a onClick={this.handleCollapseClick} style={styles.option}><i className={'fa fa-2x fa-plus'} style={styles.close}></i></a>);
          }
          else {
-            unselectedDom.push(<a onClick={this.handleCollapseClick} style={{ float: 'right', fontSize: '0.8em', marginTop: '0.42em' }}><i className={'fa fa-2x fa-minus'} style={styles.close}></i></a>);
+            unselectedDom.push(<a onClick={this.handleCollapseClick} style={styles.option}><i className={'fa fa-2x fa-minus'} style={styles.close}></i></a>);
          }
       }
 
       return (
-         <Layout layoutContext={this.props.layoutContext} layoutOptions={{ overflow: 'y' }} style={styles.appContainer}>
+         <div style={{ overflowY: 'auto' }} style={styles.appContainer}>
             <div style={{ width: '100%' }}>
-               <a onClick={this.handleCloseClick} style={{ float: 'right', marginLeft: '0.2em' }}><i className={'fa fa-2x fa-close'} style={styles.close}></i></a>
+               <a onClick={this.handleCloseClick} style={styles.closeLink}><i className={'fa fa-2x fa-close'} style={styles.close}></i></a>
                {unselectedDom}
                <h3 style={{ margin: '0', lineHeight: '40px' }}>{title}</h3>
                {this.state.collapsed ? [] : requests.map(request => <Request key={request.id} data={request} />)}
             </div>
-         </Layout>
+         </div>
       );
    }
 }
@@ -102,16 +102,36 @@ Session.propTypes = {
 
 var styles = {
    appContainer: {
-      marginBottom: '10px',
+      ...flexItem({ flex: '1' }),
+      // marginBottom: '10px',
       border: `2px ${$clrLowContrast} solid`,
-      borderRadius: '10px',
       padding: '0 10px 5px 10px',
+      background: '#222',
+      color: '#ddd',
    },
    hover: {
       color: $clrKeyword,
    },
    close: {
       color: $clrLowContrast,
+   },
+   closeLink: {
+      cursor: 'pointer',
+      float: 'right',
+      marginLeft: '0.2em'
+   },
+   option: {
+      cursor: 'pointer',
+      float: 'right',
+      fontSize: '0.8em',
+      marginTop: '0.42em'
+   },
+   select: {
+      cursor: 'pointer',
+      float: 'right',
+      marginLeft: '0.4em',
+      fontSize: '0.8em',
+      marginTop: '0.42em'
    },
 };
 

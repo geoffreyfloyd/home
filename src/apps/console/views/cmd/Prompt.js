@@ -1,5 +1,6 @@
 import React from 'react';
 import { Editor, ContentState, EditorState, RichUtils, CompositeDecorator } from 'draft-js';
+import { flexItem } from 'libs/style';
 import requestStore from 'stores/request-store';
 import those from 'those';
 
@@ -171,8 +172,8 @@ var styles = {
       fontWeight: 'bold',
    },
    inputContainer: {
-      width: '88%',
-      margin: '10px 0 0 10px',
+      ...flexItem({ flex: '1' }),
+      padding: '10px 0 0 10px',
       border: '0',
       color: '#ddd',
       backgroundColor: '#222',
@@ -181,5 +182,6 @@ var styles = {
       fontSize: '1.4em',
       borderRadius: '10px',
       paddingLeft: '10px',
+      height: '2.6rem'
    },
 };

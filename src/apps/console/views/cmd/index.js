@@ -14,7 +14,7 @@ import Session from './Session';
 import Toolbar from './Toolbar';
 import requestStore from 'stores/request-store';
 import WindowSizeLayout from 'components/Layout/WindowSizeLayout';
-import Layout from 'components/Layout/Layout';
+import { flex, flexItem } from 'libs/style';
 
 class Cmd extends React.Component {
    constructor (props) {
@@ -61,20 +61,13 @@ class Cmd extends React.Component {
    }
 
    handleClickProcesses () {
-      var state = Object.assign({
+      this.setState({
          showProcesses: !this.state.showProcesses,
-      }, this.calculateSize(!this.state.showProcesses));
-      this.setState(state);
+      });
    }
 
    handleClickNewSession () {
       requestStore.new();
-      requestStore.startTerminal().then(json => {
-         console.log(json);
-         requestStore.sendTerminal(json.pid, { msg: 'ls' }).then(res => {
-            console.log(res);
-         });
-      });
    }
 
    handleSelectSession (sessionId) {
@@ -103,49 +96,56 @@ class Cmd extends React.Component {
 
       var currentSession, sideSessions;
       currentSession = (
-         <Layout layoutWidth="flex" key="mainworkspace">
-            <Session sessionId={selectedSessionId} selected />
-         </Layout>
+         <div key="currentSession" style={styles.currentSession}>
+            <Session key={selectedSessionId} sessionId={selectedSessionId} selected />
+         </div>
       );
       if (this.state.showProcesses) {
          sideSessions = (
-            <Layout layoutWidth="20rem" key="sideSessions">
-               {otherSessionIds.map(sessionId => {
-                  return (<Session key={sessionId} sessionId={sessionId} style={{ maxHeight: '600px', overflowY: 'auto' }} onSelect={this.handleSelectSession.bind(this) } />);
-               }) }
-            </Layout>
+            <div style={styles.sideSessions}>
+               <div style={styles.blockFill}>
+                  {otherSessionIds.map(sessionId => {
+                     return (
+                        <div style={styles.blockFill}>
+                           <Session key={sessionId}
+                              sessionId={sessionId}
+                              style={{ maxHeight: '600px', overflowY: 'auto' }}
+                              onSelect={this.handleSelectSession.bind(this) }
+                           />
+                        </div>
+                     );
+                  })}
+               </div>
+            </div>
          );
       }
 
       return (
          <WindowSizeLayout layoutOptions={{ overflow: '*', flex: false }}>
-            <Layout layoutHeight="flex:900" layoutWidth="flex:1500" layoutOptions={{ flex: false }}>
-               <Layout layoutHeight="3rem">
-                  <Toolbar key="toolbar" showProcesses={this.state.showProcesses} onClickProcesses={this.handleClickProcesses} onClickNewSession={this.handleClickNewSession}>
+            <div style={styles.container}>
+               <div style={styles.toolbar}>
+                  <Toolbar
+                    showProcesses={this.state.showProcesses}
+                    onClickProcesses={this.handleClickProcesses}
+                    onClickNewSession={this.handleClickNewSession}
+                  >
                      <Prompt sessionId={selectedSessionId} />
                   </Toolbar>
-               </Layout>
-               <Layout layoutHeight="flex">
+               </div>
+               <div style={styles.sessions}>
                   {currentSession}
                   {sideSessions}
-               </Layout>
-            </Layout>
+               </div>
+            </div>
          </WindowSizeLayout>
       );
    }
 
    renderSingleSession (sessionId) {
-      var session;
-      session = (
-         <Layout key="mainworkspace">
-            <Session sessionId={sessionId} selected />
-         </Layout>
-      );
-
       return (
          <WindowSizeLayout layoutOptions={{ overflow: '*', flex: false }}>
-            <Layout layoutHeight="flex:900" layoutWidth="flex:1500" layoutOptions={{ flex: false }}>
-               <Layout layoutHeight="3rem">
+            <div style={styles.container}>
+               <div style={styles.toolbar}>
                   <Toolbar key="toolbar"
                     showProcesses={false}
                     onClickProcesses={this.handleClickProcesses}
@@ -153,11 +153,11 @@ class Cmd extends React.Component {
                   >
                      <Prompt sessionId={sessionId} />
                   </Toolbar>
-               </Layout>
-               <Layout layoutHeight="flex">
-                  {session}
-               </Layout>
-            </Layout>
+               </div>
+               <div style={styles.sessions}>
+                  <Session sessionId={sessionId} selected />
+               </div>
+            </div>
          </WindowSizeLayout>
       );
    }
@@ -174,6 +174,33 @@ class Cmd extends React.Component {
       return this.renderMultiSession(sessionIds);
    }
 }
+
+const styles = {
+   blockFill: {
+      display: 'block',
+      width: '100%'
+   },
+   container: {
+      ...flex('column', 'nowrap'),
+      width: '100%',
+      background: '#111'
+   },
+   currentSession: {
+      ...flexItem({ flex: '1' }),
+   },
+   sessions: {
+      ...flexItem({ flex: '1' }),
+      width: '100%'
+   },
+   sideSessions: {
+      ...flexItem({ width: '40rem' }),
+      overflowY: 'auto',
+   },
+   toolbar: {
+      height: '2.7rem',
+      color: '#ddd'
+   },
+};
 
 // Cmd.propTypes = { title: PropTypes.string.isRequired };
 
