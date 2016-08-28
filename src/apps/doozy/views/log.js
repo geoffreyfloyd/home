@@ -2,18 +2,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 // STORES
+import host from 'stores/host';
 import logentryStore from 'stores/logentry-store';
 import tagStore from 'stores/tag-store';
 // COMPONENTS
 import appStyle from 'apps/gnidbits/style';
 import Form from 'components/forms/Form';
 import FormSection from 'components/forms/FormSection';
+import HostContainer from 'components/HostContainer';
 import InputGroup from 'components/forms/InputGroup';
 import TagInput from 'components/forms/TagInput';
 import TextInput from 'components/forms/TextInput';
 import MultiLineInput from 'components/forms/MultiLineInput';
-import Message from 'components/Message';
 import LoadingIndicator from 'components/LoadingIndicator';
+import SavingBackdrop from 'components/SavingBackdrop';
 
 export default class LogEntry extends React.Component {
    /*************************************************************
@@ -51,12 +53,21 @@ export default class LogEntry extends React.Component {
 
    handleSaveChanges () {
       var form = this.refs.form.getValue();
-      var newModel = Object.assign({}, this.state.model, form);
+      var model = Object.assign({}, this.state.model, form);
 
-      Message.notify('Saving...');
-      logentryStore.save(newModel).then(serverModel => {
-         this.setState({ model: serverModel });
-         Message.notify('Saved...');
+      host.newWindow(<SavingBackdrop />);
+      logentryStore.save(model).then(newModel => {
+         if (newModel) {
+            host.notify('[l10n: Save successful.]');
+         }
+         else {
+            host.notify('[l10n: Save failed.]');
+         }
+         host.closeWindow();
+      })
+      .catch(err => {
+         host.notify('[l10n: Save failed.] ' + err.message);
+         host.closeWindow();
       });
    }
 
@@ -83,29 +94,31 @@ export default class LogEntry extends React.Component {
       }
 
       return (
-         <div style={appStyle.background}>
-            <div style={appStyle.content}>
-               <Form ref="form" model={model} style={appStyle.form} labelSpan={2} labelStyle={appStyle.label}>
-                  <FormSection title="General" style={appStyle.formSection}>
-                     <InputGroup label="Date">
-                        <TextInput path="date" type="date" />
-                     </InputGroup>
-                     <InputGroup label="Details">
-                        <MultiLineInput path="details" autoGrow focus />
-                     </InputGroup>
-                     <InputGroup label="Duration">
-                        <TextInput path="duration" type="text" />
-                     </InputGroup>
-                     <InputGroup label="Tags">
-                        <TagInput path="tags" items={tags} />
-                     </InputGroup>
-                  </FormSection>
-               </Form>
-               <div style={appStyle.buttons}>
-                  <button style={appStyle.button} onClick={this.handleSaveChanges}>Save Changes</button>
+         <HostContainer>
+            <div style={appStyle.background}>
+               <div style={appStyle.content}>
+                  <Form ref="form" model={model} style={appStyle.form} labelSpan={2} labelStyle={appStyle.label}>
+                     <FormSection title="General" style={appStyle.formSection}>
+                        <InputGroup label="Date">
+                           <TextInput path="date" type="date" />
+                        </InputGroup>
+                        <InputGroup label="Details">
+                           <MultiLineInput path="details" autoGrow focus />
+                        </InputGroup>
+                        <InputGroup label="Duration">
+                           <TextInput path="duration" type="text" />
+                        </InputGroup>
+                        <InputGroup label="Tags">
+                           <TagInput path="tags" items={tags} />
+                        </InputGroup>
+                     </FormSection>
+                  </Form>
+                  <div style={appStyle.buttons}>
+                     <button style={appStyle.button} onClick={this.handleSaveChanges}>Save Changes</button>
+                  </div>
                </div>
             </div>
-         </div>
+         </HostContainer>
       );
    }
 }

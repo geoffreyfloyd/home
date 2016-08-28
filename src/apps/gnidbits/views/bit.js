@@ -3,11 +3,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Promise from 'bluebird';
 // STORES
+import host from 'stores/host';
 import bitStore from 'stores/bit-store';
 import tagStore from 'stores/tag-store';
 // COMPONENTS
 import appStyle from 'apps/gnidbits/style';
-import Message from 'components/Message';
 import Form from 'components/forms/Form';
 import FormSection from 'components/forms/FormSection';
 import InputGroup from 'components/forms/InputGroup';
@@ -15,7 +15,9 @@ import InputTable from 'components/forms/InputTable';
 import TagInput from 'components/forms/TagInput';
 import TextInput from 'components/forms/TextInput';
 import MultiLineInput from 'components/forms/MultiLineInput';
+import HostContainer from 'components/HostContainer';
 import LoadingIndicator from 'components/LoadingIndicator';
+import SavingBackdrop from 'components/SavingBackdrop';
 
 export default class Bit extends React.Component {
    constructor (props) {
@@ -43,10 +45,19 @@ export default class Bit extends React.Component {
       var form = this.refs.form.getValue();
       var newModel = Object.assign({}, this.state.model, form);
 
-      Message.notify('Saving...');
+      host.newWindow(<SavingBackdrop />);
       bitStore.save(newModel).then(() => {
-         // this.setState({ model: serverModel });
-         Message.notify('Saved...');
+         if (newModel) {
+            host.notify('[l10n: Save successful.]');
+         }
+         else {
+            host.notify('[l10n: Save failed.]');
+         }
+         host.closeWindow();
+      })
+      .catch(err => {
+         host.notify('[l10n: Save failed.] ' + err.message);
+         host.closeWindow();
       });
    }
 
@@ -82,50 +93,52 @@ export default class Bit extends React.Component {
       }
 
       return (
-         <div style={appStyle.background}>
-            <div style={appStyle.content}>
-               <Form ref="form" model={model} style={{ color: '#2B90E8' }}>
-                  <FormSection title="General" style={appStyle.formSection} labelSpan={2} labelStyle={{ color: '#00AF27' }}>
-                     <InputGroup label="Caption"><TextInput path="caption" /></InputGroup>
-                     <InputGroup label="Tags"><TagInput path="tags" items={tags} /></InputGroup>
-                  </FormSection>
-                  <FormSection title="Images" style={appStyle.formSection}>
-                     <InputTable path="images" getNewRow={newImage}>
-                        <TextInput path="src" />
-                     </InputTable>
-                  </FormSection>
-                  <FormSection title="Videos" style={appStyle.formSection}>
-                     <InputTable path="videos" getNewRow={newVideo} style={appStyle.inputRow}>
-                        <label className="control-label" style={appStyle.inlineLabel}>Source</label>
-                        <TextInput path="src" cellStyle={{ flex: '1' }} />
-                        <label className="control-label" style={appStyle.inlineLabel}>Start At</label>
-                        <TextInput type="number" path="start" cellStyle={{ maxWidth: '5rem' }} />
-                        <label className="control-label" style={appStyle.inlineLabel}>End At</label>
-                        <TextInput type="number" path="end" cellStyle={{ maxWidth: '5rem' }} />
-                     </InputTable>
-                  </FormSection>
-                  <FormSection title="Texts" style={appStyle.formSection}>
-                     <InputTable path="texts" getNewRow={newText}>
-                        <MultiLineInput path="text" />
-                     </InputTable>
-                  </FormSection>
-                  <FormSection title="Notes" style={appStyle.formSection}>
-                     <InputTable path="notes" getNewRow={newNote}>
-                        <MultiLineInput path="note" />
-                     </InputTable>
-                  </FormSection>
-                  <FormSection title="Links" style={appStyle.formSection}>
-                     <InputTable path="links" getNewRow={newLink}>
-                        <TextInput path="src" />
-                        <TextInput path="description" />
-                     </InputTable>
-                  </FormSection>
-               </Form>
-               <div style={appStyle.buttons}>
-                  <button style={appStyle.button} onClick={this.handleSaveChanges}>Save Changes</button>
+         <HostContainer>
+            <div style={appStyle.background}>
+               <div style={appStyle.content}>
+                  <Form ref="form" model={model} style={{ color: '#2B90E8' }}>
+                     <FormSection title="General" style={appStyle.formSection} labelSpan={2} labelStyle={{ color: '#00AF27' }}>
+                        <InputGroup label="Caption"><TextInput path="caption" /></InputGroup>
+                        <InputGroup label="Tags"><TagInput path="tags" items={tags} /></InputGroup>
+                     </FormSection>
+                     <FormSection title="Images" style={appStyle.formSection}>
+                        <InputTable path="images" getNewRow={newImage}>
+                           <TextInput path="src" />
+                        </InputTable>
+                     </FormSection>
+                     <FormSection title="Videos" style={appStyle.formSection}>
+                        <InputTable path="videos" getNewRow={newVideo} style={appStyle.inputRow}>
+                           <label className="control-label" style={appStyle.inlineLabel}>Source</label>
+                           <TextInput path="src" cellStyle={{ flex: '1' }} />
+                           <label className="control-label" style={appStyle.inlineLabel}>Start At</label>
+                           <TextInput type="number" path="start" cellStyle={{ maxWidth: '5rem' }} />
+                           <label className="control-label" style={appStyle.inlineLabel}>End At</label>
+                           <TextInput type="number" path="end" cellStyle={{ maxWidth: '5rem' }} />
+                        </InputTable>
+                     </FormSection>
+                     <FormSection title="Texts" style={appStyle.formSection}>
+                        <InputTable path="texts" getNewRow={newText}>
+                           <MultiLineInput path="text" />
+                        </InputTable>
+                     </FormSection>
+                     <FormSection title="Notes" style={appStyle.formSection}>
+                        <InputTable path="notes" getNewRow={newNote}>
+                           <MultiLineInput path="note" />
+                        </InputTable>
+                     </FormSection>
+                     <FormSection title="Links" style={appStyle.formSection}>
+                        <InputTable path="links" getNewRow={newLink}>
+                           <TextInput path="src" />
+                           <TextInput path="description" />
+                        </InputTable>
+                     </FormSection>
+                  </Form>
+                  <div style={appStyle.buttons}>
+                     <button style={appStyle.button} onClick={this.handleSaveChanges}>Save Changes</button>
+                  </div>
                </div>
             </div>
-         </div>
+         </HostContainer>
       );
    }
 }
