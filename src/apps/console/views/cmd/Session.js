@@ -81,7 +81,7 @@ class Session extends React.Component {
       }
 
       return (
-         <div style={{ overflowY: 'auto' }} style={styles.appContainer}>
+         <div style={{ overflowY: 'auto', ...styles.appContainer }}>
             <div style={{ width: '100%' }}>
                <a onClick={this.handleCloseClick} style={styles.closeLink}><i className={'fa fa-2x fa-close'} style={styles.close}></i></a>
                {unselectedDom}
