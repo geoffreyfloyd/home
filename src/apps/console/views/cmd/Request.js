@@ -114,6 +114,7 @@ class Request extends React.Component {
        * Text style based on status of request
        */
       var statusStyle = styles.waiting;
+      var onClick;
       if (data.response && data.response.status === 'OK') {
          // if (data.context && data.context.processId) {
          //    // in a process - still expecting more responses
@@ -122,9 +123,11 @@ class Request extends React.Component {
          // else {
          statusStyle = styles.ok;
          // }
+         onClick = this.handleRequestClick;
       }
       else if (data.response && data.response.status === 'ERR') {
          statusStyle = styles.err;
+         onClick = this.handleRequestClick;
       }
 
       /**
@@ -148,7 +151,7 @@ class Request extends React.Component {
 
       cmd = [];
       if (data.cmd) {
-         cmd.push(<span ref="cmd" style={statusStyle} onClick={this.handleRequestClick}>{this.state.cmd}</span>);
+         cmd.push(<span ref="cmd" style={statusStyle} onClick={onClick}>{this.state.cmd}</span>);
          cmd.push(<br />);
       }
 
@@ -182,9 +185,11 @@ var styles = {
       color: $clrComment,
    },
    ok: {
+      cursor: 'pointer',
       color: $clrDefault,
    },
    err: {
+      cursor: 'pointer',
       color: $clrError,
       textDecoration: 'line-through',
    },
