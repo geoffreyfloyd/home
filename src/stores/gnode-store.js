@@ -88,7 +88,7 @@ export default class GnodeStore extends ContextStore {
    updateStore (newModel) {
       this.updateCache(newModel.id || newModel.key, newModel);
       this.updateContext(newModel, { key: newModel.id || newModel.key });
-      this.updateContext(cacheStore.cache[this.storeName].entities, { key: '*' });
+      this.updateContext(cacheStore.cache[this.storeName].entities, { key: JSON.stringify({ key: '*' }) });
       return newModel;
    }
 
@@ -185,7 +185,7 @@ export default class GnodeStore extends ContextStore {
          this.updateContext(result, { key: key });
 
          // Update the global need
-         this.updateContext(cacheStore.cache[this.storeName].entities, { key: '*' });
+         this.updateContext(cacheStore.cache[this.storeName].entities, { key: JSON.stringify({ key: '*' }) });
 
          // done callback
          (done || function () { })(result);
