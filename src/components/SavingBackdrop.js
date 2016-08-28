@@ -1,5 +1,5 @@
 import React from 'react';
-import LoadingIndicator from 'Components/LoadingIndicator';
+import LoadingIndicator from 'components/LoadingIndicator';
 
 const SavingBackdrop = function (props) {
    return (
