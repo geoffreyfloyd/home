@@ -90,7 +90,7 @@ var styles = {
       maxWidth: '60rem',
       minWidth: '20rem',
       fontSize: '1.5rem',
-      backgroundColor: 'rgb(243, 142, 27)',
+      backgroundColor: '#2B90E8',
       color: '#FFF',
       cursor: 'pointer',
    },
