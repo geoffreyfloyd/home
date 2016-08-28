@@ -1,4 +1,5 @@
 import React from 'react';
+import { $absoluteFill } from 'libs/style';
 import LoadingIndicator from 'components/LoadingIndicator';
 
 const SavingBackdrop = function (props) {
@@ -11,13 +12,7 @@ const SavingBackdrop = function (props) {
 
 var styles = {
    root: {
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      right: '0',
-      bottom: '0',
-      height: '100%',
-      width: '100%',
+      ...$absoluteFill,
       background: 'rgba(0,0,0,0.1)',
       zIndex: '601'
    },
