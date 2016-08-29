@@ -46,6 +46,15 @@ module.exports = function (operator) {
       var cmd = req.body.cmd.split(' ');
       var responseHandled = false;
       switch (cmd[0]) {
+         case 'calc':
+            res.end(JSON.stringify({
+               status: 'OK',
+               date: (new Date()).toISOString(),
+               result: 'Calc',
+               type: 'gooey',
+            }));
+            responseHandled = true;
+            break;
          case 'term':
             switch (cmd[1]) {
                case 'start':

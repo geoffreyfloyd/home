@@ -1,6 +1,6 @@
 import React from 'react';
 import requestStore from 'stores/request-store';
-// import GooeyHost from '../gooeys/GooeyHost';
+import GooeyHost from '../gooeys/GooeyHost';
 import { $clrComment, $clrDefault, $clrError } from './style';
 
 class Request extends React.Component {
@@ -99,13 +99,15 @@ class Request extends React.Component {
       // }
       return <span dangerouslySetInnerHTML={{ __html: JSON.stringify(obj) }}></span>;
    }
-   //  renderGooeyResponse () {
-   //      var data = this.props.data;
-   //      if (!data.response.result) {
-   //          return null;
-   //      }
-   //      return (<GooeyHost gooey={data.response.result} />);
-   //  },
+
+   renderGooeyResponse () {
+      var data = this.props.data;
+      if (!data.response.result) {
+         return null;
+      }
+      return (<GooeyHost gooey={data.response.result} />);
+   }
+
    render () {
       var cmd, response;
       var data = this.props.data;
@@ -144,9 +146,9 @@ class Request extends React.Component {
          else if (data.response.type === 'html') {
             response = this.renderHtmlResponse();
          }
-         // else if (data.response.type === 'gooey') {
-         //     response = this.renderGooeyResponse();
-         // }
+         else if (data.response.type === 'gooey') {
+            response = this.renderGooeyResponse();
+         }
       }
       response = <div ref="responseContainer" style={styles.response}>{response}</div>;
 
