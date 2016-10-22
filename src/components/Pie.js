@@ -1,5 +1,8 @@
 // PACKAGES
 import React from 'react';
+// Pie.js - an svg component study
+// Component works in Chrome, but Dasharray fill looks off in FF and perhaps others,
+// so we should eventually rewrite this with Canvas to be cross-browser compatible
 
 const defaultBgColor = '#444';
 const defaultColors = [
