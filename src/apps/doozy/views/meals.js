@@ -89,7 +89,7 @@ export default class Meals extends React.Component {
                <div style={styles.title}>{row.name}</div>
             </div>
             <div style={styles.cell}>
-               <HourDuration minutes={row.minutes} radius={40} fillColor="#0074d9" bgColor="#444" onClick={this.handleMinutesClick} />
+               <HourDuration minutes={row.minutes} radius={140} fillColor="#0074d9" bgColor="#444" tickColor="#222" onClick={this.handleMinutesClick} />
             </div>
          </div>
       );

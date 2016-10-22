@@ -3,15 +3,19 @@ import React from 'react';
 import Pie from 'components/Pie';
 
 const HourDuration = function (props) {
-   var { bgColor, fillColor, minutes, radius, onClick } = props;
+   var { bgColor, fillColor, minutes, radius, tickColor, onClick } = props;
    return (
-      <Pie
-         bgColor={bgColor}
-         series={[{ x: minutes, color: fillColor }]}
-         max={60}
-         radius={radius}
-         onClick={onClick}
-      />
+      <div onClick={onClick}>
+         <Pie
+            bgColor={bgColor}
+            borderColor={tickColor}
+            borderThickness={radius / 8}
+            borderDashIncrement={5}
+            series={[{ x: minutes, color: fillColor }]}
+            max={60}
+            radius={radius}
+         />
+      </div>
    );
 };
 
