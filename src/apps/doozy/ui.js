@@ -15,6 +15,11 @@ module.exports = exports = {
       route: '/logs',
       template: 'index',
    },
+   meals: {
+      entry: path.resolve(__dirname, './views/meals.js'),
+      route: '/meals',
+      template: 'index',
+   },
    target: {
       entry: path.resolve(__dirname, './views/target.js'),
       route: '/target/:id',

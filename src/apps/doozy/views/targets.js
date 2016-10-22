@@ -9,7 +9,7 @@ import logentryStore from 'stores/logentry-store';
 import tagStore from 'stores/tag-store';
 import targetStore from 'stores/target-store';
 // COMPONENTS
-import appStyle from 'apps/gnidbits/style';
+import appStyle from 'apps/doozy/style';
 import Indicator from 'components/Indicator';
 
 export default class Targets extends React.Component {
