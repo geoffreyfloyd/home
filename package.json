@@ -4,7 +4,7 @@
   "description": "",
   "author": "Geoffrey Floyd",
   "license": "ISC",
-  "homepage": "https://home.hoomanlogic.com",
+  "homepage": "https://home.hooman.io",
   "scripts": {
     "build": "npm run build-client && npm run build-server",
     "build-client": "webpack --verbose",
@@ -35,6 +35,7 @@
     "lodash": "^4.9.0",
     "marked": "^0.3.5",
     "method-override": "^2.3.5",
+    "nodegit": "^0.14.1",
     "passport": "0.3.2",
     "passport-google-oauth": "^1.0.0",
     "pretty-error": "2.0.0",
