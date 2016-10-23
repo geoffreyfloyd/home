@@ -18,45 +18,60 @@ class DurationInput extends React.Component {
    }
 
    handleMouseDown (e) {
-      // Still down
-      if (this.state.anchor) {
+      var { anchor, value } = this.state;
+
+      // If anchor is still set then ignore subsequent mouse down
+      if (anchor) {
          return;
       }
+
+      // Bind mouse events to document
+      document.addEventListener('mousemove', this.handleMouseMove);
+      document.addEventListener('mouseup', this.handleMouseUp);
+
       // Place anchor for relative position to value mapping adjustment
       this.setState({
          anchor: e.pageX,
-         feedbackValue: this.state.value,
+         feedbackValue: value,
       });
-
-      document.addEventListener('mousemove', this.handleMouseMove);
-      document.addEventListener('mouseup', this.handleMouseUp);
    }
 
    handleMouseMove (e) {
       var { max } = this.props;
       var { anchor, value } = this.state;
 
-      if (this.state.anchor) {
-         var feedbackValue = value + (e.pageX - anchor);
-         if (feedbackValue < 0) {
-            feedbackValue = 0;
-         }
-         else if (feedbackValue > max) {
-            feedbackValue = max;
-         }
-         this.setState({
-            feedbackValue: feedbackValue
-         });
+      // If an anchor isn't set then there is nothing to relate to
+      if (!this.state.anchor) {
+         return;
       }
+
+      // Ensure feedback value remains within range
+      var feedbackValue = value + (e.pageX - anchor);
+      if (feedbackValue < 0) {
+         feedbackValue = 0;
+      }
+      else if (feedbackValue > max) {
+         feedbackValue = max;
+      }
+
+      // Set feedback value
+      this.setState({
+         feedbackValue: feedbackValue
+      });
    }
 
    handleMouseUp () {
+      var { feedbackValue } = this.state;
+
+      // Unbind mouse events from document
       document.removeEventListener('mousemove', this.handleMouseMove);
       document.removeEventListener('mouseup', this.handleMouseUp);
+
+      // Set value and clear mouse drag interaction states
       this.setState({
          anchor: undefined,
          feedbackValue: undefined,
-         value: this.state.feedbackValue,
+         value: feedbackValue,
       });
    }
 
@@ -64,16 +79,17 @@ class DurationInput extends React.Component {
       var { bgColor, fillColor, radius, tickColor, onClick } = this.props;
       var { feedbackValue, value } = this.state;
       var displayValue = feedbackValue === undefined ? value : feedbackValue;
-      var hourDisplaysCount = Math.ceil(displayValue / 60) || 1;
-      var lastHour = displayValue % 60;
-      var hourDisplays = [];
-      for (let i = 0; i < hourDisplaysCount; i++) {
-         var isLastHour = i + 1 >= hourDisplaysCount;
-         var key = i; // isLastHour ? 'last' : i;
-         hourDisplays.push(
+      var hourPieCount = Math.ceil(displayValue / 60) || 1; // Get count of hour pies to be rendered
+      var lastHour = (displayValue % 60) || (displayValue ? 60 : 0); // Get minutes for the last hour
+      var hourPies = []; // Array of rendered hour pies
+
+      // Build Hour Pies
+      for (let i = 0; i < hourPieCount; i++) {
+         var isLastHour = i + 1 >= hourPieCount;
+         hourPies.push(
             <HourDuration
-               key={key}
-               minutes={isLastHour ? lastHour || (displayValue ? 60 : 0) : 60}
+               key={i}
+               minutes={isLastHour ? lastHour : 60}
                max={180}
                radius={140}
                fillColor={fillColor}
@@ -83,9 +99,11 @@ class DurationInput extends React.Component {
             />
          );
       }
+      
+      // Return rendered
       return (
          <div onClick={onClick} onMouseDown={this.handleMouseDown}>
-            {hourDisplays}
+            {hourPies}
          </div>
       );
    }
