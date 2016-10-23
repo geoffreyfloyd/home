@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 // STORES
 import tagStore from 'stores/tag-store';
 // COMPONENTS
-import HourDuration from 'components/HourDuration';
+import DurationInput from 'components/DurationInput';
 import appStyle from 'apps/doozy/style';
 
 export default class Meals extends React.Component {
@@ -62,7 +62,7 @@ export default class Meals extends React.Component {
          meals: this.state.meals.map(meal => {
             return {
                ...meal,
-               minutes: Math.floor(Math.random() * (61))
+               minutes: Math.floor(Math.random() * (361))
             };
          })
       });
@@ -89,7 +89,7 @@ export default class Meals extends React.Component {
                <div style={styles.title}>{row.name}</div>
             </div>
             <div style={styles.cell}>
-               <HourDuration minutes={row.minutes} radius={140} fillColor="#0074d9" bgColor="#444" tickColor="#222" onClick={this.handleMinutesClick} />
+               <DurationInput max={120} minutes={row.minutes} radius={40} fillColor="#0074d9" bgColor="#444" tickColor="#222" />
             </div>
          </div>
       );

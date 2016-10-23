@@ -5,7 +5,7 @@ import Pie from 'components/Pie';
 const HourDuration = function (props) {
    var { bgColor, fillColor, minutes, radius, tickColor, onClick } = props;
    return (
-      <div onClick={onClick}>
+      <div style={style} onClick={onClick}>
          <Pie
             bgColor={bgColor}
             borderColor={tickColor}
@@ -18,5 +18,7 @@ const HourDuration = function (props) {
       </div>
    );
 };
+
+const style = { display: 'inline-block' };
 
 export default HourDuration;
