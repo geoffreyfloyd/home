@@ -1,6 +1,19 @@
 import { create, get, getAll, remove, update } from '../../stores/core';
-import bitStore from '../../stores/bit-store';
 import those from 'those';
+
+function newBit (id) {
+   return {
+      isNew: true,
+      id: id || GnodeStore.uuid(),
+      caption: '',
+      videos: [],
+      images: [],
+      links: [],
+      notes: [],
+      texts: [],
+      tags: [],
+   };
+}
 
 module.exports = function (operator) {
    /*****************************************************
@@ -16,7 +29,7 @@ module.exports = function (operator) {
       get(operator, req.params.id, 'gnidbits.bit').then(result => {
          if (result === null) {
             // Send a new model
-            res.end(JSON.stringify(bitStore.new(req.params.id)));
+            res.end(JSON.stringify(newBit(req.params.id)));
          }
          else {
             res.end(JSON.stringify(result));

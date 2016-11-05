@@ -1,7 +1,21 @@
 import { create, get, getAll, remove, update } from '../../stores/core';
 import those from 'those';
-import logentryStore from '../../stores/logentry-store';
 
+function newLogEntry (id) {
+      return {
+            isNew: true,
+            id: id || GnodeStore.uuid(),
+            actionId: null,
+            actions: [],
+            rootActionId: null,
+            actionName: '',
+            duration: 0,
+            date: getLocalDateString(),
+            details: '',
+            entry: 'performed',
+            tags: [],
+      };
+}
 /**
  * Set the context for data access
  */
@@ -319,7 +333,7 @@ module.exports = function (operator) {
       get(operator, req.params.id, 'doozy.logentry').then(result => {
          if (result === null) {
             // Send a new model
-            res.end(JSON.stringify(logentryStore.new(req.params.id)));
+            res.end(JSON.stringify(newLogEntry(req.params.id)));
          }
          else {
             res.end(JSON.stringify(result));
