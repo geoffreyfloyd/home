@@ -827,6 +827,7 @@ export default {
                return load(context);
             })
             .then(function () {
+               console.log('Opening ' + context.repoPath);
                return db;
             });
       }
